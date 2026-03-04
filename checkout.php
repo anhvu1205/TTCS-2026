@@ -1,5 +1,5 @@
 <?php
-ob_start(); 
+ob_start();
 session_start();
 require_once 'includes/db.php';
 
@@ -20,12 +20,12 @@ if (isset($_POST['confirm_order'])) {
     $fullname = mysqli_real_escape_string($conn, $_POST['fullname']);
     $phone = mysqli_real_escape_string($conn, $_POST['phone']);
     $address = mysqli_real_escape_string($conn, $_POST['address']);
-    
+
     $payment_method = trim($_POST['payment_method']);
 
     $sql_order = "INSERT INTO orders (user_id, fullname, phone, address, total_amount, payment_method) 
                   VALUES ('$user_id', '$fullname', '$phone', '$address', '$total', '$payment_method')";
-    
+
     if (mysqli_query($conn, $sql_order)) {
         $order_id = mysqli_insert_id($conn);
         foreach ($_SESSION['cart'] as $product_id => $item) {
@@ -34,12 +34,12 @@ if (isset($_POST['confirm_order'])) {
             mysqli_query($conn, "INSERT INTO order_items (order_id, product_id, quantity, price) 
                                  VALUES ('$order_id', '$product_id', '$qty', '$price')");
         }
-        
+
         unset($_SESSION['cart']);
 
         if ($payment_method === 'Chuyển khoản QR') {
             header("Location: payment-qr.php?order_id=$order_id&total=$total");
-            exit(); 
+            exit();
         } else {
             echo "<script>alert('Đặt hàng thành công!'); window.location.href='shop.php';</script>";
             exit();
@@ -49,6 +49,7 @@ if (isset($_POST['confirm_order'])) {
 ?>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>Thanh toán</title>
@@ -57,6 +58,7 @@ if (isset($_POST['confirm_order'])) {
     <link rel="stylesheet" href="assets/css/style.css?v=26">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body class="bg-light">
     <div class="container mt-5 mb-5">
         <div class="row justify-content-center">
@@ -96,12 +98,12 @@ if (isset($_POST['confirm_order'])) {
                             </label>
 
                             <label class="w-100">
-        <input type="radio" name="payment_method" value="Chuyển khoản QR">
-        <div class="method-item">
-            <i class="fa-solid fa-qrcode method-icon text-dark"></i>
-            <span class="method-text">Chuyển khoản ngân hàng (QR Code)</span>
-        </div>
-    </label>
+                                <input type="radio" name="payment_method" value="Chuyển khoản QR">
+                                <div class="method-item">
+                                    <i class="fa-solid fa-qrcode method-icon text-dark"></i>
+                                    <span class="method-text">Chuyển khoản ngân hàng (QR Code)</span>
+                                </div>
+                            </label>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-4">
@@ -116,4 +118,5 @@ if (isset($_POST['confirm_order'])) {
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

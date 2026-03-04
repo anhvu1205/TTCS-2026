@@ -9,23 +9,27 @@ if (isset($_POST['add_to_cart'])) {
     } else {
         $_SESSION['cart'][$id]['quantity']++;
     }
-    header("Location: cart.php"); exit();
+    header("Location: cart.php");
+    exit();
 }
 
 if (isset($_POST['update_quantity'])) {
     $id = $_POST['update_id'];
     $qty = (int)$_POST['new_quantity'];
     if ($qty > 0) $_SESSION['cart'][$id]['quantity'] = $qty;
-    header("Location: cart.php"); exit();
+    header("Location: cart.php");
+    exit();
 }
 
 if (isset($_GET['remove'])) {
     unset($_SESSION['cart'][$_GET['remove']]);
-    header("Location: cart.php"); exit();
+    header("Location: cart.php");
+    exit();
 }
 ?>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>Giỏ hàng</title>
@@ -34,6 +38,7 @@ if (isset($_GET['remove'])) {
     <link rel="stylesheet" href="assets/css/style.css?v=21">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 shadow-sm">
         <div class="container-fluid">
@@ -53,28 +58,31 @@ if (isset($_GET['remove'])) {
                             $subtotal = $item['price'] * $item['quantity'];
                             $total += $subtotal;
                     ?>
-                        <div class="row align-items-center mb-3 border-bottom pb-3">
-                            <div class="col-md-2 col-4">
-                                <img src="assets/img/<?php echo $item['image']; ?>" class="cart-item-img w-100">
+                            <div class="row align-items-center mb-3 border-bottom pb-3">
+                                <div class="col-md-2 col-4">
+                                    <img src="assets/img/<?php echo $item['image']; ?>" class="cart-item-img w-100">
+                                </div>
+                                <div class="col-md-5 col-8">
+                                    <h6 class="fw-bold mb-0"><?php echo $item['name']; ?></h6>
+                                    <p class="small text-muted mb-0"><?php echo number_format($item['price']); ?>₫</p>
+                                </div>
+                                <div class="col-md-3 col-6 text-center">
+                                    <form action="cart.php" method="POST" class="d-flex justify-content-center align-items-center">
+                                        <input type="hidden" name="update_id" value="<?php echo $id; ?>">
+                                        <input type="hidden" name="update_quantity" value="1">
+                                        <button name="new_quantity" value="<?php echo $item['quantity'] - 1; ?>" class="btn btn-sm btn-light border">-</button>
+                                        <span class="mx-2 fw-bold"><?php echo $item['quantity']; ?></span>
+                                        <button name="new_quantity" value="<?php echo $item['quantity'] + 1; ?>" class="btn btn-sm btn-light border">+</button>
+                                    </form>
+                                </div>
+                                <div class="col-md-2 col-6 text-end">
+                                    <a href="cart.php?remove=<?php echo $id; ?>" class="text-danger"><i class="fa-solid fa-trash-can"></i></a>
+                                </div>
                             </div>
-                            <div class="col-md-5 col-8">
-                                <h6 class="fw-bold mb-0"><?php echo $item['name']; ?></h6>
-                                <p class="small text-muted mb-0"><?php echo number_format($item['price']); ?>₫</p>
-                            </div>
-                            <div class="col-md-3 col-6 text-center">
-                                <form action="cart.php" method="POST" class="d-flex justify-content-center align-items-center">
-                                    <input type="hidden" name="update_id" value="<?php echo $id; ?>">
-                                    <input type="hidden" name="update_quantity" value="1">
-                                    <button name="new_quantity" value="<?php echo $item['quantity']-1; ?>" class="btn btn-sm btn-light border">-</button>
-                                    <span class="mx-2 fw-bold"><?php echo $item['quantity']; ?></span>
-                                    <button name="new_quantity" value="<?php echo $item['quantity']+1; ?>" class="btn btn-sm btn-light border">+</button>
-                                </form>
-                            </div>
-                            <div class="col-md-2 col-6 text-end">
-                                <a href="cart.php?remove=<?php echo $id; ?>" class="text-danger"><i class="fa-solid fa-trash-can"></i></a>
-                            </div>
-                        </div>
-                    <?php } } else { echo '<p class="text-center">Giỏ hàng của bạn đang trống.</p>'; } ?>
+                    <?php }
+                    } else {
+                        echo '<p class="text-center">Giỏ hàng của bạn đang trống.</p>';
+                    } ?>
                 </div>
             </div>
             <div class="col-lg-4">
@@ -91,4 +99,5 @@ if (isset($_GET['remove'])) {
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

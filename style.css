@@ -306,3 +306,21 @@ h2{
         height: 300px;
     }
 }
+
+.text-uppercase {
+    font-size: 14px;
+    letter-spacing: 2px !important;
+}
+
+.border-bottom {
+    border-bottom: 2px solid #000 !important;
+    display: inline-block;
+}
+
+.text-muted {
+    line-height: 1.8;
+}
+
+.fa-solid {
+    color: #ee2d24; /* Màu đỏ thương hiệu của bạn */
+}

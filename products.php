@@ -25,6 +25,7 @@ $result = mysqli_query($conn, $sql);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>Cửa Hàng</title>
@@ -33,6 +34,7 @@ $result = mysqli_query($conn, $sql);
     <link rel="stylesheet" href="assets/css/style.css?v=<?php echo time(); ?>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top nav-custom">
         <div class="container-fluid px-lg-5">
@@ -50,8 +52,10 @@ $result = mysqli_query($conn, $sql);
                         <ul class="dropdown-menu custom-dropdown-menu border-0 shadow-lg">
                             <li><a class="dropdown-item" href="products.php?cat=tee">T-SHIRT / ÁO THUN</a></li>
                             <li><a class="dropdown-item" href="products.php?cat=hoodie">HOODIE / SWEATER</a></li>
-                            <li><a class="dropdown-item" href="products.php?cat=short">PANTS / QUẦN ĐÀI</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="products.php?cat=pant">PANTS / QUẦN ĐÀI</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item text-danger fw-bold" href="products.php">TẤT CẢ</a></li>
                         </ul>
                     </li>
@@ -74,46 +78,47 @@ $result = mysqli_query($conn, $sql);
 
     <div class="container mt-5 mb-5">
         <h2 class="fw-bold text-center mb-4">
-    <?php 
-        $search_l = mb_strtolower($search, 'UTF-8');
-        if($cat == 'tee' || $search_l == 'áo' || $search_l == 'tee') echo 'T-SHIRT / ÁO THUN';
-        elseif($cat == 'hoodie' || $search_l == 'hoodie') echo 'HOODIE / SWEATER';
-        elseif($cat == 'pant' || $search_l == 'quần') echo 'PANTS / QUẦN';
-        elseif($search != '') echo 'KẾT QUẢ TÌM KIẾM: ' . htmlspecialchars($search);
-        else echo 'SẢN PHẨM MỚI';
-    ?>
-</h2>>
+            <?php
+            $search_l = mb_strtolower($search, 'UTF-8');
+            if ($cat == 'tee' || $search_l == 'áo' || $search_l == 'tee') echo 'T-SHIRT / ÁO THUN';
+            elseif ($cat == 'hoodie' || $search_l == 'hoodie') echo 'HOODIE / SWEATER';
+            elseif ($cat == 'pant' || $search_l == 'quần') echo 'PANTS / QUẦN';
+            elseif ($search != '') echo 'KẾT QUẢ TÌM KIẾM: ' . htmlspecialchars($search);
+            else echo 'SẢN PHẨM MỚI';
+            ?>
+        </h2>>
         <div class="row g-4">
             <?php
-            if(mysqli_num_rows($result) > 0) {
+            if (mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
             ?>
-                <div class="col-6 col-md-3 d-flex">
-                    <div class="card shadow-sm w-100 border-0">
-                        <a href="detail.php?id=<?php echo $row['id']; ?>">
-                            <img src="assets/img/<?php echo $row['image']; ?>" class="card-img-top product-img">
-                        </a>
-                        <div class="card-body">
-                            <h6 class="card-title fw-bold"><?php echo $row['name']; ?></h6>
-                            <p class="price-text"><?php echo number_format($row['price']); ?>₫</p>
-                            <form action="cart.php" method="POST">
-                                <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
-                                <input type="hidden" name="name" value="<?php echo $row['name']; ?>">
-                                <input type="hidden" name="price" value="<?php echo $row['price']; ?>">
-                                <input type="hidden" name="image" value="<?php echo $row['image']; ?>">
-                                <button type="submit" name="add_to_cart" class="btn btn-dark w-100 rounded-0">MUA NGAY</button>
-                            </form>
+                    <div class="col-6 col-md-3 d-flex">
+                        <div class="card shadow-sm w-100 border-0">
+                            <a href="detail.php?id=<?php echo $row['id']; ?>">
+                                <img src="assets/img/<?php echo $row['image']; ?>" class="card-img-top product-img">
+                            </a>
+                            <div class="card-body">
+                                <h6 class="card-title fw-bold"><?php echo $row['name']; ?></h6>
+                                <p class="price-text"><?php echo number_format($row['price']); ?>₫</p>
+                                <form action="cart.php" method="POST">
+                                    <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                    <input type="hidden" name="name" value="<?php echo $row['name']; ?>">
+                                    <input type="hidden" name="price" value="<?php echo $row['price']; ?>">
+                                    <input type="hidden" name="image" value="<?php echo $row['image']; ?>">
+                                    <button type="submit" name="add_to_cart" class="btn btn-dark w-100 rounded-0">MUA NGAY</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-            <?php 
+            <?php
                 }
             } else {
                 echo '<div class="col-12 text-center py-5"><h5>Không tìm thấy sản phẩm nào.</h5></div>';
-            } 
+            }
             ?>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
