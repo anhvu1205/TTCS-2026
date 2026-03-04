@@ -1,18 +1,16 @@
-/* --- 1. Cấu trúc nền tảng --- */
 body {
-    background-color: #ffffff; /* Streetwear thường dùng nền trắng tinh */
+    background-color: #ffffff;
     font-family: 'Inter', sans-serif;
-    color: #000; /* Chữ đen sâu */
+    color: #000;
     overflow-x: hidden;
 }
 
 .flex-1 { flex: 1; }
 
-/* --- 2. Navbar (Minimalist High-End) --- */
 .nav-custom {
     background-color: #ffffff !important;
-    border-bottom: 1px solid rgba(0,0,0,0.05); /* Đường kẻ cực mảnh */
-    padding: 20px 0 !important; /* Tạo "khoảng thở" lớn cho Header */
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 20px 0 !important;
     transition: all 0.3s ease;
 }
 
@@ -27,25 +25,23 @@ body {
     transform: scale(1.05);
 }
 
-/* Menu chính phong cách Streetwear */
 .nav-link-custom {
     color: #000000 !important;
-    font-weight: 800; /* Font dày đặc trưng */
+    font-weight: 800;
     font-size: 13px;
     padding: 0 20px !important;
     text-transform: uppercase;
-    letter-spacing: 2px; /* Khoảng cách chữ rộng */
+    letter-spacing: 2px;
     position: relative;
-    opacity: 0.5; /* Mặc định hơi mờ */
+    opacity: 0.5;
     transition: 0.3s ease;
-}   
+} 
 
 .nav-link-custom:hover, 
 .nav-link-custom.active {
-    opacity: 1; /* Sáng rõ khi chọn */
+    opacity: 1;
 }
 
-/* Hiệu ứng gạch chân Minimal */
 .nav-link-custom::after {
     content: '';
     position: absolute;
@@ -59,10 +55,9 @@ body {
 }
 
 .nav-link-custom:hover::after {
-    width: 60%; /* Gạch chân vừa phải, không quá dài */
+    width: 60%;
 }
 
-/* --- 3. Icon Groups --- */
 .btn-icon {
     background: none;
     border: none;
@@ -77,12 +72,11 @@ body {
     transform: scale(1.1);
 }
 
-/* Ô tìm kiếm Underlined */
 .search-input-minimal {
     width: 0;
     opacity: 0;
     border: none;
-    border-bottom: 1.5px solid #000; /* Gạch chân thay vì khung */
+    border-bottom: 1.5px solid #000;
     background: transparent !important;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 13px;
@@ -96,9 +90,7 @@ body {
     margin-right: 10px;
 }
 
-/* --- 4. Responsive (Mobile Streetwear) --- */
 @media (max-width: 991px) {
-    /* Đưa logo về chính giữa tuyệt đối */
     .nav-logo {
         position: absolute;
         left: 50%;
@@ -106,12 +98,10 @@ body {
         z-index: 1001;
     }
 
-    /* Tùy chỉnh nút Hamburger */
     .navbar-toggler {
         z-index: 1002;
     }
 
-    /* Menu phủ kín màn hình khi mở */
     .navbar-collapse {
         position: fixed;
         top: 0;
@@ -124,16 +114,14 @@ body {
         justify-content: center;
         align-items: center;
         transition: transform 0.4s ease-in-out;
-        transform: translateY(-100%); /* Giấu menu lên trên */
+        transform: translateY(-100%);
         z-index: 1000;
     }
 
-    /* Hiển thị menu khi nhấn nút gạch */
     .navbar-collapse.show {
         transform: translateY(0);
     }
 
-    /* Chữ menu mobile to, đậm và cách thưa giống Lonely Stonie */
     .nav-link-custom {
         font-size: 32px !important;
         font-weight: 800 !important;
@@ -143,12 +131,10 @@ body {
         text-align: center;
     }
 
-    /* Ẩn các icon search/cart khi menu đang mở để tránh rối (tùy chọn) */
     .navbar-collapse.show ~ .nav-icons-group {
         display: none;
     }
 
-    /* Fix lỗi ô search bị tràn trên phone */
     .search-input-minimal.active {
         width: 150px;
         position: fixed;
@@ -158,16 +144,16 @@ body {
         z-index: 1001;
     }
 }
-/* --- 5. Products & Auth --- */
+
 .card {
     border: none !important;
     background: transparent;
 }
 
 .product-img {
-    height: 400px; /* Ảnh dài hơn nhìn sẽ high-fashion hơn */
+    height: 400px;
     object-fit: cover;
-    filter: grayscale(20%); /* Hơi xám nhẹ cho nghệ */
+    filter: grayscale(20%);
     transition: 0.5s ease;
 }
 
@@ -177,7 +163,7 @@ body {
 }
 
 .price-text {
-    color: #000; /* Giá màu đen nhìn sang hơn màu đỏ */
+    color: #000;
     font-weight: 900;
     font-size: 1.2rem;
     letter-spacing: -1px;
@@ -191,14 +177,13 @@ h2{
 
 .cart-card {
     background: #ffffff;
-    border-radius: 15px; /* Bo góc mềm mại giống mẫu */
+    border-radius: 15px;
     padding: 25px;
     border: 1px solid rgba(0,0,0,0.05);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Đổ bóng nhẹ */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     margin-bottom: 20px;
 }
 
-/* Nút thanh toán nổi bật */
 .btn-checkout-red {
     background-color: #ee2d24;
     color: white;
@@ -214,7 +199,7 @@ h2{
     transform: translateY(-2px);
     color: white;
 }
-/* Căn giữa toàn bộ trang login */
+
 .auth-page {
     background-color: #f4f7f6;
     min-height: 100vh;
@@ -224,22 +209,20 @@ h2{
     padding: 20px;
 }
 
-/* Khống chế độ rộng khung đăng nhập */
 .auth-card {
     background: #ffffff;
     width: 100%;
-    max-width: 400px; /* Giúp khung không bị quá to trên PC */
+    max-width: 400px;
     border-radius: 20px;
     padding: 40px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
-/* SỬA LỖI LOGO TO: Cố định kích thước tối đa cho logo */
 .logo-auth-fixed {
-    max-height: 80px; /* Khống chế chiều cao logo không được vượt quá 80px */
+    max-height: 80px;
     width: auto;
     margin-bottom: 15px;
-    mix-blend-mode: multiply; /* Xóa nền trắng logo nếu có */
+    mix-blend-mode: multiply;
 }
 
 .auth-title {
@@ -249,7 +232,6 @@ h2{
     margin-bottom: 25px;
 }
 
-/* Style cho các ô input giống Lonely Stonie */
 .auth-input {
     border-radius: 8px !important;
     border: 1.5px solid #eee !important;
@@ -267,4 +249,60 @@ h2{
     font-weight: bold;
     padding: 12px;
     transition: 0.3s;
+}
+
+.custom-dropdown-menu {
+    border-radius: 0;
+    padding: 20px 0;
+    margin-top: 15px !important;
+    min-width: 220px;
+    animation: fadeInSlide 0.4s ease;
+    border: 1px solid rgba(0,0,0,0.05) !important;
+}
+
+.custom-dropdown-menu .dropdown-item {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #000;
+    padding: 12px 25px;
+    transition: all 0.3s ease;
+}
+
+.custom-dropdown-menu .dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #ee2d24;
+    padding-left: 35px;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.map-container {
+    width: 100%;
+    height: 450px;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+.map-container:hover {
+    transform: scale(1.01);
+}
+
+@media (max-width: 768px) {
+    .map-container {
+        height: 300px;
+    }
 }
