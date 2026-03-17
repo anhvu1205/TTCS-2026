@@ -55,7 +55,7 @@ require_once 'includes/db.php';
 
                 <div class="text-start mt-4">
                     <h4 class="fw-bold text-dark border-bottom pb-2 mb-3">TẦM NHÌN CỦA CHÚNG TÔI</h4>
-                    <p>Tại EngDzu$$Shop, chúng tôi tin rằng thời trang không chỉ là trang phục, mà là ngôn ngữ để bạn khẳng định bản thân mà không cần lên tiếng. Chúng tôi tập trung vào những thiết kế <strong>Minimalist</strong>, chú trọng vào chất liệu cotton cao cấp và form dáng <strong>Oversize</strong> chuẩn Streetwear.</p>
+                    <p>Tại Simple Fit Store, chúng tôi tin rằng thời trang không chỉ là trang phục, mà là ngôn ngữ để bạn khẳng định bản thân mà không cần lên tiếng. Chúng tôi tập trung vào những thiết kế <strong>Minimalist</strong>, chú trọng vào chất liệu cotton cao cấp và form dáng <strong>Oversize</strong> chuẩn Streetwear.</p>
 
                     <h4 class="fw-bold text-dark border-bottom pb-2 mt-5 mb-3">CHẤT LƯỢNG LÀM NÊN THƯƠNG HIỆU</h4>
                     <p>Mỗi sản phẩm tại shop đều trải qua quy trình kiểm duyệt nghiêm ngặt từ khâu chọn vải đến kỹ thuật in ấn, đảm bảo mang đến trải nghiệm tốt nhất cho người mặc.</p>
