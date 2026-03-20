@@ -56,12 +56,18 @@ $grid_class = ($cols === 4) ? "col-lg-2" : "col-lg-4";
                         <option value="Tất cả">Loại: Tất cả</option>
                         <option value="1" <?php if($cat == '1') echo 'selected'; ?>>Áo thun</option>
                         <option value="5" <?php if($cat == '5') echo 'selected'; ?>>Áo sơ mi</option>
+                        <option value="2" <?php if($cat == '2') echo 'selected'; ?>>Quần jean</option>
+                        <option value="3" <?php if($cat == '3') echo 'selected'; ?>>Áo khoác</option>
+                        <option value="4" <?php if($cat == '4') echo 'selected'; ?>>Unisex</option>
+                        <option value="6" <?php if($cat == '6') echo 'selected'; ?>>Quần short</option>
+                        <option value="7" <?php if($cat == '7') echo 'selected'; ?>>Áo len</option>
                     </select>
 
                     <select name="price_range" class="filter-select-minimal" onchange="this.form.submit()">
                         <option value="all" <?php if($p_range == 'all') echo 'selected'; ?>>Giá: Tất cả</option>
-                        <option value="0-200000" <?php if($p_range == '0-200000') echo 'selected'; ?>>Dưới 200k</option>
                         <option value="200000-500000" <?php if($p_range == '200000-500000') echo 'selected'; ?>>200k - 500k</option>
+                        <option value="500000-1000000" <?php if($p_range == '500000-1000000') echo 'selected'; ?>>500k - 1tr</option>
+                        <option value="1000000-1500000" <?php if($p_range == '1000000-1500000') echo 'selected'; ?>>1tr - 1tr500</option>
                     </select>
                     <input type="hidden" name="sort" value="<?php echo $sort; ?>">
                     <input type="hidden" name="cols" value="<?php echo $cols; ?>">
@@ -71,11 +77,19 @@ $grid_class = ($cols === 4) ? "col-lg-2" : "col-lg-4";
             <div class="d-flex align-items-center gap-4">
                 <span class="text-xs text-muted"><?php echo $total_data['total']; ?> sản phẩm</span>
                 
-                <select onchange="location.href='products.php?<?php echo http_build_query(array_merge($_GET, ['sort' => ''])); ?>' + this.value" class="sort-select-minimal">
-                    <option value="newest" <?php if($sort=='newest') echo 'selected'; ?>>Mới nhất</option>
-                    <option value="price-asc" <?php if($sort=='price-asc') echo 'selected'; ?>>Giá tăng dần</option>
-                    <option value="price-desc" <?php if($sort=='price-desc') echo 'selected'; ?>>Giá giảm dần</option>
-                </select>
+                <form method="GET" id="sortForm" class="d-flex align-items-center gap-3">
+    <!-- Giữ nguyên các filter hiện tại -->
+    <input type="hidden" name="cat" value="<?php echo htmlspecialchars($cat); ?>">
+    <input type="hidden" name="price_range" value="<?php echo htmlspecialchars($p_range); ?>">
+    <input type="hidden" name="cols" value="<?php echo $cols; ?>">
+
+    <!-- Dropdown sort -->
+    <select name="sort" class="sort-select-minimal" onchange="this.form.submit()">
+        <option value="newest" <?php if($sort=='newest') echo 'selected'; ?>>Mới nhất</option>
+        <option value="price-asc" <?php if($sort=='price-asc') echo 'selected'; ?>>Giá tăng dần</option>
+        <option value="price-desc" <?php if($sort=='price-desc') echo 'selected'; ?>>Giá giảm dần</option>
+    </select>
+</form>
 
                 <div class="d-none d-md-flex gap-2">
                     <a href="products.php?<?php echo http_build_query(array_merge($_GET, ['cols' => 4])); ?>" class="icon-btn <?php if($cols==4) echo 'active'; ?>"><i class="fa-solid fa-grid-4"></i></a>

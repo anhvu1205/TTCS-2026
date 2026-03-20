@@ -32,7 +32,11 @@ include 'includes/header.php';
                     </div>
                     <div class="list-group list-group-flush small fw-bold">
                         <a href="profile.php" class="list-group-item list-group-item-action border-0 active-custom">Thông tin cá nhân</a>
-                        <a href="#" class="list-group-item list-group-item-action border-0">Đơn hàng của tôi</a>
+                        <a href="cart.php" class="list-group-item list-group-item-action border-0 d-flex justify-content-between align-items-center">Đơn hàng của tôi
+    <?php if($cartCount > 0): ?>
+        <span class="badge bg-dark rounded-pill"><?php echo $cartCount; ?></span>
+    <?php endif; ?>
+</a>
                         <a href="logout.php" class="list-group-item list-group-item-action border-0 text-danger">Đăng xuất</a>
                     </div>
                 </div>

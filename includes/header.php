@@ -27,23 +27,38 @@
         </button>
 
         <div class="collapse navbar-collapse justify-content-center" id="navPTIT">
-            <ul class="navbar-nav gap-3">
-                <li class="nav-item">
-                    <a class="nav-link nav-link-ptit active" href="shop.php">Trang chủ</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-link-ptit" href="products.php">Sản phẩm</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-link-ptit" href="about.php">Về chúng tôi</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-link-ptit" href="blog.php">Blog</a>
-                </li>
-            </ul>
+            <?php $page = basename($_SERVER['PHP_SELF']); ?>
+
+<ul class="navbar-nav gap-3">
+    <li class="nav-item">
+        <a class="nav-link nav-link-ptit <?= ($page == 'index.php' || $page == 'shop.php') ? 'active' : '' ?>" href="shop.php">
+            Trang chủ
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link nav-link-ptit <?= $page == 'products.php' ? 'active' : '' ?>" href="products.php">
+            Sản phẩm
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link nav-link-ptit <?= $page == 'about.php' ? 'active' : '' ?>" href="about.php">
+            Về chúng tôi
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link nav-link-ptit <?= $page == 'blog.php' ? 'active' : '' ?>" href="blog.php">
+            Blog
+        </a>
+    </li>
+</ul>
         </div>
 
         <div class="nav-icons-ptit d-flex align-items-center gap-3">
+            <div class="search-wrapper position-relative">
+        <form id="searchForm" action="products.php" method="GET" class="d-flex">
+            <input type="text" id="searchInput" name="query" placeholder="Tìm kiếm" class="form-control search-input">
+        </form>
+    </div>
             <a href="#" class="icon-link"><i class="fa-solid fa-magnifying-glass"></i></a>
             
             <?php if(isset($_SESSION['user'])): ?>
@@ -52,10 +67,15 @@
                 <a href="login.php" class="icon-link"><i class="fa-regular fa-user"></i></a>
             <?php endif; ?>
             
-            <a href="cart.php" class="icon-link position-relative">
-                <i class="fa-solid fa-bag-shopping"></i>
-                <span class="cart-badge-ptit">3</span>
-            </a>
+            <?php 
+$cartCount = isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0; 
+?>
+<a href="cart.php" class="icon-link position-relative">
+    <i class="fa-solid fa-bag-shopping"></i>
+    <?php if($cartCount > 0): ?>
+        <span class="cart-badge-ptit"><?= $cartCount ?></span>
+    <?php endif; ?>
+</a>
         </div>
     </div>
 </nav>

@@ -3,10 +3,13 @@ ob_start();
 session_start();
 require_once 'includes/db.php';
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user']['id'])) {
     header("Location: login.php");
     exit();
 }
+
+$user_id = $_SESSION['user']['id'];
+$fullname = $_SESSION['user']['name'];
 
 $total = 0;
 if (isset($_SESSION['cart'])) {
@@ -68,7 +71,9 @@ if (isset($_POST['confirm_order'])) {
                     <form action="checkout.php" method="POST">
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Họ và tên người nhận</label>
-                            <input type="text" name="fullname" class="form-control" value="<?php echo $_SESSION['username']; ?>" required>
+                            <input type="text" name="fullname" class="form-control" 
+                                   value="<?php echo isset($_SESSION['user']['name']) ? $_SESSION['user']['name'] : ''; ?>" 
+                                   required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Số điện thoại</label>

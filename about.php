@@ -21,7 +21,7 @@ require_once 'includes/db.php';
     <div class="container mt-5 mb-5">
         <div class="row justify-content-center">
             <div class="col-md-10 text-center">
-                <h1 class="fw-black italic mb-4" style="letter-spacing: -1px; font-size: 3rem;">OUR STORY</h1>
+                <h1 class="fw-black italic mb-4" style="letter-spacing: -1px; font-size: 3rem;">VỀ CHÚNG TÔI</h1>
                 <p class="lead text-muted mb-5">
                     Chào mừng bạn đến với <strong>Simple Fit Store</strong> - Nơi định hình phong cách Streetwear tối giản nhưng đầy cá tính cho thế hệ mới.
                 </p>
