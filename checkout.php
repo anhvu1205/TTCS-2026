@@ -11,11 +11,17 @@ if (!isset($_SESSION['user']['id'])) {
 $user_id = $_SESSION['user']['id'];
 $fullname = $_SESSION['user']['name'];
 
+$subtotal = 0;
+$shipping = 0;
 $total = 0;
-if (isset($_SESSION['cart'])) {
+
+if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
     foreach ($_SESSION['cart'] as $item) {
-        $total += $item['price'] * $item['quantity'];
+        $subtotal += (float)$item['price'] * (int)$item['quantity'];
     }
+
+    $shipping = ($subtotal >= 500000 || $subtotal == 0) ? 0 : 30000;
+    $total = $subtotal + $shipping;
 }
 
 if (isset($_POST['confirm_order'])) {
@@ -26,13 +32,16 @@ if (isset($_POST['confirm_order'])) {
         header("Location: payment-qr.php?order_id=$order_id&total=$total");
         exit();
     } elseif ($payment_method === 'Tiền mặt') {
-        echo "<div style='max-width:500px;margin:50px auto;padding:20px;border:1px solid #ccc;border-radius:10px;text-align:center;'>";
-        echo "<h3>Đặt hàng thành công!</h3>";
-        echo "<p style='font-weight:bold;color:#28a745;'>Thanh toán khi nhận hàng (COD)</p>";
-        echo "<p>Tổng tiền: <strong>".number_format($total)."₫</strong></p>";
-        echo "<a href='shop.php' style='display:inline-block;margin-top:10px;padding:10px 20px;background:#28a745;color:white;border-radius:5px;text-decoration:none;'>Quay lại cửa hàng</a>";
-        echo "</div>";
-        exit();
+
+    unset($_SESSION['cart']);
+
+    echo "<div style='max-width:500px;margin:50px auto;padding:20px;border:1px solid #ccc;border-radius:10px;text-align:center;'>";
+    echo "<h3>Đặt hàng thành công!</h3>";
+    echo "<p style='font-weight:bold;color:#28a745;'>Thanh toán khi nhận hàng (COD)</p>";
+    echo "<p>Tổng tiền: <strong>".number_format($total)."₫</strong></p>";
+    echo "<a href='shop.php' style='display:inline-block;margin-top:10px;padding:10px 20px;background:#28a745;color:white;border-radius:5px;text-decoration:none;'>Quay lại cửa hàng</a>";
+    echo "</div>";
+    exit();
     } else {
         header("Location: payment-the.php");
         exit();
@@ -56,7 +65,7 @@ if (isset($_POST['confirm_order'])) {
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Họ và tên người nhận</label>
                         <input type="text" name="fullname" class="form-control" 
-                               value="<?php echo isset($_SESSION['user']['name']) ? $_SESSION['user']['name'] : ''; ?>" 
+                               value="<?php echo htmlspecialchars($fullname); ?>" 
                                required>
                     </div>
                     <div class="mb-3">
@@ -70,15 +79,26 @@ if (isset($_POST['confirm_order'])) {
 
                     <h6 class="fw-bold mb-3">Phương thức thanh toán</h6>
                     <div class="mb-4">
-                        <label><input type="radio" name="payment_method" value="Tiền mặt" checked> Thanh toán tiền mặt (COD)</label><br>
-                        <label><input type="radio" name="payment_method" value="Thẻ"> Thẻ tín dụng / Ghi nợ</label><br>
-                        <label><input type="radio" name="payment_method" value="Chuyển khoản QR"> Chuyển khoản ngân hàng (QR Code)</label>
+                        <label class="d-block"><input type="radio" name="payment_method" value="Tiền mặt" checked> Thanh toán tiền mặt (COD)</label>
+                        <label class="d-block"><input type="radio" name="payment_method" value="Thẻ"> Thẻ tín dụng / Ghi nợ</label>
+                        <label class="d-block"><input type="radio" name="payment_method" value="Chuyển khoản QR"> Chuyển khoản ngân hàng (QR Code)</label>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-4">
-                        <span class="fw-bold fs-5">Tổng cộng:</span>
-                        <span class="fw-bold text-danger fs-3"><?php echo number_format($total); ?>₫</span>
+                    <div class="border p-3 mb-4 bg-light rounded">
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span>Tạm tính</span>
+                            <span><?php echo number_format($subtotal); ?>₫</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span>Vận chuyển</span>
+                            <span><?php echo $shipping == 0 ? 'Miễn phí' : number_format($shipping).'₫'; ?></span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                            <span class="fw-bold fs-5">Tổng cộng:</span>
+                            <span class="fw-bold text-danger fs-3"><?php echo number_format($total); ?>₫</span>
+                        </div>
                     </div>
+
                     <button type="submit" name="confirm_order" class="btn btn-danger w-100 py-3">XÁC NHẬN ĐẶT HÀNG</button>
                 </form>
             </div>

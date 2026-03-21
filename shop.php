@@ -88,7 +88,7 @@ $result = mysqli_query($conn, $sql);
                     ['name' => 'Áo sơ mi', 'image' => 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600', 'color' => '#D9E5D6', 'id' => 5],
                     ['name' => 'Quần jean', 'image' => 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600', 'color' => '#D6DDE8', 'id' => 2],
                     ['name' => 'Áo khoác', 'image' => 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600', 'color' => '#E8D9D6', 'id' => 3],
-                    ['name' => 'Unisex', 'image' => 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600', 'color' => '#E5E0D8', 'id' => 6],
+                    ['name' => 'Unisex', 'image' => 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600', 'color' => '#E5E0D8', 'id' => 4],
                 ];
 
                 foreach ($categories as $cat) :

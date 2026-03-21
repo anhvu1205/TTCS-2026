@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    unset($_SESSION['cart']);
+    header("Location: shop.php");
+    exit();
+}
+
 require_once 'includes/db.php';
 
 if (!isset($_SESSION['user']['id'])) {
@@ -70,7 +77,9 @@ $qr_url = "https://img.vietqr.io/image/{$bank}-{$account_no}-compact2.jpg?amount
                 </div>
             </div>
 
-            <a href="shop.php" class="btn btn-dark w-100 py-3 fw-bold mb-2">TÔI ĐÃ CHUYỂN KHOẢN</a>
+            <form method="post">
+<button type="submit" class="btn btn-dark w-100 py-3 fw-bold mb-2"> TÔI ĐÃ CHUYỂN KHOẢN </button>
+            </form>
             <p class="small text-muted mt-3">
                 Hệ thống sẽ kiểm tra và xác nhận đơn hàng sau khi nhận được tiền.
             </p>

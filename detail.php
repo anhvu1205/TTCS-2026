@@ -22,6 +22,18 @@ if (isset($_GET['id'])) {
         $colors = $product['mauSac'] ? explode(',', $product['mauSac']) : [];
         $sizes = $product['kichCo'] ? explode(',', $product['kichCo']) : [];
         $stock = $product['soLuong'] ?? 0;
+        $cart_qty = 0;
+
+    if(isset($_SESSION['cart'])){
+    foreach($_SESSION['cart'] as $item){
+        if($item['id'] == $id){
+            $cart_qty += $item['quantity'];
+        }
+    }
+}
+
+$stock = $stock - $cart_qty;
+if($stock < 0) $stock = 0;
         
     } else {
         header("Location: products.php");
@@ -101,11 +113,18 @@ if (isset($_GET['id'])) {
                         <div class="mb-4">
                             <label class="fw-bold small mb-3 d-block">SỐ LƯỢNG:</label>
                             <div class="d-flex align-items-center gap-3">
-                                <div class="input-group" style="width: 140px; border: 1px solid #dee2e6; border-radius: 0.75rem; overflow: hidden;">
-                                    <button class="btn btn-link text-dark text-decoration-none border-0 px-3" type="button" onclick="updateQty(-1)"><i class="fa-solid fa-minus small"></i></button>
-                                    <input type="number" name="quantity" id="productQty" value="1" class="form-control border-0 text-center fw-bold" readonly style="box-shadow: none; background: transparent;">
-                                    <button class="btn btn-link text-dark text-decoration-none border-0 px-3" type="button" onclick="updateQty(1)"><i class="fa-solid fa-plus small"></i></button>
-                                </div>
+                                <div style="width:140px;border:1px solid #dee2e6;border-radius:12px;display:flex;align-items:center;justify-content:space-between;">
+                        <button type="button" onclick="updateQty(-1)" style="border:none;background:none;padding:8px 12px;">
+                        <i class="fa-solid fa-minus"></i>
+                        </button>
+
+                        <input type="text" name="quantity" id="productQty" value="0" readonly max="<?php echo $stock; ?>"
+                               style="width:40px;text-align:center;border:none;font-weight:bold;background:transparent;outline:none;">
+
+                        <button type="button" onclick="updateQty(1)" style="border:none;background:none;padding:8px 12px;">
+                        <i class="fa-solid fa-plus"></i>
+                        </button>
+                        </div>
                                 <span class="text-muted small"><?php echo $stock; ?> sản phẩm có sẵn</span>
                             </div>
                         </div>
@@ -173,8 +192,10 @@ if (isset($_GET['id'])) {
 <script>
 function updateQty(amt) {
     let input = document.getElementById('productQty');
+    let max = parseInt(input.getAttribute('max'));
     let val = parseInt(input.value) + amt;
     if (val < 1) val = 1;
+    if (val > max) val = max;
     input.value = val;
 }
 
