@@ -1,0 +1,214 @@
+/* --- BIẾN HỆ THỐNG --- */
+:root {
+    --admin-bg: #FAF7F2;
+    --admin-card: #EDE8DF;
+    --admin-primary: #C4622D;
+    --admin-text: #1A1A1A;
+    --admin-muted: #8C8279;
+    --admin-border: #D4CEBE;
+}
+
+body.admin-page {
+    background-color: var(--admin-bg);
+    color: var(--admin-text);
+    font-family: 'Arial', sans-serif;
+}
+
+/* --- TABS NAVIGATION --- */
+.nav-tabs-admin {
+    background-color: var(--admin-card);
+    border-radius: 16px;
+    padding: 5px;
+    display: inline-flex;
+    border: none;
+}
+
+.nav-tabs-admin .nav-link {
+    border: none !important;
+    border-radius: 12px !important;
+    color: #5C5049 !important;
+    padding: 10px 24px !important;
+    font-weight: 500;
+    transition: 0.3s;
+    background: transparent;
+}
+
+.nav-tabs-admin .nav-link.active {
+    background-color: var(--admin-primary) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(196, 98, 45, 0.2);
+}
+
+/* --- THỐNG KÊ (STAT CARDS MODERN) --- */
+.stat-card-modern {
+    background-color: var(--admin-card) !important;
+    border-radius: 20px !important;
+    padding: 24px !important;
+    position: relative;
+    overflow: hidden;
+    border: none !important;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.stat-card-modern:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card-modern .icon-wrapper-v2 {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.stat-card-modern .label-v2 {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--admin-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.stat-card-modern .value-v2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--admin-text);
+    margin-bottom: 0;
+}
+
+/* --- PANEL CHỨA BIỂU ĐỒ VÀ DANH SÁCH --- */
+.admin-panel-v2 {
+    background-color: var(--admin-card) !important;
+    border-radius: 24px !important;
+    padding: 30px !important;
+    margin-bottom: 30px;
+}
+
+/* --- DANH SÁCH ĐƠN HÀNG GẦN ĐÂY (OVERVIEW) --- */
+.recent-order-item {
+    border-color: var(--admin-border) !important;
+    transition: background 0.2s;
+}
+
+.recent-order-item:hover {
+    background-color: rgba(26, 26, 26, 0.02);
+}
+
+.extra-small {
+    font-size: 11px;
+}
+
+/* --- TRẠNG THÁI (BADGE STATUS) --- */
+.badge-status {
+    border-radius: 50px;
+    padding: 5px 14px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    border: none;
+    display: inline-block;
+}
+
+/* Các trạng thái mapping từ PHP */
+.status-chua_thanh_toan {
+    background-color: #6B7280;
+}
+
+.status-cho_xac_nhan {
+    background-color: #F59E0B;
+}
+
+.status-da_giao_hang {
+    background-color: #3B82F6;
+}
+
+.status-hoan_tat {
+    background-color: #10B981;
+}
+
+.status-da_huy {
+    background-color: #EF4444;
+}
+
+/* --- LOGOUT BUTTON --- */
+.btn-logout-minimal {
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 10px 24px;
+    border-radius: 50px;
+    border: 1px solid var(--admin-border);
+    background-color: white;
+    transition: 0.3s;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-logout-minimal:hover {
+    background-color: #EF4444;
+    color: white;
+    border-color: #EF4444;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+/* --- QUẢN LÝ SẢN PHẨM --- */
+.product-img-admin {
+    width: 40px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    background-color: white;
+}
+
+.table-v2 thead {
+    background-color: var(--admin-border);
+}
+
+.table-v2 tr {
+    border-color: var(--admin-border) !important;
+}
+
+/* MÃ GIẢM GIÁ */
+.discount-code-badge {
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.discount-code-badge.active {
+    background-color: rgba(196, 98, 45, 0.1);
+    color: #C4622D;
+    border: 1px dashed #C4622D;
+}
+
+.discount-code-badge.hidden {
+    background-color: #EDE8DF;
+    color: #8C8279;
+    border: 1px solid #D4CEBE;
+}
+
+.btn-primary-v2 {
+    background-color: #C4622D;
+    color: white;
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-primary-v2:hover {
+    background-color: #a34f24;
+    color: white;
+}

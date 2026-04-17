@@ -1,0 +1,48 @@
+/* Chứa giao diện cho trang chi tiết sản phẩm đơn lẻ. */
+.product-detail-page {
+    background-color: #ffffff;
+}
+
+.thumb-item {
+    width: 70px;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: 0.3s;
+    opacity: 0.6;
+}
+
+.thumb-item.active {
+    border-color: #1A1A1A;
+    opacity: 1;
+}
+
+.product-main-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+.btn-option {
+    border: 1px solid #EDE8DF;
+    padding: 10px 20px;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+.btn-option.active {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.trust-badges-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 25px 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+}
