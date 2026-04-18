@@ -95,7 +95,6 @@ CREATE TABLE YeuThich (
 );
 
 -- Bảng đơn hàng
--- Bảng đơn hàng (ĐÃ SỬA: Thêm cột phiShip)
 DROP TABLE IF EXISTS DonHang;
 CREATE TABLE DonHang (
     maDH BIGINT AUTO_INCREMENT PRIMARY KEY,
