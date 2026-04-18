@@ -375,7 +375,6 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                         </div>
                     </form>
                 </div>
-
                 <div class="admin-panel-v2 shadow-sm p-0 overflow-hidden">
                     <div class="px-4 py-3 border-bottom" style="border-color:#D4CEBE !important;">
                         <h3 class="h6 fw-bold mb-0">Danh sách mã giảm giá</h3>
