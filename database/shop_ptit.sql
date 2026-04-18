@@ -140,14 +140,32 @@ CREATE TABLE ChiTietGioHang (
                                 FOREIGN KEY (maSP) REFERENCES SanPham(maSP) ON DELETE CASCADE
 );
 
+-- Bảng bài viết
+CREATE TABLE BaiViet (
+    maBV INT AUTO_INCREMENT PRIMARY KEY,
+    tieuDe VARCHAR(255) NOT NULL,
+    tomTat TEXT,
+    noiDung LONGTEXT,
+    hinhAnh VARCHAR(255),
+    ngayDang DATETIME DEFAULT CURRENT_TIMESTAMP,
+    tacGia VARCHAR(100),
+    trangThai TINYINT(1) DEFAULT 1
+);
+
 -- Bảng mã giảm giá
-CREATE TABLE MaGiamGia (
-                                maGG INT AUTO_INCREMENT PRIMARY KEY,
-                                code VARCHAR(20) UNIQUE NOT NULL,
-                                phanTramGiam INT NOT NULL,
-                                donToiThieu INT DEFAULT 0,
-                                trangThai ENUM('ACTIVE', 'HIDDEN') DEFAULT 'ACTIVE',
-                                ngayTao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE discount_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    discount_type ENUM('percent', 'fixed') NOT NULL DEFAULT 'percent',
+    discount_value DECIMAL(10,2) NOT NULL DEFAULT 0,
+    min_order_value DECIMAL(10,2) NOT NULL DEFAULT 0,
+    max_discount DECIMAL(10,2) DEFAULT NULL,
+    usage_limit INT DEFAULT NULL,
+    used_count INT NOT NULL DEFAULT 0,
+    start_date DATETIME DEFAULT NULL,
+    end_date DATETIME DEFAULT NULL,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- =========================
