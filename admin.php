@@ -368,6 +368,16 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                             <input type="number" name="usage_limit" class="form-control rounded-xl border-0 bg-white" placeholder="trống = không giới hạn">
                         </div>
 
+                        <div class="col-md-3">
+                            <label class="extra-small fw-bold text-muted mb-2">BẮT ĐẦU</label>
+                            <input type="datetime-local" name="start_date" class="form-control rounded-xl border-0 bg-white">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="extra-small fw-bold text-muted mb-2">KẾT THÚC</label>
+                            <input type="datetime-local" name="end_date" class="form-control rounded-xl border-0 bg-white">
+                        </div>
+
                         <div class="col-md-3 d-flex align-items-end">
                             <button type="submit" name="add_discount" class="btn btn-primary-v2 w-100 rounded-xl py-2">
                                 <i class="fa-solid fa-plus me-2"></i>Tạo mã
@@ -375,6 +385,7 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                         </div>
                     </form>
                 </div>
+
                 <div class="admin-panel-v2 shadow-sm p-0 overflow-hidden">
                     <div class="px-4 py-3 border-bottom" style="border-color:#D4CEBE !important;">
                         <h3 class="h6 fw-bold mb-0">Danh sách mã giảm giá</h3>
