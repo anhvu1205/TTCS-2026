@@ -1,5 +1,59 @@
 /* Chứa Header (Navbar) và Footer dùng chung cho toàn bộ các trang. */
 /* --- HEADER --- */
+/* --- LOGO TEXT MỚI: THANH MẢNH & SANG TRỌNG --- */
+.logo-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.1;
+    /* Tăng nhẹ để không dính chữ */
+    transition: 0.3s;
+}
+
+.logo-main {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    /* Giảm size xuống cho thanh thoát */
+    font-weight: 600;
+    /* Chữ mảnh hơn mới sang */
+    color: #1A1A1A;
+    letter-spacing: 6px;
+    /* Giãn rộng hơn nữa */
+    text-transform: uppercase;
+}
+
+.logo-sub {
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    /* Thu nhỏ phần sub */
+    font-weight: 700;
+    color: #C4622D;
+    letter-spacing: 12px;
+    /* Giãn cực rộng để bằng chiều ngang chữ trên */
+    text-transform: uppercase;
+    margin-top: 4px;
+    margin-left: 12px;
+    /* Bù trừ khoảng cách để căn giữa tuyệt đối */
+    opacity: 0.8;
+}
+
+/* Hiệu ứng Hover mượt mà */
+.navbar-brand:hover .logo-text-wrapper {
+    transform: scale(0.98);
+    opacity: 0.7;
+}
+
+/* Điều chỉnh lại Navbar Brand để không bị dãn */
+.navbar-brand {
+    min-width: fit-content !important;
+    padding: 0 !important;
+}
+@media (max-width: 991px) {
+    .logo-ptit {
+        width: 110px;
+        max-height: 30px;
+    }
+}
 .nav-custom-ptit {
     background-color: #FAF7F2;
     /* Màu be sáng của nền trang */
@@ -7,39 +61,6 @@
     transition: 0.3s;
     border-bottom: 1px solid #EDE8DF;
     /* Đường kẻ mờ tạo sự phân chia */
-}
-
-/* Kích thước Logo ở góc trái - sửa to hơn, rõ hơn, không phá menu */
-.navbar-brand {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 0 !important;
-    margin: 0 !important;
-    line-height: 1;
-    min-width: 170px; /* giữ vùng logo đủ rộng */
-}
-
-.logo-ptit {
-    display: block !important;
-    width: 170px !important;
-    max-width: none !important;
-    height: auto !important;
-    max-height: none !important;
-    object-fit: contain;
-    filter: contrast(1.08) brightness(0.98);
-}
-
-.navbar-brand:hover .logo-ptit {
-    transform: scale(1.02);
-    opacity: 0.96;
-}
-
-@media (max-width: 991px) {
-    .logo-ptit {
-        width: 110px;
-        max-height: 30px;
-    }
 }
 
 /* Phong cách Menu chính */

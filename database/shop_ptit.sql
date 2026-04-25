@@ -83,8 +83,7 @@ CREATE TABLE GioHang (
                          FOREIGN KEY (maKH) REFERENCES KhachHang(maKH) ON DELETE CASCADE
 );
 
--- Bảng YeuThich (Đã sửa kiểu dữ liệu và thêm khóa ngoại)
-DROP TABLE IF EXISTS YeuThich;
+-- Bảng YeuThich
 CREATE TABLE YeuThich (
     maYT BIGINT AUTO_INCREMENT PRIMARY KEY,
     maND BIGINT NOT NULL, 
@@ -95,8 +94,6 @@ CREATE TABLE YeuThich (
 );
 
 -- Bảng đơn hàng
--- Bảng đơn hàng (ĐÃ SỬA: Thêm cột phiShip)
-DROP TABLE IF EXISTS DonHang;
 CREATE TABLE DonHang (
     maDH BIGINT AUTO_INCREMENT PRIMARY KEY,
     maKH BIGINT,
@@ -196,6 +193,13 @@ INSERT INTO ThuongHieu VALUES
                            (5,'H&M','https://logos-world.net/wp-content/uploads/2020/04/HM-Logo.png'),
                            (6,'Gucci','https://logos-world.net/wp-content/uploads/2020/04/Gucci-Logo.png'),
                            (7,'Puma','https://logos-world.net/wp-content/uploads/2020/04/Puma-Logo.png');
+
+INSERT INTO discount_codes
+(code, discount_type, discount_value, min_order_value, max_discount, usage_limit, used_count, start_date, end_date, is_active, created_at)
+VALUES
+('MAU10', 'percent', 10.00, 200000.00, 50000.00, 100, 0, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-14 05:18:37'),
+('KHACHHANGTHANTHIET', 'fixed', 150000.00, 2990000.00, NULL, 50, 0, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-15 05:18:37'),
+('UUDAIMUAHE', 'fixed', 100000.00, 1000000.00, 0.00, 100, 0, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-15 06:20:54');
 
 INSERT INTO SanPham (maDM, maTH, ten, moTa, gia, soLuong, kichCo, mauSac, chatLieu, hinhAnh, daBan) VALUES
 -- Áo Thun (6 sản phẩm)
