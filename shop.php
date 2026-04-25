@@ -334,3 +334,4 @@ include 'includes/header.php';
 </script>
 
 <?php include 'includes/footer.php'; ?>
+<?php include 'chat-widget.php'; ?>
