@@ -288,49 +288,78 @@ include 'includes/header.php';
 </main>
 
 <script>
-    // 1. Logic cho Slider (Giữ nguyên của bạn nhưng bọc lại cho an toàn)
+    // Slider sản phẩm bán chạy
     function scrollSlider(direction) {
         const slider = document.getElementById('bestSellerSlider');
-        if(slider) {
-            slider.scrollBy({ left: direction * 320, behavior: 'smooth' });
+        if (slider) {
+            slider.scrollBy({
+                left: direction * 320,
+                behavior: 'smooth'
+            });
         }
     }
 
-    // 2. Logic cho Review (Giữ nguyên)
+    // Review slider
     let currentReview = 0;
+
     function changeReview(dir) {
         const items = document.querySelectorAll('.review-item');
-        if(items.length > 0) {
+        if (items.length > 0) {
             items[currentReview].classList.remove('active');
             currentReview = (currentReview + dir + items.length) % items.length;
             items[currentReview].classList.add('active');
         }
     }
-    // 3. QUAN TRỌNG: Đảm bảo AJAX luôn chạy trên trang chủ
-    $(document).ready(function() {
-        // Sử dụng $(document).on để bắt sự kiện cho cả các card trong Slider
-        $(document).off('click', '.add-to-wishlist').on('click', '.add-to-wishlist', function(e) {
-            e.preventDefault();
-            let btn = $(this);
-            let p_id = btn.data('id');
 
-            $.post('controll/add_like.php', { product_id: p_id }, function(res) {
-                if (res.trim() === 'added') {
-                    btn.find('i').removeClass('fa-regular').addClass('fa-solid text-danger');
-                } else if (res.trim() === 'removed') {
-                    btn.find('i').removeClass('fa-solid text-danger').addClass('fa-regular');
+    // Wishlist không dùng jQuery
+    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.add-to-wishlist');
+            if (!btn) return;
+
+            e.preventDefault();
+
+            const pId = btn.dataset.id;
+            const formData = new FormData();
+            formData.append('product_id', pId);
+
+            fetch('controll/add_like.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.text())
+            .then(res => {
+                const icon = btn.querySelector('i');
+                const result = res.trim();
+
+                if (result === 'added') {
+                    icon.classList.remove('fa-regular');
+                    icon.classList.add('fa-solid', 'text-danger');
+                } else if (result === 'removed') {
+                    icon.classList.remove('fa-solid', 'text-danger');
+                    icon.classList.add('fa-regular');
                 }
+            })
+            .catch(err => {
+                console.error('Wishlist error:', err);
             });
         });
-    });
-    // JS cho Newsletter (Giữ nguyên)
-    document.getElementById('newsletter-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        document.getElementById('newsletter-area').innerHTML = `
-            <div class="success-message">
-                <i class="fa-solid fa-check-circle me-2"></i><span>Cảm ơn bạn đã đăng ký!</span>
-            </div>`;
+
+        const newsletterForm = document.getElementById('newsletter-form');
+        const newsletterArea = document.getElementById('newsletter-area');
+
+        if (newsletterForm && newsletterArea) {
+            newsletterForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                newsletterArea.innerHTML = `
+                    <div class="success-message">
+                        <i class="fa-solid fa-check-circle me-2"></i>
+                        <span>Cảm ơn bạn đã đăng ký!</span>
+                    </div>`;
+            });
+        }
     });
 </script>
 
+<?php include 'chat-widget.php'; ?>
 <?php include 'includes/footer.php'; ?>
