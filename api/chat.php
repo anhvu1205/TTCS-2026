@@ -17,6 +17,7 @@ mysqli_set_charset($conn, 'utf8mb4');
 $data = json_decode(file_get_contents("php://input"), true);
 $message = trim($data['message'] ?? '');
 $sessionId = trim($data['session_id'] ?? 'default');
+$currentUserId = $_SESSION['user']['id'] ?? null;
 
 if ($message === '') {
     echo json_encode(['reply_html' => 'Bạn hãy nhập nội dung cần hỏi nhé.'], JSON_UNESCAPED_UNICODE);
@@ -31,15 +32,18 @@ if (!isset($_SESSION['chat_state'][$sessionId])) {
     ];
 }
 
-function vn_money($n) {
+function vn_money($n)
+{
     return number_format((float)$n, 0, ',', '.') . '₫';
 }
 
-function normalize_text($text) {
+function normalize_text($text)
+{
     return mb_strtolower(trim($text), 'UTF-8');
 }
 
-function has_kw($text, $keywords) {
+function has_kw($text, $keywords)
+{
     foreach ($keywords as $kw) {
         $kw = mb_strtolower($kw, 'UTF-8');
 
@@ -56,7 +60,8 @@ function has_kw($text, $keywords) {
     return false;
 }
 
-function parse_price($text) {
+function parse_price($text)
+{
     if (preg_match('/(\d+(?:[.,]\d+)?)\s*(k|nghìn|ngàn)/u', $text, $m)) {
         return (int)((float)str_replace(',', '.', $m[1]) * 1000);
     }
@@ -76,7 +81,8 @@ function parse_price($text) {
     return null;
 }
 
-function search_products($conn, $options = []) {
+function search_products($conn, $options = [])
+{
     $keyword = trim($options['keyword'] ?? '');
     $min = isset($options['min']) ? (int)$options['min'] : null;
     $max = isset($options['max']) ? (int)$options['max'] : null;
@@ -122,7 +128,8 @@ function search_products($conn, $options = []) {
     return $products;
 }
 
-function product_cards($products) {
+function product_cards($products)
+{
     if (!$products || count($products) === 0) {
         return "<div>Hiện mình chưa tìm thấy sản phẩm phù hợp trong shop.</div>";
     }
@@ -158,9 +165,46 @@ function product_cards($products) {
     return $html;
 }
 
+function table_exists($conn, $tableName)
+{
+    $safeTable = mysqli_real_escape_string($conn, $tableName);
+    $res = mysqli_query($conn, "SHOW TABLES LIKE '$safeTable'");
+    return $res && mysqli_num_rows($res) > 0;
+}
+
+function save_chat_message($conn, $sessionId, $userId, $sender, $message)
+{
+    if (!table_exists($conn, 'ChatbotMessages')) return;
+
+    $safeSession = mysqli_real_escape_string($conn, $sessionId);
+    $safeSender = mysqli_real_escape_string($conn, $sender);
+    $safeMessage = mysqli_real_escape_string($conn, strip_tags($message));
+    $userValue = $userId ? (int)$userId : "NULL";
+
+    @mysqli_query($conn, "
+        INSERT INTO ChatbotMessages (session_id, maND, sender, message)
+        VALUES ('$safeSession', $userValue, '$safeSender', '$safeMessage')
+    ");
+}
+
+function save_chat_request($conn, $sessionId, $userId, $message)
+{
+    if (!table_exists($conn, 'ChatbotRequests')) return;
+
+    $safeSession = mysqli_real_escape_string($conn, $sessionId);
+    $safeMessage = mysqli_real_escape_string($conn, $message);
+    $userValue = $userId ? (int)$userId : "NULL";
+
+    @mysqli_query($conn, "
+        INSERT INTO ChatbotRequests (session_id, maND, customer_message, status)
+        VALUES ('$safeSession', $userValue, '$safeMessage', 'pending')
+    ");
+}
+
 $text = normalize_text($message);
 $reply = '';
 
+/* FAQ */
 if (has_kw($text, ['ship', 'giao hàng', 'vận chuyển', 'bao lâu', 'mấy ngày', 'phí ship', 'freeship'])) {
     $reply = "
         Shop hỗ trợ giao hàng toàn quốc 🚚<br>
@@ -171,13 +215,9 @@ if (has_kw($text, ['ship', 'giao hàng', 'vận chuyển', 'bao lâu', 'mấy ng
         <button class='chat-choice' data-msg='Sản phẩm mới nhất'>Xem hàng mới</button>
         <button class='chat-choice' data-msg='Sản phẩm dưới 500k'>Dưới 500k</button>
     ";
-}
-
-elseif (has_kw($text, ['hi', 'hello', 'xin chào', 'chào', 'alo'])) {
+} elseif (has_kw($text, ['hi', 'hello', 'xin chào', 'chào', 'alo'])) {
     $reply = "Xin chào 👋 Mình có thể tư vấn áo, quần, váy, sản phẩm theo giá hoặc hỗ trợ thông tin ship/đổi trả cho bạn.";
-}
-
-elseif (has_kw($text, ['mã giảm giá', 'voucher', 'code giảm', 'discount', 'sale code', 'mã sale'])) {
+} elseif (has_kw($text, ['mã giảm giá', 'voucher', 'code giảm', 'discount', 'sale code', 'mã sale'])) {
     $reply = "
         Shop đang có mã giảm giá 🎁<br>
         • <b>SALE10</b>: giảm 10% cho đơn từ 300.000₫<br>
@@ -185,23 +225,52 @@ elseif (has_kw($text, ['mã giảm giá', 'voucher', 'code giảm', 'discount', 
         Bạn có thể nhập mã ở trang giỏ hàng khi thanh toán nhé.<br>
         <button class='chat-choice' data-msg='Sản phẩm dưới 500k'>Gợi ý sản phẩm dễ áp mã</button>
     ";
+} elseif (has_kw($text, ['đổi trả', 'đổi hàng', 'trả hàng', 'hoàn hàng'])) {
+    $reply = "Shop hỗ trợ đổi trả nếu sản phẩm lỗi hoặc chưa phù hợp theo chính sách shop.<br>Bạn nên giữ sản phẩm còn nguyên tình trạng ban đầu và liên hệ shop sớm để được hỗ trợ nhé.";
+} elseif (has_kw($text, ['thanh toán', 'cod', 'chuyển khoản', 'trả tiền'])) {
+    $reply = "Shop hỗ trợ thanh toán khi nhận hàng hoặc các hình thức thanh toán có sẵn trên website.<br>Bạn muốn mình tư vấn sản phẩm trước khi đặt hàng không?";
 }
 
-elseif (has_kw($text, ['đổi trả', 'đổi hàng', 'trả hàng', 'hoàn hàng'])) {
+/* FLOW TƯ VẤN RIÊNG */ elseif (has_kw($text, ['tư vấn áo', 'chọn áo', 'gợi ý áo'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'ao';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'áo';
+
     $reply = "
-        Shop hỗ trợ đổi trả nếu sản phẩm lỗi hoặc chưa phù hợp theo chính sách shop.<br>
-        Bạn nên giữ sản phẩm còn nguyên tình trạng ban đầu và liên hệ shop sớm để được hỗ trợ nhé.
+        Bạn muốn chọn áo theo phong cách nào?<br>
+        <button class='chat-choice' data-msg='Áo đi làm'>Đi làm</button>
+        <button class='chat-choice' data-msg='Áo đi chơi'>Đi chơi</button>
+        <button class='chat-choice' data-msg='Áo basic'>Basic</button>
+        <button class='chat-choice' data-msg='Áo giá rẻ'>Giá rẻ</button>
+        <button class='chat-choice' data-msg='Áo sơ mi'>Áo sơ mi</button>
+        <button class='chat-choice' data-msg='Áo thun'>Áo thun</button>
     ";
-}
+} elseif (has_kw($text, ['tư vấn quần', 'chọn quần', 'gợi ý quần'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'quan';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'quần';
 
-elseif (has_kw($text, ['thanh toán', 'cod', 'chuyển khoản', 'trả tiền'])) {
     $reply = "
-        Shop hỗ trợ thanh toán khi nhận hàng hoặc các hình thức thanh toán có sẵn trên website.<br>
-        Bạn muốn mình tư vấn sản phẩm trước khi đặt hàng không?
+        Bạn muốn chọn quần theo kiểu nào?<br>
+        <button class='chat-choice' data-msg='Quần đi làm'>Đi làm</button>
+        <button class='chat-choice' data-msg='Quần đi chơi'>Đi chơi</button>
+        <button class='chat-choice' data-msg='Quần basic'>Basic</button>
+        <button class='chat-choice' data-msg='Quần giá rẻ'>Giá rẻ</button>
+        <button class='chat-choice' data-msg='Quần jeans'>Quần jeans</button>
+        <button class='chat-choice' data-msg='Quần short'>Quần short</button>
     ";
-}
+} elseif (has_kw($text, ['tư vấn váy', 'tư vấn đầm', 'chọn váy', 'chọn đầm', 'gợi ý váy', 'gợi ý đầm'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'vay';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'váy';
 
-elseif (has_kw($text, ['tư vấn', 'gợi ý', 'không biết chọn', 'chọn giúp'])) {
+    $reply = "
+        Bạn muốn chọn váy/đầm theo phong cách nào?<br>
+        <button class='chat-choice' data-msg='Váy đi làm'>Đi làm</button>
+        <button class='chat-choice' data-msg='Váy đi chơi'>Đi chơi</button>
+        <button class='chat-choice' data-msg='Váy basic'>Basic</button>
+        <button class='chat-choice' data-msg='Váy giá rẻ'>Giá rẻ</button>
+        <button class='chat-choice' data-msg='Đầm'>Đầm</button>
+        <button class='chat-choice' data-msg='Váy'>Váy</button>
+    ";
+} elseif (has_kw($text, ['tư vấn', 'gợi ý', 'không biết chọn', 'chọn giúp'])) {
     $reply = "
         Bạn muốn mình tư vấn theo hướng nào?<br>
         <button class='chat-choice' data-msg='Tư vấn áo'>Áo</button>
@@ -212,7 +281,110 @@ elseif (has_kw($text, ['tư vấn', 'gợi ý', 'không biết chọn', 'chọn 
     ";
 }
 
-elseif ((has_kw($text, ['dưới', 'nhỏ hơn', 'không quá']) || preg_match('/dưới\s*\d+/u', $text)) && parse_price($text)) {
+/* STYLE THEO ÁO */ elseif (has_kw($text, ['áo đi làm'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'ao';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'áo sơ mi';
+    $_SESSION['chat_state'][$sessionId]['last_style'] = 'di_lam';
+
+    $products = search_products($conn, ['keyword' => 'áo sơ mi', 'limit' => 4, 'order' => 'new']);
+    $reply = "Nếu chọn áo đi làm, mình gợi ý các mẫu lịch sự, dễ phối này:" . product_cards($products);
+} elseif (has_kw($text, ['áo đi chơi'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'ao';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'áo';
+    $_SESSION['chat_state'][$sessionId]['last_style'] = 'di_choi';
+
+    $products = search_products($conn, ['keyword' => 'áo', 'limit' => 4, 'order' => 'new']);
+    $reply = "Nếu đi chơi, bạn có thể chọn vài mẫu áo thoải mái, dễ phối này:" . product_cards($products);
+} elseif (has_kw($text, ['áo basic'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'ao';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'áo';
+    $_SESSION['chat_state'][$sessionId]['last_style'] = 'basic';
+
+    $products = search_products($conn, ['keyword' => 'áo', 'limit' => 4, 'order' => 'price_asc']);
+    $reply = "Phong cách áo basic/tối giản thì mình gợi ý vài mẫu dễ mặc này:" . product_cards($products);
+} elseif (has_kw($text, ['áo giá rẻ'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'ao';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'áo';
+
+    $products = search_products($conn, ['keyword' => 'áo', 'limit' => 4, 'order' => 'price_asc']);
+    $reply = "Mình lọc vài mẫu áo giá mềm cho bạn:" . product_cards($products);
+}
+
+/* STYLE THEO QUẦN */ elseif (has_kw($text, ['quần đi làm'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'quan';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'quần';
+    $_SESSION['chat_state'][$sessionId]['last_style'] = 'di_lam';
+
+    $products = search_products($conn, ['keyword' => 'quần', 'limit' => 4, 'order' => 'new']);
+    $reply = "Nếu chọn quần đi làm, mình gợi ý vài mẫu lịch sự, dễ phối này:" . product_cards($products);
+} elseif (has_kw($text, ['quần đi chơi'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'quan';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'quần';
+    $_SESSION['chat_state'][$sessionId]['last_style'] = 'di_choi';
+
+    $products = search_products($conn, ['keyword' => 'quần', 'limit' => 4, 'order' => 'new']);
+    $reply = "Đi chơi thì bạn có thể chọn vài mẫu quần thoải mái, dễ phối này:" . product_cards($products);
+} elseif (has_kw($text, ['quần basic'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'quan';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'quần';
+    $_SESSION['chat_state'][$sessionId]['last_style'] = 'basic';
+
+    $products = search_products($conn, ['keyword' => 'quần', 'limit' => 4, 'order' => 'price_asc']);
+    $reply = "Phong cách quần basic/tối giản thì mình gợi ý vài mẫu dễ mặc này:" . product_cards($products);
+} elseif (has_kw($text, ['quần giá rẻ'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'quan';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'quần';
+
+    $products = search_products($conn, ['keyword' => 'quần', 'limit' => 4, 'order' => 'price_asc']);
+    $reply = "Mình lọc vài mẫu quần giá mềm cho bạn:" . product_cards($products);
+}
+
+/* STYLE THEO VÁY */ elseif (has_kw($text, ['váy đi làm', 'đầm đi làm'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'vay';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'váy';
+    $_SESSION['chat_state'][$sessionId]['last_style'] = 'di_lam';
+
+    $products = search_products($conn, ['keyword' => 'váy', 'limit' => 4, 'order' => 'new']);
+    if (count($products) === 0) {
+        $products = search_products($conn, ['keyword' => 'đầm', 'limit' => 4, 'order' => 'new']);
+    }
+
+    $reply = "Nếu mặc đi làm, mình gợi ý vài mẫu váy/đầm lịch sự, dễ phối này:" . product_cards($products);
+} elseif (has_kw($text, ['váy đi chơi', 'đầm đi chơi'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'vay';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'váy';
+    $_SESSION['chat_state'][$sessionId]['last_style'] = 'di_choi';
+
+    $products = search_products($conn, ['keyword' => 'váy', 'limit' => 4, 'order' => 'new']);
+    if (count($products) === 0) {
+        $products = search_products($conn, ['keyword' => 'đầm', 'limit' => 4, 'order' => 'new']);
+    }
+
+    $reply = "Đi chơi thì bạn có thể chọn vài mẫu váy/đầm nữ tính, dễ mặc này:" . product_cards($products);
+} elseif (has_kw($text, ['váy basic', 'đầm basic'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'vay';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'váy';
+    $_SESSION['chat_state'][$sessionId]['last_style'] = 'basic';
+
+    $products = search_products($conn, ['keyword' => 'váy', 'limit' => 4, 'order' => 'price_asc']);
+    if (count($products) === 0) {
+        $products = search_products($conn, ['keyword' => 'đầm', 'limit' => 4, 'order' => 'price_asc']);
+    }
+
+    $reply = "Phong cách váy/đầm basic thì mình gợi ý vài mẫu dễ mặc này:" . product_cards($products);
+} elseif (has_kw($text, ['váy giá rẻ', 'đầm giá rẻ'])) {
+    $_SESSION['chat_state'][$sessionId]['last_topic'] = 'vay';
+    $_SESSION['chat_state'][$sessionId]['last_keyword'] = 'váy';
+
+    $products = search_products($conn, ['keyword' => 'váy', 'limit' => 4, 'order' => 'price_asc']);
+    if (count($products) === 0) {
+        $products = search_products($conn, ['keyword' => 'đầm', 'limit' => 4, 'order' => 'price_asc']);
+    }
+
+    $reply = "Mình lọc vài mẫu váy/đầm giá mềm cho bạn:" . product_cards($products);
+}
+
+/* LỌC GIÁ */ elseif ((has_kw($text, ['dưới', 'nhỏ hơn', 'không quá']) || preg_match('/dưới\s*\d+/u', $text)) && parse_price($text)) {
     $max = parse_price($text);
     $topic = $_SESSION['chat_state'][$sessionId]['last_keyword'];
 
@@ -224,9 +396,7 @@ elseif ((has_kw($text, ['dưới', 'nhỏ hơn', 'không quá']) || preg_match('
     ]);
 
     $reply = "Mình lọc vài sản phẩm dưới <b>" . vn_money($max) . "</b> cho bạn:" . product_cards($products);
-}
-
-elseif (preg_match('/từ.+đến/u', $text)) {
+} elseif (preg_match('/từ.+đến/u', $text)) {
     preg_match_all('/\d+(?:[.,]\d+)?\s*(?:k|nghìn|ngàn|tr|triệu|trieu)?/u', $text, $matches);
 
     if (count($matches[0]) >= 2) {
@@ -244,7 +414,7 @@ elseif (preg_match('/từ.+đến/u', $text)) {
     }
 }
 
-elseif (has_kw($text, ['áo thun', 'áo sơ mi', 'áo khoác', 'áo len', 'áo'])) {
+/* SẢN PHẨM TRỰC TIẾP */ elseif (has_kw($text, ['áo thun', 'áo sơ mi', 'áo khoác', 'áo len', 'áo'])) {
     $kw = 'áo';
 
     if (mb_strpos($text, 'áo thun') !== false) $kw = 'áo thun';
@@ -255,17 +425,11 @@ elseif (has_kw($text, ['áo thun', 'áo sơ mi', 'áo khoác', 'áo len', 'áo']
     $_SESSION['chat_state'][$sessionId]['last_topic'] = 'ao';
     $_SESSION['chat_state'][$sessionId]['last_keyword'] = $kw;
 
-    $products = search_products($conn, [
-        'keyword' => $kw,
-        'limit' => 4,
-        'order' => 'new'
-    ]);
+    $products = search_products($conn, ['keyword' => $kw, 'limit' => 4, 'order' => 'new']);
 
     $reply = "Mình chọn vài mẫu <b>{$kw}</b> hợp với phong cách SimpleFit cho bạn:" . product_cards($products) . "
     <div class='chat-suggest'>Bạn muốn mình lọc tiếp theo <b>giá rẻ hơn</b>, <b>đi chơi</b> hay <b>đi làm</b>?</div>";
-}
-
-elseif (has_kw($text, ['quần jeans', 'quần jean', 'quần short', 'quần', 'jeans', 'short'])) {
+} elseif (has_kw($text, ['quần jeans', 'quần jean', 'quần short', 'quần', 'jeans', 'short'])) {
     $kw = 'quần';
 
     if (mb_strpos($text, 'jeans') !== false || mb_strpos($text, 'jean') !== false) $kw = 'quần jeans';
@@ -274,132 +438,68 @@ elseif (has_kw($text, ['quần jeans', 'quần jean', 'quần short', 'quần', 
     $_SESSION['chat_state'][$sessionId]['last_topic'] = 'quan';
     $_SESSION['chat_state'][$sessionId]['last_keyword'] = $kw;
 
-    $products = search_products($conn, [
-        'keyword' => $kw,
-        'limit' => 4,
-        'order' => 'new'
-    ]);
+    $products = search_products($conn, ['keyword' => $kw, 'limit' => 4, 'order' => 'new']);
 
     $reply = "Đây là vài mẫu <b>{$kw}</b> mình gợi ý cho bạn:" . product_cards($products) . "
     <div class='chat-suggest'>Bạn thích form rộng, ôm hay mặc thường ngày?</div>";
-}
-
-elseif (has_kw($text, ['váy', 'đầm'])) {
+} elseif (has_kw($text, ['váy', 'đầm'])) {
     $kw = mb_strpos($text, 'đầm') !== false ? 'đầm' : 'váy';
 
     $_SESSION['chat_state'][$sessionId]['last_topic'] = 'vay';
     $_SESSION['chat_state'][$sessionId]['last_keyword'] = $kw;
 
-    $products = search_products($conn, [
-        'keyword' => $kw,
-        'limit' => 4,
-        'order' => 'new'
-    ]);
+    $products = search_products($conn, ['keyword' => $kw, 'limit' => 4, 'order' => 'new']);
 
     $reply = "Mình gợi ý vài mẫu <b>{$kw}</b> cho bạn:" . product_cards($products) . "
     <div class='chat-suggest'>Bạn thích phong cách nữ tính, tối giản hay dễ mặc hằng ngày?</div>";
 }
 
-elseif (has_kw($text, ['đi làm', 'công sở', 'văn phòng'])) {
-    $_SESSION['chat_state'][$sessionId]['last_style'] = 'di_lam';
+/* STYLE CHUNG */ elseif (has_kw($text, ['đi làm', 'công sở', 'văn phòng'])) {
+    $topic = $_SESSION['chat_state'][$sessionId]['last_topic'];
 
-    $products = search_products($conn, [
-        'keyword' => 'sơ mi',
-        'limit' => 4,
-        'order' => 'new'
-    ]);
-
-    if (count($products) === 0) {
-        $products = search_products($conn, [
-            'keyword' => 'áo',
-            'limit' => 4,
-            'order' => 'new'
-        ]);
+    if ($topic === 'quan') {
+        $kw = 'quần';
+        $replyText = "Nếu mặc đi làm, mình gợi ý vài mẫu quần lịch sự, dễ phối này:";
+    } elseif ($topic === 'vay') {
+        $kw = 'váy';
+        $replyText = "Nếu mặc đi làm, mình gợi ý vài mẫu váy/đầm lịch sự, dễ phối này:";
+    } else {
+        $kw = 'áo sơ mi';
+        $replyText = "Nếu mặc đi làm, mình gợi ý các mẫu lịch sự, dễ phối này:";
     }
 
-    $reply = "Nếu mặc đi làm, mình gợi ý các mẫu lịch sự, dễ phối này:" . product_cards($products);
-}
+    $products = search_products($conn, ['keyword' => $kw, 'limit' => 4, 'order' => 'new']);
+    $reply = $replyText . product_cards($products);
+} elseif (has_kw($text, ['đi chơi', 'dạo phố', 'casual'])) {
+    $keyword = $_SESSION['chat_state'][$sessionId]['last_keyword'] ?: 'áo';
 
-elseif (has_kw($text, ['đi chơi', 'dạo phố', 'casual'])) {
-    $_SESSION['chat_state'][$sessionId]['last_style'] = 'di_choi';
-
-    $keyword = $_SESSION['chat_state'][$sessionId]['last_keyword'] ?? '';
-    if ($keyword === '') {
-        $keyword = 'áo';
-    }
-
-    $products = search_products($conn, [
-        'keyword' => $keyword,
-        'limit' => 4,
-        'order' => 'new'
-    ]);
-
+    $products = search_products($conn, ['keyword' => $keyword, 'limit' => 4, 'order' => 'new']);
     $reply = "Đi chơi thì bạn có thể chọn vài mẫu thoải mái, dễ phối này:" . product_cards($products);
-}
+} elseif (has_kw($text, ['basic', 'đơn giản', 'tối giản'])) {
+    $keyword = $_SESSION['chat_state'][$sessionId]['last_keyword'] ?: 'áo';
 
-elseif (has_kw($text, ['basic', 'đơn giản', 'tối giản'])) {
-    $_SESSION['chat_state'][$sessionId]['last_style'] = 'basic';
-
-    $keyword = $_SESSION['chat_state'][$sessionId]['last_keyword'] ?? '';
-    if ($keyword === '') {
-        $keyword = 'áo';
-    }
-
-    $products = search_products($conn, [
-        'keyword' => $keyword,
-        'limit' => 4,
-        'order' => 'price_asc'
-    ]);
-
+    $products = search_products($conn, ['keyword' => $keyword, 'limit' => 4, 'order' => 'price_asc']);
     $reply = "Phong cách basic/tối giản thì mình gợi ý vài mẫu dễ mặc này:" . product_cards($products);
-}
-
-elseif (has_kw($text, ['mới nhất', 'hàng mới', 'new', 'bán chạy', 'hot'])) {
-    $products = search_products($conn, [
-        'keyword' => '',
-        'limit' => 4,
-        'order' => 'new'
-    ]);
-
+} elseif (has_kw($text, ['mới nhất', 'hàng mới', 'new', 'bán chạy', 'hot'])) {
+    $products = search_products($conn, ['keyword' => '', 'limit' => 4, 'order' => 'new']);
     $reply = "Đây là một vài sản phẩm mới/nổi bật bên shop:" . product_cards($products);
-}
-
-elseif (has_kw($text, ['rẻ hơn', 'giá rẻ', 'mẫu rẻ', 'loại rẻ'])) {
+} elseif (has_kw($text, ['rẻ hơn', 'giá rẻ', 'mẫu rẻ', 'loại rẻ'])) {
     $kw = $_SESSION['chat_state'][$sessionId]['last_keyword'] ?? '';
 
-    $products = search_products($conn, [
-        'keyword' => $kw,
-        'limit' => 4,
-        'order' => 'price_asc'
-    ]);
-
+    $products = search_products($conn, ['keyword' => $kw, 'limit' => 4, 'order' => 'price_asc']);
     $reply = "Mình lọc vài mẫu giá mềm hơn cho bạn:" . product_cards($products);
-}
-
-elseif (has_kw($text, ['khác', 'mẫu khác', 'xem thêm'])) {
+} elseif (has_kw($text, ['khác', 'mẫu khác', 'xem thêm'])) {
     $kw = $_SESSION['chat_state'][$sessionId]['last_keyword'] ?? '';
 
-    $products = search_products($conn, [
-        'keyword' => $kw,
-        'limit' => 4,
-        'order' => 'new'
-    ]);
-
+    $products = search_products($conn, ['keyword' => $kw, 'limit' => 4, 'order' => 'new']);
     $reply = "Bạn có thể xem thêm vài mẫu này:" . product_cards($products);
 }
 
-else {
-    $safeMsg = mysqli_real_escape_string($conn, $message);
-
-if (mysqli_query($conn, "SHOW TABLES LIKE 'chatbot_requests'")->num_rows > 0) {
-    mysqli_query($conn, "
-    INSERT INTO chatbot_requests (session_id, customer_message, status, created_at)
-    VALUES ('$sessionId', '$safeMsg', 'pending', NOW())
-    ");
-}
+/* FALLBACK */ else {
+    save_chat_request($conn, $sessionId, $currentUserId, $message);
 
     $reply = "
-        Mình đã ghi nhận nội dung này, nhân viên shop sẽ kiểm tra và phản hồi bạn sớm nhất.<br><br>
+        Shop đã ghi nhận nội dung này, nhân viên shop sẽ kiểm tra và phản hồi bạn sớm nhất.<br><br>
         Trong lúc chờ, bạn có thể chọn nhanh một nhu cầu bên dưới:<br>
         <button class='chat-choice' data-msg='Tư vấn áo'>Áo</button>
         <button class='chat-choice' data-msg='Tư vấn quần'>Quần</button>
@@ -414,7 +514,11 @@ $_SESSION['chat_history'][$sessionId][] = [
     'bot' => $reply
 ];
 
+save_chat_message($conn, $sessionId, $currentUserId, 'user', $message);
+save_chat_message($conn, $sessionId, $currentUserId, 'bot', $reply);
+
 echo json_encode([
     'session_id' => $sessionId,
     'reply_html' => $reply
 ], JSON_UNESCAPED_UNICODE);
+exit;

@@ -1,4 +1,4 @@
-<?php 
+<?php
 session_start();
 require_once 'includes/db.php';
 
@@ -18,7 +18,7 @@ if ($search != '') {
 }
 
 $result = mysqli_query($conn, $sql);
-include 'includes/header.php'; 
+include 'includes/header.php';
 ?>
 
 <main>
@@ -37,7 +37,7 @@ include 'includes/header.php';
                             Simple Life
                         </h1>
                         <p class="hero-sub-desc">Mặc đẹp không cần phức tạp. Thời trang tối giản dành riêng cho bạn.</p>
-                        
+
                         <div class="hero-cta-group">
                             <a href="products.php" class="btn btn-gold-filled">Khám phá ngay <i class="fa-solid fa-arrow-right ms-2"></i></a>
                         </div>
@@ -110,53 +110,54 @@ include 'includes/header.php';
 
             <div class="row g-4 lg-g-5">
                 <?php if (mysqli_num_rows($result) > 0): ?>
-                        <?php while ($row = mysqli_fetch_assoc($result)) : 
-                            $is_wishlisted = false;
-                            if (isset($_SESSION['user'])) {
-                                $u_id = $_SESSION['user']['id'];
-                                $p_id = $row['id'];
-                                $check_heart = mysqli_query($conn, "SELECT * FROM YeuThich WHERE maND = '$u_id' AND maSP = '$p_id'");
-                                if ($check_heart && mysqli_num_rows($check_heart) > 0) {
-                                    $is_wishlisted = true;
-                                }
+                    <?php while ($row = mysqli_fetch_assoc($result)) :
+                        $is_wishlisted = false;
+                        if (isset($_SESSION['user'])) {
+                            $u_id = $_SESSION['user']['id'];
+                            $p_id = $row['id'];
+                            $check_heart = mysqli_query($conn, "SELECT * FROM YeuThich WHERE maND = '$u_id' AND maSP = '$p_id'");
+                            if ($check_heart && mysqli_num_rows($check_heart) > 0) {
+                                $is_wishlisted = true;
                             }
-                        ?>
-                    <div class="col-6 col-md-4 col-xl-3">
-                        <div class="product-card-v3 h-100">
-                            <div class="product-img-wrapper-v3 small-card">
-                                <a href="detail.php?id=<?php echo $row['id']; ?>">
-                                    <img src="<?php echo $row['image']; ?>" class="product-img-main-v3" alt="<?php echo htmlspecialchars($row['name']); ?>">
-                                </a>
-                                
-                                <button class="btn-wishlist-v3 add-to-wishlist" data-id="<?php echo $row['id']; ?>" title="Thêm vào yêu thích">
-                                    <i class="<?php echo $is_wishlisted ? 'fa-solid text-danger' : 'fa-regular'; ?> fa-heart"></i>
-                                </button>
-                                
-                                <form action="cart.php" method="POST" class="quick-add-form-v3">
-                                    <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
-                                    <?php if ($row['soLuong'] > 0): ?>
-                                        <button type="submit" name="add_to_cart" class="btn-quick-add-v3">
-                                            <i class="fa-solid fa-cart-plus me-2"></i>THÊM VÀO GIỎ HÀNG 
-                                        </button>
-                                    <?php else: ?>
-                                        <button type="button" class="btn-quick-add-v3 disabled" style="background: #999; cursor: not-allowed;">
-                                            <i class="fa-solid fa-xmark me-2"></i>HẾT HÀNG
-                                        </button>
-                                    <?php endif; ?>
-                                </form>
-                            </div>
-                            
-                            <div class="product-info-v3 text-center">
-                                <h6 class="product-name-v3 mb-1">
-                                    <a href="detail.php?id=<?php echo $row['id']; ?>" style="color: inherit; text-decoration: none;">
-                                        <?php echo htmlspecialchars($row['name']); ?>
+                        }
+                    ?>
+                        <div class="col-6 col-md-4 col-xl-3">
+                            <div class="product-card-v3 h-100">
+                                <div class="product-img-wrapper-v3 small-card">
+                                    <a href="detail.php?id=<?php echo $row['id']; ?>">
+                                        <img src="<?php echo $row['image']; ?>" class="product-img-main-v3" alt="<?php echo htmlspecialchars($row['name']); ?>">
                                     </a>
-                                </h6>
-                                <p class="product-price-v3 mb-0"><?php echo number_format($row['price']); ?>₫</p>
+
+                                    <button class="btn-wishlist-v3 add-to-wishlist" data-id="<?php echo $row['id']; ?>" title="Thêm vào yêu thích">
+                                        <i class="<?php echo $is_wishlisted ? 'fa-solid text-danger' : 'fa-regular'; ?> fa-heart"></i>
+                                    </button>
+
+                                    <form action="cart.php" method="POST" class="quick-add-form-v3">
+                                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                        <?php if ($row['soLuong'] > 0): ?>
+                                            <button type="submit" name="add_to_cart" class="btn-quick-add-v3">
+                                                <i class="fa-solid fa-cart-plus me-2"></i>THÊM VÀO GIỎ HÀNG
+                                            </button>
+                                        <?php else: ?>
+                                            <button type="button" class="btn-quick-add-v3 disabled" style="background: #999; cursor: not-allowed;">
+                                                <i class="fa-solid fa-xmark me-2"></i>HẾT HÀNG
+                                            </button>
+                                        <?php endif; ?>
+                                    </form>
+                                </div>
+
+                                <div class="product-info-v3 text-center">
+                                    <h6 class="product-name-v3 mb-1">
+                                        <a href="detail.php?id=<?php echo $row['id']; ?>" style="color: inherit; text-decoration: none;">
+                                            <?php echo htmlspecialchars($row['name']); ?>
+                                        </a>
+                                    </h6>
+                                    <p class="product-price-v3 mb-0"><?php echo number_format($row['price']); ?>₫</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <?php endwhile; else : ?>
+                    <?php endwhile;
+                else : ?>
                     <div class="col-12 text-center py-5">
                         <p style="color: #8C8279; font-family: 'DM Sans', sans-serif;">Sắp ra mắt...</p>
                     </div>
@@ -182,8 +183,8 @@ include 'includes/header.php';
                 <?php
                 $sql_best = "SELECT maSP as id, ten as name, gia as price, hinhAnh as image, soLuong FROM SanPham ORDER BY maSP DESC LIMIT 10";
                 $res_best = mysqli_query($conn, $sql_best);
-                if (mysqli_num_rows($res_best) > 0) : 
-                    while ($row = mysqli_fetch_assoc($res_best)) : 
+                if (mysqli_num_rows($res_best) > 0) :
+                    while ($row = mysqli_fetch_assoc($res_best)) :
                         $is_wishlisted = false;
                         if (isset($_SESSION['user'])) {
                             $u_id = $_SESSION['user']['id'];
@@ -193,42 +194,43 @@ include 'includes/header.php';
                                 $is_wishlisted = true;
                             }
                         }
-                    ?>
-                    <div class="best-seller-item">
-                        <div class="product-card-v3">
-                            <div class="product-img-wrapper-v3">
-                                <a href="detail.php?id=<?php echo $row['id']; ?>">
-                                    <img src="<?php echo $row['image']; ?>" class="product-img-main-v3" alt="<?php echo htmlspecialchars($row['name']); ?>">
-                                </a>
-                                
-                                <button class="btn-wishlist-v3 add-to-wishlist" data-id="<?php echo $row['id']; ?>" title="Thêm vào yêu thích">
-                                    <i class="<?php echo $is_wishlisted ? 'fa-solid text-danger' : 'fa-regular'; ?> fa-heart"></i>
-                                </button>
-                                <form action="cart.php" method="POST" class="quick-add-form-v3">
-                                    <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
-                                    <?php if ($row['soLuong'] > 0): ?>
-                                        <button type="submit" name="add_to_cart" class="btn-quick-add-v3">
-                                            <i class="fa-solid fa-cart-plus me-2"></i>THÊM VÀO GIỎ HÀNG 
-                                        </button>
-                                    <?php else: ?>
-                                        <button type="button" class="btn-quick-add-v3 disabled" style="background: #999; cursor: not-allowed;">
-                                            <i class="fa-solid fa-xmark me-2"></i>HẾT HÀNG
-                                        </button>
-                                    <?php endif; ?>
-                                </form>
-                            </div>
-                            
-                            <div class="product-info-v3 text-center">
-                                <h6 class="product-name-v3 mb-1">
-                                    <a href="detail.php?id=<?php echo $row['id']; ?>" style="color: inherit; text-decoration: none;">
-                                        <?php echo htmlspecialchars($row['name']); ?>
+                ?>
+                        <div class="best-seller-item">
+                            <div class="product-card-v3">
+                                <div class="product-img-wrapper-v3">
+                                    <a href="detail.php?id=<?php echo $row['id']; ?>">
+                                        <img src="<?php echo $row['image']; ?>" class="product-img-main-v3" alt="<?php echo htmlspecialchars($row['name']); ?>">
                                     </a>
-                                </h6>
-                                <p class="product-price-v3 mb-0"><?php echo number_format($row['price']); ?>₫</p>
+
+                                    <button class="btn-wishlist-v3 add-to-wishlist" data-id="<?php echo $row['id']; ?>" title="Thêm vào yêu thích">
+                                        <i class="<?php echo $is_wishlisted ? 'fa-solid text-danger' : 'fa-regular'; ?> fa-heart"></i>
+                                    </button>
+                                    <form action="cart.php" method="POST" class="quick-add-form-v3">
+                                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                        <?php if ($row['soLuong'] > 0): ?>
+                                            <button type="submit" name="add_to_cart" class="btn-quick-add-v3">
+                                                <i class="fa-solid fa-cart-plus me-2"></i>THÊM VÀO GIỎ HÀNG
+                                            </button>
+                                        <?php else: ?>
+                                            <button type="button" class="btn-quick-add-v3 disabled" style="background: #999; cursor: not-allowed;">
+                                                <i class="fa-solid fa-xmark me-2"></i>HẾT HÀNG
+                                            </button>
+                                        <?php endif; ?>
+                                    </form>
+                                </div>
+
+                                <div class="product-info-v3 text-center">
+                                    <h6 class="product-name-v3 mb-1">
+                                        <a href="detail.php?id=<?php echo $row['id']; ?>" style="color: inherit; text-decoration: none;">
+                                            <?php echo htmlspecialchars($row['name']); ?>
+                                        </a>
+                                    </h6>
+                                    <p class="product-price-v3 mb-0"><?php echo number_format($row['price']); ?>₫</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <?php endwhile; endif; ?>
+                <?php endwhile;
+                endif; ?>
             </div>
         </div>
     </section>
@@ -239,13 +241,13 @@ include 'includes/header.php';
             <h2 class="review-main-title">Khách hàng nói gì về chúng tôi</h2>
             <div class="review-container position-relative">
                 <div id="review-content">
-                    <?php 
+                    <?php
                     $reviews = [
                         ['name' => 'Nguyễn An', 'rating' => 5, 'comment' => 'Chất vải rất mịn, form áo cực kỳ tôn dáng.'],
                         ['name' => 'Trần Bình', 'rating' => 5, 'comment' => 'Giao hàng nhanh, đóng gói cẩn thận.'],
                         ['name' => 'Lê Chi', 'rating' => 4, 'comment' => 'Áo sơ mi mặc đi làm rất lịch sự.'],
                     ];
-                    foreach ($reviews as $index => $rev) : 
+                    foreach ($reviews as $index => $rev) :
                     ?>
                         <div class="review-item <?php echo $index === 0 ? 'active' : ''; ?>" id="rev-<?php echo $index; ?>">
                             <div class="star-rating mb-4">
@@ -312,8 +314,8 @@ include 'includes/header.php';
     }
 
     // Wishlist không dùng jQuery
-    document.addEventListener('DOMContentLoaded', function () {
-        document.addEventListener('click', function (e) {
+    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('click', function(e) {
             const btn = e.target.closest('.add-to-wishlist');
             if (!btn) return;
 
@@ -324,38 +326,41 @@ include 'includes/header.php';
             formData.append('product_id', pId);
 
             fetch('controll/add_like.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.text())
-            .then(res => {
-                const icon = btn.querySelector('i');
-                const result = res.trim();
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.text())
+                .then(res => {
+                    const icon = btn.querySelector('i');
+                    const result = res.trim();
 
-                if (result === 'added') {
-                    icon.classList.remove('fa-regular');
-                    icon.classList.add('fa-solid', 'text-danger');
-                } else if (result === 'removed') {
-                    icon.classList.remove('fa-solid', 'text-danger');
-                    icon.classList.add('fa-regular');
-                }
-            })
-            .catch(err => {
-                console.error('Wishlist error:', err);
-            });
+                    if (result === 'added') {
+                        icon.classList.remove('fa-regular');
+                        icon.classList.add('fa-solid', 'text-danger');
+                    } else if (result === 'removed') {
+                        icon.classList.remove('fa-solid', 'text-danger');
+                        icon.classList.add('fa-regular');
+                    } else if (result === 'login_required') {
+                        alert('Vui lòng đăng nhập để thêm vào yêu thích.');
+                    }
+                })
+                .catch(err => {
+                    console.error('Wishlist error:', err);
+                });
         });
 
         const newsletterForm = document.getElementById('newsletter-form');
         const newsletterArea = document.getElementById('newsletter-area');
 
         if (newsletterForm && newsletterArea) {
-            newsletterForm.addEventListener('submit', function (e) {
+            newsletterForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 newsletterArea.innerHTML = `
                     <div class="success-message">
                         <i class="fa-solid fa-check-circle me-2"></i>
                         <span>Cảm ơn bạn đã đăng ký!</span>
-                    </div>`;
+                    </div>
+                `;
             });
         }
     });

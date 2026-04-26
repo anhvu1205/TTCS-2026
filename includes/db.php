@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
 $username = "root";
-$password = "123456";
+$password = "";
 $dbname = "shop_ptit";
 
 $conn = mysqli_connect($servername, $username, $password, $dbname);

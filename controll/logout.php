@@ -1,13 +1,31 @@
 <?php
 session_start();
 
-// 1. Xóa toàn bộ dữ liệu session
 session_unset();
-
-// 2. Hủy session
 session_destroy();
-
-// 3. Chuyển hướng ra thư mục gốc để vào shop.php
-header("Location: ../shop.php");
-exit();
 ?>
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng xuất...</title>
+</head>
+
+<body>
+    <script>
+        Object.keys(localStorage).forEach(function(key) {
+            if (
+                key.startsWith('sf_chat_session_id_') ||
+                key.startsWith('sf_chat_history_')
+            ) {
+                localStorage.removeItem(key);
+            }
+        });
+
+        window.location.href = '../shop.php';
+    </script>
+</body>
+
+</html>

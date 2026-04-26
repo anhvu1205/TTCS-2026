@@ -1,6 +1,7 @@
 (function () {
     const toggleBtn = document.getElementById('sf-chat-toggle');
     const closeBtn = document.getElementById('sf-chat-close');
+    const resetBtn = document.getElementById('sf-chat-reset');
     const panel = document.getElementById('sf-chat-panel');
     const chatBox = document.getElementById('chatBox');
     const input = document.getElementById('chatInput');
@@ -8,17 +9,28 @@
 
     if (!toggleBtn || !panel || !chatBox || !input || !sendBtn) return;
 
+    function getChatUserId() {
+        return window.SF_CHAT_USER_ID || 'guest';
+    }
+
+    function getSessionKey() {
+        return 'sf_chat_session_id_' + getChatUserId();
+    }
+
     function getSessionId() {
-        let sid = localStorage.getItem('sf_chat_session_id');
+        const key = getSessionKey();
+        let sid = localStorage.getItem(key);
+
         if (!sid) {
-            sid = 'sess_' + Math.random().toString(36).slice(2) + '_' + Date.now();
-            localStorage.setItem('sf_chat_session_id', sid);
+            sid = 'sess_' + getChatUserId() + '_' + Math.random().toString(36).slice(2) + '_' + Date.now();
+            localStorage.setItem(key, sid);
         }
+
         return sid;
     }
 
     function getHistoryKey() {
-        return 'sf_chat_history_' + getSessionId();
+        return 'sf_chat_history_' + getChatUserId();
     }
 
     function saveChatHistory() {
@@ -31,6 +43,18 @@
             chatBox.innerHTML = saved;
             chatBox.scrollTop = chatBox.scrollHeight;
         }
+    }
+
+    function clearChatHistory() {
+        localStorage.removeItem(getHistoryKey());
+        localStorage.removeItem(getSessionKey());
+
+        chatBox.innerHTML = '';
+
+        addMessage(
+            'assistant',
+            'Bạn muốn tư vấn áo, quần, váy hay sản phẩm theo giá?'
+        );
     }
 
     function escapeHtml(str) {
@@ -49,11 +73,7 @@
         const bubble = document.createElement('div');
         bubble.className = 'sf-chat-bubble';
 
-        if (isHtml) {
-            bubble.innerHTML = text;
-        } else {
-            bubble.innerHTML = escapeHtml(text);
-        }
+        bubble.innerHTML = isHtml ? text : escapeHtml(text);
 
         row.appendChild(bubble);
         chatBox.appendChild(row);
@@ -102,7 +122,7 @@
         try {
             const res = await fetch('./api/chat.php', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     session_id: getSessionId(),
                     message: message
@@ -115,7 +135,9 @@
             try {
                 data = JSON.parse(text);
             } catch (e) {
-                data = { reply_html: 'Response không phải JSON:<br>' + escapeHtml(text) };
+                data = {
+                    reply_html: 'Response không phải JSON:<br>' + escapeHtml(text)
+                };
             }
 
             const loading = document.getElementById('sf-chat-loading');
@@ -123,12 +145,8 @@
 
             if (data.reply_html) {
                 addMessage('assistant', data.reply_html, true);
-            } else if (data.reply) {
-                addMessage('assistant', data.reply);
-            } else if (data.error) {
-                addMessage('assistant', typeof data.error === 'string' ? data.error : JSON.stringify(data.error));
             } else {
-                addMessage('assistant', 'Bot chưa có phản hồi.');
+                addMessage('assistant', data.reply || data.error || 'Bot chưa có phản hồi.');
             }
         } catch (err) {
             const loading = document.getElementById('sf-chat-loading');
@@ -139,7 +157,14 @@
     }
 
     toggleBtn.addEventListener('click', openChat);
-    closeBtn.addEventListener('click', closeChat);
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeChat);
+    }
+
+    if (resetBtn) {
+        resetBtn.addEventListener('click', clearChatHistory);
+    }
 
     sendBtn.addEventListener('click', function () {
         sendChat();
@@ -175,7 +200,7 @@
 
             fetch('cart.php', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'id=' + encodeURIComponent(id) + '&add_to_cart=1'
             })
                 .then(function () {

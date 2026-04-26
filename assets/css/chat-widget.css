@@ -284,3 +284,27 @@
         height: 335px;
     }
 }
+
+.sf-chat-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#sf-chat-reset,
+#sf-chat-close {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #f7efe6;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+#sf-chat-reset:hover,
+#sf-chat-close:hover {
+    background: rgba(255, 255, 255, 0.12);
+}

@@ -2,9 +2,24 @@
 session_start();
 require_once 'includes/db.php';
 
-// 1. XỬ LÝ CÁC HÀNH ĐỘNG POST
+// 1. KIỂM TRA QUYỀN TRUY CẬP
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'ADMIN') {
+    header("Location: shop.php");
+    exit();
+}
+
+$tab = $_GET['tab'] ?? 'overview';
+
+// 2. XỬ LÝ CHATBOT GET
+if (isset($_GET['mark_chat_answered'])) {
+    $id = (int)$_GET['mark_chat_answered'];
+    mysqli_query($conn, "UPDATE ChatbotRequests SET status = 'answered' WHERE id = $id");
+    header("Location: admin.php?tab=chatbot");
+    exit();
+}
+
+// 3. XỬ LÝ CÁC HÀNH ĐỘNG POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Xử lý đơn hàng
     if (isset($_POST['set_pending_id'])) {
         $id = $_POST['set_pending_id'];
         mysqli_query($conn, "UPDATE DonHang SET trangThai='CHO_XAC_NHAN' WHERE maDH='$id'");
@@ -23,9 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             mysqli_query($conn, "UPDATE SanPham SET soLuong = soLuong + $qty WHERE maSP='$p_id'");
         }
         mysqli_query($conn, "UPDATE DonHang SET trangThai='DA_HUY' WHERE maDH='$order_id'");
-    }
-    // Xử lý người dùng
-    elseif (isset($_POST['user_action'])) {
+    } elseif (isset($_POST['user_action'])) {
         $user_id = $_POST['target_user_id'];
         $action = $_POST['user_action'];
 
@@ -36,9 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } elseif ($action == 'unlock') {
             mysqli_query($conn, "UPDATE NguoiDung SET trangThai='ACTIVE' WHERE maND='$user_id'");
         }
-    }
-    // Xử lý Mã giảm giá theo discount_codes
-    elseif (isset($_POST['add_discount'])) {
+    } elseif (isset($_POST['add_discount'])) {
         $code = strtoupper(mysqli_real_escape_string($conn, trim($_POST['code'])));
         $discount_type = mysqli_real_escape_string($conn, $_POST['discount_type']);
         $discount_value = (float)($_POST['discount_value'] ?? 0);
@@ -81,16 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
 }
 
-// 2. KIỂM TRA QUYỀN TRUY CẬP
-if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'ADMIN') {
-    header("Location: shop.php");
-    exit();
-}
-
-$tab = $_GET['tab'] ?? 'overview';
 include 'includes/header.php';
 
-// 3. LẤY DỮ LIỆU THỐNG KÊ
+// 4. LẤY DỮ LIỆU THỐNG KÊ
 $revenue = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SUM(tongTien) as total FROM DonHang WHERE trangThai != 'DA_HUY'"))['total'] ?: 0;
 $total_orders = mysqli_num_rows(mysqli_query($conn, "SELECT maDH FROM DonHang"));
 $pending_orders = mysqli_num_rows(mysqli_query($conn, "SELECT maDH FROM DonHang WHERE trangThai = 'CHO_XAC_NHAN'"));
@@ -125,6 +129,9 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
             </a>
             <a href="admin.php?tab=discounts" class="nav-link <?php echo $tab == 'discounts' ? 'active' : ''; ?>">
                 <i class="fa-solid fa-tag me-2"></i>Mã giảm giá
+            </a>
+            <a href="admin.php?tab=chatbot" class="nav-link <?php echo $tab == 'chatbot' ? 'active' : ''; ?>">
+                <i class="fa-solid fa-comments me-2"></i>Chatbot
             </a>
         </div>
 
@@ -201,10 +208,8 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                                     </div>
                                     <span class="badge-status <?php echo $stt_class; ?>"><?php echo $o['trangThai']; ?></span>
                                 </div>
-                            <?php
-                            endwhile;
-                        else:
-                            ?>
+                            <?php endwhile;
+                        else: ?>
                             <p class="text-center text-muted py-4 small">Chưa có đơn hàng nào.</p>
                         <?php endif; ?>
                     </div>
@@ -446,12 +451,118 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                                         </form>
                                     </div>
                                 </div>
-                            <?php
-                            endwhile;
-                        else:
-                            ?>
+                            <?php endwhile;
+                        else: ?>
                             <p class="text-center text-muted py-5 small">Chưa có mã giảm giá nào.</p>
                         <?php endif; ?>
+                    </div>
+                </div>
+
+            <?php elseif ($tab == 'chatbot'): ?>
+                <div class="admin-panel-v2 shadow-sm mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div>
+                            <h3 class="h6 fw-bold mb-1">
+                                <i class="fa-solid fa-comments me-2"></i>Quản lý Chatbot
+                            </h3>
+                            <p class="text-muted small mb-0">Theo dõi lịch sử chat và các câu hỏi cần nhân viên xử lý.</p>
+                        </div>
+                    </div>
+
+                    <h4 class="h6 fw-bold mb-3">Câu hỏi khó chờ xử lý</h4>
+
+                    <div class="table-responsive mb-5">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead style="background-color:#D4CEBE;">
+                                <tr class="extra-small text-muted">
+                                    <th>ID</th>
+                                    <th>USER</th>
+                                    <th>NỘI DUNG</th>
+                                    <th>TRẠNG THÁI</th>
+                                    <th>THỜI GIAN</th>
+                                    <th class="text-end">THAO TÁC</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $requests = mysqli_query($conn, "SELECT * FROM ChatbotRequests ORDER BY id DESC LIMIT 100");
+                                if ($requests && mysqli_num_rows($requests) > 0):
+                                    while ($r = mysqli_fetch_assoc($requests)):
+                                ?>
+                                        <tr class="small">
+                                            <td><?php echo $r['id']; ?></td>
+                                            <td><?php echo $r['maND'] ?: 'Guest'; ?></td>
+                                            <td style="max-width:420px;"><?php echo nl2br(htmlspecialchars($r['customer_message'])); ?></td>
+                                            <td>
+                                                <?php if ($r['status'] == 'pending'): ?>
+                                                    <span class="badge bg-warning text-dark">Chờ xử lý</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-success">Đã xử lý</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo $r['created_at']; ?></td>
+                                            <td class="text-end">
+                                                <?php if ($r['status'] == 'pending'): ?>
+                                                    <a href="admin.php?tab=chatbot&mark_chat_answered=<?php echo $r['id']; ?>" class="btn btn-sm btn-success">
+                                                        Đã xử lý
+                                                    </a>
+                                                <?php else: ?>
+                                                    <span class="text-muted small">Xong</span>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endwhile;
+                                else: ?>
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4 small">Chưa có câu hỏi nào.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4 class="h6 fw-bold mb-3">Lịch sử chat gần đây</h4>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead style="background-color:#D4CEBE;">
+                                <tr class="extra-small text-muted">
+                                    <th>ID</th>
+                                    <th>SESSION</th>
+                                    <th>USER</th>
+                                    <th>NGƯỜI GỬI</th>
+                                    <th>NỘI DUNG</th>
+                                    <th>THỜI GIAN</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $logs = mysqli_query($conn, "SELECT * FROM ChatbotMessages ORDER BY id DESC LIMIT 150");
+                                if ($logs && mysqli_num_rows($logs) > 0):
+                                    while ($log = mysqli_fetch_assoc($logs)):
+                                ?>
+                                        <tr class="small">
+                                            <td><?php echo $log['id']; ?></td>
+                                            <td style="max-width:180px; word-break:break-all;"><?php echo htmlspecialchars($log['session_id']); ?></td>
+                                            <td><?php echo $log['maND'] ?: 'Guest'; ?></td>
+                                            <td>
+                                                <?php if ($log['sender'] == 'user'): ?>
+                                                    <span class="badge bg-primary">Khách</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-secondary">Bot</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td style="max-width:520px;"><?php echo nl2br(htmlspecialchars($log['message'])); ?></td>
+                                            <td><?php echo $log['created_at']; ?></td>
+                                        </tr>
+                                    <?php endwhile;
+                                else: ?>
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4 small">Chưa có lịch sử chat.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             <?php endif; ?>
