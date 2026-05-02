@@ -1,164 +1,55 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
 DROP DATABASE IF EXISTS shop_ptit;
 CREATE DATABASE shop_ptit
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE shop_ptit;
 
-CREATE TABLE NguoiDung (
-                           maND BIGINT AUTO_INCREMENT PRIMARY KEY,
-                           tenDangNhap VARCHAR(50) UNIQUE NOT NULL,
-                           matKhau VARCHAR(255) NOT NULL,
-                           ten VARCHAR(100),
-                           ngaySinh DATE,
-                           gioiTinh VARCHAR(10),
-                           diaChi VARCHAR(255),
-                           soDienThoai VARCHAR(20),
-                           ngayTao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                           vaiTro VARCHAR(20) DEFAULT 'USER',
-                           trangThai VARCHAR(20) DEFAULT 'ACTIVE'
-);
+CREATE TABLE `BaiViet` (
+  `maBV` int(11) NOT NULL,
+  `tieuDe` varchar(255) NOT NULL,
+  `tomTat` text DEFAULT NULL,
+  `noiDung` longtext DEFAULT NULL,
+  `hinhAnh` varchar(255) DEFAULT NULL,
+  `ngayDang` datetime DEFAULT current_timestamp(),
+  `tacGia` varchar(100) DEFAULT NULL,
+  `trangThai` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE DanhMuc (
-                         maDM BIGINT AUTO_INCREMENT PRIMARY KEY,
-                         ten VARCHAR(100),
-                         hinhAnh VARCHAR(255)
-);
+INSERT INTO `BaiViet` (`maBV`, `tieuDe`, `tomTat`, `noiDung`, `hinhAnh`, `ngayDang`, `tacGia`, `trangThai`) VALUES
+(1, 'Xu hướng thời trang hè 2026', 'Các mẫu trang phục nổi bật cho mùa hè năm nay.', 'Nội dung bài viết mẫu 1...', 'assets/images/blog1.jpg', '2026-04-17 12:45:35', 'Admin', 1),
+(2, 'Cách phối đồ basic nhưng vẫn đẹp', 'Gợi ý mix đồ đơn giản cho nam và nữ.', 'Nội dung bài viết mẫu 2...', 'assets/images/blog2.jpg', '2026-04-17 12:45:35', 'Admin', 1),
+(3, 'Mẹo bảo quản quần áo bền đẹp', 'Một số mẹo giúp quần áo luôn mới.', 'Nội dung bài viết mẫu 3...', 'assets/images/blog3.jpg', '2026-04-17 12:45:35', 'Admin', 1);
 
-CREATE TABLE ThuongHieu (
-                            maTH BIGINT AUTO_INCREMENT PRIMARY KEY,
-                            ten VARCHAR(100),
-                            logo VARCHAR(255)
-);
+CREATE TABLE `ChiTietDonHang` (
+  `maCTDH` bigint(20) NOT NULL,
+  `maDH` bigint(20) DEFAULT NULL,
+  `maSP` bigint(20) DEFAULT NULL,
+  `soLuong` int(11) DEFAULT NULL,
+  `donGia` decimal(15,2) DEFAULT NULL,
+  `thanhTien` decimal(15,2) DEFAULT NULL,
+  `kichCo` varchar(50) DEFAULT NULL,
+  `mauSac` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE QuanTriVien (
-                             maQTV BIGINT AUTO_INCREMENT PRIMARY KEY,
-                             maND BIGINT,
-                             email VARCHAR(100),
-                             FOREIGN KEY (maND) REFERENCES NguoiDung(maND) ON DELETE CASCADE
-);
+CREATE TABLE `ChiTietGioHang` (
+  `maCTGH` bigint(20) NOT NULL,
+  `maGH` bigint(20) DEFAULT NULL,
+  `maSP` bigint(20) DEFAULT NULL,
+  `soLuong` int(11) DEFAULT NULL,
+  `kichCo` varchar(50) DEFAULT NULL,
+  `mauSac` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE NhanVien (
-                          maNV BIGINT AUTO_INCREMENT PRIMARY KEY,
-                          maND BIGINT,
-                          email VARCHAR(100),
-                          luong DECIMAL(15,2),
-                          FOREIGN KEY (maND) REFERENCES NguoiDung(maND) ON DELETE CASCADE
-);
+CREATE TABLE `DanhMuc` (
+  `maDM` bigint(20) NOT NULL,
+  `ten` varchar(100) DEFAULT NULL,
+  `hinhAnh` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE KhachHang (
-                           maKH BIGINT AUTO_INCREMENT PRIMARY KEY,
-                           maND BIGINT,
-                           diemTichLuy INT DEFAULT 0,
-                           FOREIGN KEY (maND) REFERENCES NguoiDung(maND) ON DELETE CASCADE
-);
-
-CREATE TABLE SanPham (
-                         maSP BIGINT AUTO_INCREMENT PRIMARY KEY,
-                         maDM BIGINT,
-                         maTH BIGINT,
-                         ten VARCHAR(100),
-                         moTa TEXT,
-                         gia DECIMAL(15,2),
-                         soLuong INT,
-                         kichCo VARCHAR(50),
-                         mauSac VARCHAR(50),
-                         chatLieu VARCHAR(100),
-                         hinhAnh VARCHAR(255),
-                         daBan INT DEFAULT 0,
-                         FOREIGN KEY (maDM) REFERENCES DanhMuc(maDM) ON DELETE SET NULL,
-                         FOREIGN KEY (maTH) REFERENCES ThuongHieu(maTH) ON DELETE SET NULL
-);
-
-CREATE TABLE GioHang (
-                         maGH BIGINT AUTO_INCREMENT PRIMARY KEY,
-                         maKH BIGINT,
-                         trangThai VARCHAR(50) DEFAULT 'Đang mua',
-                         FOREIGN KEY (maKH) REFERENCES KhachHang(maKH) ON DELETE CASCADE
-);
-
-CREATE TABLE YeuThich (
-    maYT BIGINT AUTO_INCREMENT PRIMARY KEY,
-    maND BIGINT NOT NULL, 
-    maSP BIGINT NOT NULL, 
-    ngayTao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_yeuthich_nguoidung FOREIGN KEY (maND) REFERENCES NguoiDung(maND) ON DELETE CASCADE,
-    CONSTRAINT fk_yeuthich_sanpham FOREIGN KEY (maSP) REFERENCES SanPham(maSP) ON DELETE CASCADE
-);
-
-CREATE TABLE DonHang (
-    maDH BIGINT AUTO_INCREMENT PRIMARY KEY,
-    maKH BIGINT,
-    maNV BIGINT,
-    hoTen VARCHAR(100),          -- Tên người nhận
-    email VARCHAR(100),
-    soDienThoai VARCHAR(20),     -- SĐT người nhận
-    diaChi VARCHAR(255),         -- Địa chỉ giao hàng
-    tongTien DECIMAL(15,2),      -- Tổng tiền hàng + ship
-    phiShip DECIMAL(15,2) DEFAULT 0, -- MỚI: Thêm cột này để lưu phí ship
-    phuongThucThanhToan VARCHAR(50),
-    trangThai VARCHAR(50) DEFAULT 'Chờ xác nhận',
-    ngayTao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (maKH) REFERENCES KhachHang(maKH) ON DELETE CASCADE,
-    FOREIGN KEY (maNV) REFERENCES NhanVien(maNV) ON DELETE SET NULL
-);
-
-CREATE TABLE ChiTietDonHang (
-                                maCTDH BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                maDH BIGINT,
-                                maSP BIGINT,
-                                soLuong INT,
-                                donGia DECIMAL(15,2),
-                                thanhTien DECIMAL(15,2),
-                                kichCo VARCHAR(50),
-                                mauSac VARCHAR(50),
-                                FOREIGN KEY (maDH) REFERENCES DonHang(maDH) ON DELETE CASCADE,
-                                FOREIGN KEY (maSP) REFERENCES SanPham(maSP) ON DELETE CASCADE
-);
-
-CREATE TABLE ChiTietGioHang (
-                                maCTGH BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                maGH BIGINT,
-                                maSP BIGINT,
-                                soLuong INT,
-                                kichCo VARCHAR(50),
-                                mauSac VARCHAR(50),
-                                FOREIGN KEY (maGH) REFERENCES GioHang(maGH) ON DELETE CASCADE,
-                                FOREIGN KEY (maSP) REFERENCES SanPham(maSP) ON DELETE CASCADE
-);
-
-CREATE TABLE BaiViet (
-    maBV INT AUTO_INCREMENT PRIMARY KEY,
-    tieuDe VARCHAR(255) NOT NULL,
-    tomTat TEXT,
-    noiDung LONGTEXT,
-    hinhAnh VARCHAR(255),
-    ngayDang DATETIME DEFAULT CURRENT_TIMESTAMP,
-    tacGia VARCHAR(100),
-    trangThai TINYINT(1) DEFAULT 1
-);
-
-CREATE TABLE discount_codes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    code VARCHAR(50) NOT NULL UNIQUE,
-    discount_type ENUM('percent', 'fixed') NOT NULL DEFAULT 'percent',
-    discount_value DECIMAL(10,2) NOT NULL DEFAULT 0,
-    min_order_value DECIMAL(10,2) NOT NULL DEFAULT 0,
-    max_discount DECIMAL(10,2) DEFAULT NULL,
-    usage_limit INT DEFAULT NULL,
-    used_count INT NOT NULL DEFAULT 0,
-    start_date DATETIME DEFAULT NULL,
-    end_date DATETIME DEFAULT NULL,
-    is_active TINYINT(1) NOT NULL DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-INSERT INTO NguoiDung (`maND`, `tenDangNhap`, `matKhau`, `ten`, `ngaySinh`, `gioiTinh`, `diaChi`, `soDienThoai`, `ngayTao`, `vaiTro`, `trangThai`) VALUES
-(1, 'admin', '1', 'Quản Trị Viên', NULL, NULL, NULL, NULL, '2025-10-13 17:14:54', 'ADMIN', 'ACTIVE'),
-(2, 'user', '2', 'Người Dùng', NULL, NULL, NULL, NULL, '2025-10-13 17:14:54', 'USER', 'ACTIVE'),
-(3, 'anhvu', 'vu12122005@@', 'Anh Vũ Trần Lê', NULL, NULL, NULL, '1', '2026-04-17 05:25:57', 'USER', 'ACTIVE'),
-(4, 'B23DCCN948', 'vu1', 'Anh Vũ Trần Lê', NULL, NULL, NULL, '0915085807', '2026-04-17 05:28:59', 'USER', 'ACTIVE'),
-(5, 'tranleanhvu', '121205', 'Anh Vũ Trần Lê', NULL, NULL, NULL, '0915085807', '2026-04-17 11:17:19', 'USER', 'ACTIVE');
-
-INSERT INTO DanhMuc (`maDM`, `ten`, `hinhAnh`) VALUES
+INSERT INTO `DanhMuc` (`maDM`, `ten`, `hinhAnh`) VALUES
 (1, 'Áo Thun', 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500'),
 (2, 'Quần Jeans', 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=500'),
 (3, 'Áo Khoác', 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500'),
@@ -167,22 +58,162 @@ INSERT INTO DanhMuc (`maDM`, `ten`, `hinhAnh`) VALUES
 (6, 'Quần Short', 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500'),
 (7, 'Áo Len', 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=500');
 
-INSERT INTO ThuongHieu (`maTH`, `ten`, `logo`) VALUES
-(1, 'Nike', 'https://logos-world.net/wp-content/uploads/2020/04/Nike-Logo.png'),
-(2, 'Adidas', 'https://logos-world.net/wp-content/uploads/2020/04/Adidas-Logo.png'),
-(3, 'Zara', 'https://logos-world.net/wp-content/uploads/2020/04/Zara-Logo.png'),
-(4, 'Uniqlo', 'https://logos-world.net/wp-content/uploads/2020/12/Uniqlo-Logo.png'),
-(5, 'H&M', 'https://logos-world.net/wp-content/uploads/2020/04/HM-Logo.png'),
-(6, 'Gucci', 'https://logos-world.net/wp-content/uploads/2020/04/Gucci-Logo.png'),
-(7, 'Puma', 'https://logos-world.net/wp-content/uploads/2020/04/Puma-Logo.png');
+CREATE TABLE `discount_codes` (
+  `id` int(11) NOT NULL,
+  `code` varchar(50) NOT NULL,
+  `discount_type` enum('percent','fixed') NOT NULL DEFAULT 'percent',
+  `discount_value` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `min_order_value` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `max_discount` decimal(10,2) DEFAULT NULL,
+  `usage_limit` int(11) DEFAULT NULL,
+  `used_count` int(11) NOT NULL DEFAULT 0,
+  `start_date` datetime DEFAULT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO KhachHang (`maKH`, `maND`, `diemTichLuy`) VALUES
+INSERT INTO `discount_codes` (`id`, `code`, `discount_type`, `discount_value`, `min_order_value`, `max_discount`, `usage_limit`, `used_count`, `start_date`, `end_date`, `is_active`, `created_at`) VALUES
+(1, 'MAU10', 'percent', 10.00, 200000.00, 50000.00, 100, 0, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-14 05:18:37'),
+(2, 'KHACHHANGTHANTHIET', 'fixed', 150000.00, 2990000.00, NULL, 50, 0, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-15 05:18:37'),
+(8, 'UUDAIMUAHE', 'fixed', 100000.00, 1000000.00, 0.00, 100, 0, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-15 06:20:54'),
+(9, 'PTIT2026', 'fixed', 100000.00, 1000000.00, NULL, NULL, 0, NULL, NULL, 1, '2026-04-18 00:51:52'),
+(10, 'GIAM5', 'percent', 5.00, 0.00, NULL, NULL, 0, NULL, NULL, 1, '2026-04-18 08:46:17'),
+(11, 'GIAMGIADAUNAM', 'percent', 10.00, 700000.00, NULL, NULL, 0, NULL, NULL, 1, '2026-04-18 09:16:11');
+
+CREATE TABLE `DonHang` (
+  `maDH` bigint(20) NOT NULL,
+  `maKH` bigint(20) DEFAULT NULL,
+  `maNV` bigint(20) DEFAULT NULL,
+  `hoTen` varchar(100) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `soDienThoai` varchar(20) DEFAULT NULL,
+  `diaChi` varchar(255) DEFAULT NULL,
+  `tongTien` decimal(15,2) DEFAULT NULL,
+  `phiShip` decimal(15,2) DEFAULT 0.00,
+  `phuongThucThanhToan` varchar(50) DEFAULT NULL,
+  `trangThai` varchar(50) DEFAULT 'Chờ xác nhận',
+  `ngayTao` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `DonHang` (`maDH`, `maKH`, `maNV`, `hoTen`, `email`, `soDienThoai`, `diaChi`, `tongTien`, `phiShip`, `phuongThucThanhToan`, `trangThai`, `ngayTao`) VALUES
+(1, 1, NULL, 'Người Dùng', 'user@email.com', '0912345678', '123 Đường ABC, Hà Nội', 3680000.00, 30000.00, 'COD', 'DA_GIAO_HANG', '2025-11-05 07:20:30'),
+(2, 1, NULL, 'Người Dùng', 'user@email.com', '0912345678', '123 Đường ABC, Hà Nội', 1330000.00, 30000.00, 'Chuyển khoản', 'DA_GIAO_HANG', '2026-04-17 03:56:27');
+
+
+CREATE TABLE `GioHang` (
+  `maGH` bigint(20) NOT NULL,
+  `maKH` bigint(20) DEFAULT NULL,
+  `trangThai` varchar(50) DEFAULT 'Đang mua'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `KhachHang` (
+  `maKH` bigint(20) NOT NULL,
+  `maND` bigint(20) DEFAULT NULL,
+  `diemTichLuy` int(11) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `KhachHang` (`maKH`, `maND`, `diemTichLuy`) VALUES
 (1, 2, 0),
-(2, 3, 0),
-(3, 4, 0),
-(4, 5, 0);
+(2, 3, 0);
 
-INSERT INTO SanPham (`maSP`, `maDM`, `maTH`, `ten`, `moTa`, `gia`, `soLuong`, `kichCo`, `mauSac`, `chatLieu`, `hinhAnh`, `daBan`) VALUES
+CREATE TABLE `MaGiamGia` (
+  `maGG` int(11) NOT NULL,
+  `code` varchar(20) NOT NULL,
+  `loaiGiam` enum('PERCENT','FIXED') NOT NULL DEFAULT 'PERCENT',
+  `giaTriGiam` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `phanTramGiam` int(11) NOT NULL,
+  `donToiThieu` int(11) DEFAULT 0,
+  `giamToiDa` decimal(15,2) DEFAULT NULL,
+  `trangThai` enum('ACTIVE','HIDDEN') DEFAULT 'ACTIVE',
+  `ngayTao` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+INSERT INTO `MaGiamGia` (`maGG`, `code`, `loaiGiam`, `giaTriGiam`, `phanTramGiam`, `donToiThieu`, `giamToiDa`, `trangThai`, `ngayTao`) VALUES
+(1, 'MAU10', 'PERCENT', 10.00, 10, 200000, 50000.00, 'ACTIVE', '2026-04-18 00:14:50'),
+(2, 'GIAM50K', 'FIXED', 50000.00, 0, 500000, NULL, 'ACTIVE', '2026-04-18 00:14:50'),
+(3, 'GIAM100K', 'FIXED', 100000.00, 0, 1000000, NULL, 'ACTIVE', '2026-04-18 00:14:50'),
+(4, 'SALE15', 'PERCENT', 15.00, 15, 800000, 120000.00, 'ACTIVE', '2026-04-18 00:14:50');
+
+CREATE TABLE `NguoiDung` (
+  `maND` bigint(20) NOT NULL,
+  `tenDangNhap` varchar(50) NOT NULL,
+  `matKhau` varchar(255) NOT NULL,
+  `ten` varchar(100) DEFAULT NULL,
+  `ngaySinh` date DEFAULT NULL,
+  `gioiTinh` varchar(10) DEFAULT NULL,
+  `diaChi` varchar(255) DEFAULT NULL,
+  `soDienThoai` varchar(20) DEFAULT NULL,
+  `ngayTao` timestamp NOT NULL DEFAULT current_timestamp(),
+  `vaiTro` varchar(20) DEFAULT 'USER',
+  `trangThai` varchar(20) DEFAULT 'ACTIVE'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `NguoiDung` (`maND`, `tenDangNhap`, `matKhau`, `ten`, `ngaySinh`, `gioiTinh`, `diaChi`, `soDienThoai`, `ngayTao`, `vaiTro`, `trangThai`) VALUES
+(1, 'admin', '1', 'Quản Trị Viên', NULL, NULL, NULL, NULL, '2025-10-13 17:14:54', 'ADMIN', 'ACTIVE'),
+(2, 'user', '2', 'Người Dùng', NULL, NULL, NULL, NULL, '2025-10-13 17:14:54', 'USER', 'ACTIVE'),
+(3, 'anhvu', 'vu12122005@@', 'Anh Vũ Trần Lê', NULL, NULL, NULL, '1', '2026-04-17 05:25:57', 'USER', 'ACTIVE');
+
+
+CREATE TABLE `NhanVien` (
+  `maNV` bigint(20) NOT NULL,
+  `maND` bigint(20) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `luong` decimal(15,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `orderitems` (
+  `order_id` varchar(255) DEFAULT NULL,
+  `maSP` bigint(20) DEFAULT NULL,
+  `soLuong` int(11) DEFAULT NULL,
+  `donGia` bigint(20) DEFAULT NULL,
+  `thanhTien` bigint(20) DEFAULT NULL,
+  `kichCo` varchar(50) DEFAULT NULL,
+  `mauSac` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `orders` (
+  `order_id` varchar(255) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `maKH` bigint(20) DEFAULT NULL,
+  `maNV` bigint(20) DEFAULT NULL,
+  `subtotal` bigint(20) DEFAULT NULL,
+  `shipping` bigint(20) DEFAULT NULL,
+  `tongTien` bigint(20) DEFAULT NULL,
+  `ngayTao` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `trangThai` varchar(50) DEFAULT NULL,
+  `diaChi` varchar(255) DEFAULT NULL,
+  `soDienThoai` varchar(15) DEFAULT NULL,
+  `phuongThucThanhToan` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `QuanTriVien` (
+  `maQTV` bigint(20) NOT NULL,
+  `maND` bigint(20) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `SanPham` (
+  `maSP` bigint(20) NOT NULL,
+  `maDM` bigint(20) DEFAULT NULL,
+  `maTH` bigint(20) DEFAULT NULL,
+  `ten` varchar(100) DEFAULT NULL,
+  `moTa` text DEFAULT NULL,
+  `gia` decimal(15,2) DEFAULT NULL,
+  `soLuong` int(11) DEFAULT NULL,
+  `kichCo` varchar(50) DEFAULT NULL,
+  `mauSac` varchar(50) DEFAULT NULL,
+  `chatLieu` varchar(100) DEFAULT NULL,
+  `hinhAnh` varchar(255) DEFAULT NULL,
+  `daBan` int(11) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+INSERT INTO `SanPham` (`maSP`, `maDM`, `maTH`, `ten`, `moTa`, `gia`, `soLuong`, `kichCo`, `mauSac`, `chatLieu`, `hinhAnh`, `daBan`) VALUES
 (1, 1, 1, 'Áo thun Nike Sportswear', 'Áo thun thể thao cotton thoáng mát', 350000.00, 50, 'S,M,L,XL', 'Đen', 'Cotton 100%', 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/025fcce7-dec4-455d-b089-4a45c4aed01d/AS+M+NK+DF+TEE+RUN+ENERGY+SP25.png', 120),
 (2, 1, 2, 'Áo thun Adidas Originals', 'Áo thun cổ tròn in logo Adidas', 320000.00, 40, 'M,L,XL', 'Trắng', 'Cotton', 'https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/4eb95e8f57de44f099accc38e8fa0e75_9366/Ao_DJau_Jacquard_adidas_Adicolor_Mau_xanh_da_troi_JW5879_21_model.jpg', 95),
 (3, 1, 7, 'Áo thun Puma Classic', 'Áo thun basic Puma, chất liệu mềm mại', 280000.00, 35, 'S,M,L', 'Xám', 'Cotton pha Spandex', 'https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_2000,h_2000/global/629636/02/mod01/fnd/VNM/fmt/png/%C3%81o-thun-nam-GRAPHICS-PUMA-Hotel-Relaxed', 75),
@@ -212,24 +243,27 @@ INSERT INTO SanPham (`maSP`, `maDM`, `maTH`, `ten`, `moTa`, `gia`, `soLuong`, `k
 (27, 7, 5, 'Áo nỉ H&M', 'Áo nỉ dáng thụng H&M Basics', 399000.00, 45, 'XS,S,M,L', 'Xanh Navy', 'Cotton, Polyester', 'https://image.hm.com/assets/hm/d2/29/d229e5925fab8f6b9db1cdf4f386a269616e632b.jpg?imwidth=2160', 60),
 (28, 7, 3, 'Áo len Zara', 'Áo len Polo cổ tay Zara', 1280000.00, 28, 'S,M,L,XL', 'Navy Blue', 'Cotton, Polyester', 'https://static.zara.net/assets/public/7f3d/981f/a95a48fda38b/12e72a1415da/00526310401-a1/00526310401-a1.jpg?ts=1754995160359&w=1125', 65);
 
-INSERT INTO DonHang (`maDH`, `maKH`, `maNV`, `hoTen`, `email`, `soDienThoai`, `diaChi`, `tongTien`, `phiShip`, `phuongThucThanhToan`, `trangThai`, `ngayTao`) VALUES
-(1, 1, NULL, 'Người Dùng', 'user@email.com', '0912345678', '123 Đường ABC, Hà Nội', 3680000.00, 30000.00, 'COD', 'DA_GIAO_HANG', '2025-11-05 07:20:30'),
-(2, 1, NULL, 'Người Dùng', 'user@email.com', '0912345678', '123 Đường ABC, Hà Nội', 1330000.00, 30000.00, 'Chuyển khoản', 'CHO_XAC_NHAN', '2026-04-17 03:56:27'),
-(3, 3, NULL, 'Anh Vũ Trần Lê', NULL, '0915085807', 'sgsdg', 2560000.00, 0.00, 'QR', 'CHUA_THANH_TOAN', '2026-04-17 05:29:36');
+-- --------------------------------------------------------
 
-INSERT INTO ChiTietDonHang (`maCTDH`, `maDH`, `maSP`, `soLuong`, `donGia`, `thanhTien`, `kichCo`, `mauSac`) VALUES
-(1, 3, 28, 2, 1280000.00, 2560000.00, 'M', 'Trắng');
+--
+-- Cấu trúc bảng cho bảng `ThuongHieu`
+--
 
-INSERT INTO BaiViet (`maBV`, `tieuDe`, `tomTat`, `noiDung`, `hinhAnh`, `ngayDang`, `tacGia`, `trangThai`) VALUES
-(1, 'Xu hướng thời trang hè 2026', 'Các mẫu trang phục nổi bật cho mùa hè năm nay.', 'Nội dung bài viết mẫu 1...', 'assets/images/blog1.jpg', '2026-04-17 12:45:35', 'Admin', 1),
-(2, 'Cách phối đồ basic nhưng vẫn đẹp', 'Gợi ý mix đồ đơn giản cho nam và nữ.', 'Nội dung bài viết mẫu 2...', 'assets/images/blog2.jpg', '2026-04-17 12:45:35', 'Admin', 1),
-(3, 'Mẹo bảo quản quần áo bền đẹp', 'Một số mẹo giúp quần áo luôn mới.', 'Nội dung bài viết mẫu 3...', 'assets/images/blog3.jpg', '2026-04-17 12:45:35', 'Admin', 1);
+CREATE TABLE `ThuongHieu` (
+  `maTH` bigint(20) NOT NULL,
+  `ten` varchar(100) DEFAULT NULL,
+  `logo` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO discount_codes (`id`, `code`, `discount_type`, `discount_value`, `min_order_value`, `max_discount`, `usage_limit`, `used_count`, `start_date`, `end_date`, `is_active`, `created_at`) VALUES
-(1, 'MAU10', 'percent', 10.00, 200000.00, 50000.00, 100, 0, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-14 05:18:37'),
-(2, 'KHACHHANGTHANTHIET', 'fixed', 150000.00, 2990000.00, NULL, 50, 0, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-15 05:18:37'),
-(8, 'UUDAIMUAHE', 'fixed', 100000.00, 1000000.00, 0.00, 100, 0, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-15 06:20:54'),
-(9, 'PTIT2026', 'fixed', 100000.00, 1000000.00, NULL, NULL, 0, NULL, NULL, 1, '2026-04-18 00:51:52'),
-(10, 'GIAM5', 'percent', 5.00, 0.00, NULL, NULL, 0, NULL, NULL, 1, '2026-04-18 08:46:17'),
-(11, 'GIAMGIADAUNAM', 'percent', 10.00, 700000.00, NULL, NULL, 0, NULL, NULL, 1, '2026-04-18 09:16:11');
+--
+-- Đang đổ dữ liệu cho bảng `ThuongHieu`
+--
 
+INSERT INTO `ThuongHieu` (`maTH`, `ten`, `logo`) VALUES
+(1, 'Nike', 'https://logos-world.net/wp-content/uploads/2020/04/Nike-Logo.png'),
+(2, 'Adidas', 'https://logos-world.net/wp-content/uploads/2020/04/Adidas-Logo.png'),
+(3, 'Zara', 'https://logos-world.net/wp-content/uploads/2020/04/Zara-Logo.png'),
+(4, 'Uniqlo', 'https://logos-world.net/wp-content/uploads/2020/12/Uniqlo-Logo.png'),
+(5, 'H&M', 'https://logos-world.net/wp-content/uploads/2020/04/HM-Logo.png'),
+(6, 'Gucci', 'https://logos-world.net/wp-content/uploads/2020/04/Gucci-Logo.png'),
+(7, 'Puma', 'https://logos-world.net/wp-content/uploads/2020/04/Puma-Logo.png');

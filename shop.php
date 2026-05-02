@@ -242,21 +242,36 @@ include 'includes/header.php';
             <div class="review-container position-relative">
                 <div id="review-content">
                     <?php
-                    $reviews = [
-                        ['name' => 'Nguyễn An', 'rating' => 5, 'comment' => 'Chất vải rất mịn, form áo cực kỳ tôn dáng.'],
-                        ['name' => 'Trần Bình', 'rating' => 5, 'comment' => 'Giao hàng nhanh, đóng gói cẩn thận.'],
-                        ['name' => 'Lê Chi', 'rating' => 4, 'comment' => 'Áo sơ mi mặc đi làm rất lịch sự.'],
-                    ];
+                    $reviews = [];
+                    $review_query = mysqli_query($conn, "SELECT customer_name, content, rating FROM HomeReviews WHERE status = 1 ORDER BY RAND() LIMIT 5");
+
+                    if ($review_query && mysqli_num_rows($review_query) > 0) {
+                        while ($row = mysqli_fetch_assoc($review_query)) {
+                            $reviews[] = [
+                                'name' => $row['customer_name'],
+                                'rating' => (int)$row['rating'],
+                                'comment' => $row['content']
+                            ];
+                        }
+                    } else {
+                        $reviews = [
+                            ['name' => 'Nguyễn An', 'rating' => 5, 'comment' => 'Chất vải rất mịn, form áo cực kỳ tôn dáng.'],
+                            ['name' => 'Trần Bình', 'rating' => 5, 'comment' => 'Giao hàng nhanh, đóng gói cẩn thận.'],
+                            ['name' => 'Lê Chi', 'rating' => 4, 'comment' => 'Áo sơ mi mặc đi làm rất lịch sự.'],
+                        ];
+                    }
+
                     foreach ($reviews as $index => $rev) :
+                        $rating = max(1, min(5, (int)$rev['rating']));
                     ?>
                         <div class="review-item <?php echo $index === 0 ? 'active' : ''; ?>" id="rev-<?php echo $index; ?>">
                             <div class="star-rating mb-4">
                                 <?php for ($i = 0; $i < 5; $i++) : ?>
-                                    <i class="fa-solid fa-star" style="color: <?php echo $i < $rev['rating'] ? '#C4622D' : '#333'; ?>"></i>
+                                    <i class="fa-solid fa-star" style="color: <?php echo $i < $rating ? '#C4622D' : '#333'; ?>"></i>
                                 <?php endfor; ?>
                             </div>
-                            <p class="review-comment">"<?php echo $rev['comment']; ?>"</p>
-                            <p class="review-customer">— <?php echo $rev['name']; ?></p>
+                            <p class="review-comment">"<?php echo htmlspecialchars($rev['comment']); ?>"</p>
+                            <p class="review-customer">— <?php echo htmlspecialchars($rev['name']); ?></p>
                         </div>
                     <?php endforeach; ?>
                 </div>

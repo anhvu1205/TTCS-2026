@@ -33,6 +33,18 @@
         return 'sf_chat_history_' + getChatUserId();
     }
 
+    function getAdminLastIdKey() {
+        return 'sf_chat_last_admin_id_' + getChatUserId();
+    }
+
+    function getLastAdminMessageId() {
+        return parseInt(localStorage.getItem(getAdminLastIdKey()) || '0', 10);
+    }
+
+    function setLastAdminMessageId(id) {
+        localStorage.setItem(getAdminLastIdKey(), String(id));
+    }
+
     function saveChatHistory() {
         localStorage.setItem(getHistoryKey(), chatBox.innerHTML);
     }
@@ -48,6 +60,7 @@
     function clearChatHistory() {
         localStorage.removeItem(getHistoryKey());
         localStorage.removeItem(getSessionKey());
+        localStorage.removeItem(getAdminLastIdKey());
 
         chatBox.innerHTML = '';
 
@@ -98,11 +111,43 @@
         }
 
         input.focus();
+        fetchAdminMessages();
     }
 
     function closeChat() {
         panel.style.display = 'none';
         toggleBtn.style.display = 'flex';
+    }
+
+    async function fetchAdminMessages() {
+        if (panel.style.display === 'none') return;
+
+        try {
+            const res = await fetch('./api/chat-fetch.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    session_id: getSessionId(),
+                    last_id: getLastAdminMessageId()
+                })
+            });
+
+            const data = await res.json();
+
+            if (data.messages && data.messages.length > 0) {
+                data.messages.forEach(function (msg) {
+                    const msgId = parseInt(msg.id, 10);
+                    const currentLastId = getLastAdminMessageId();
+
+                    if (msgId > currentLastId) {
+                        setLastAdminMessageId(msgId);
+                        addMessage('assistant', '👩‍💼 Nhân viên: ' + msg.message);
+                    }
+                });
+            }
+        } catch (err) {
+            console.log('Fetch admin message error:', err);
+        }
     }
 
     async function sendChat(customMessage = null) {
@@ -143,11 +188,18 @@
             const loading = document.getElementById('sf-chat-loading');
             if (loading) loading.remove();
 
+            if (data.admin_mode) {
+                fetchAdminMessages();
+                return;
+            }
+
             if (data.reply_html) {
                 addMessage('assistant', data.reply_html, true);
             } else {
                 addMessage('assistant', data.reply || data.error || 'Bot chưa có phản hồi.');
             }
+
+            fetchAdminMessages();
         } catch (err) {
             const loading = document.getElementById('sf-chat-loading');
             if (loading) loading.remove();
@@ -214,4 +266,6 @@
                 });
         }
     });
+
+    setInterval(fetchAdminMessages, 5000);
 })();

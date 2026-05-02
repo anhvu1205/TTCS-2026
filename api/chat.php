@@ -201,6 +201,39 @@ function save_chat_request($conn, $sessionId, $userId, $message)
     ");
 }
 
+
+function get_chat_mode($conn, $sessionId)
+{
+    if (!table_exists($conn, 'ChatbotSessions')) return 'bot';
+
+    $safeSession = mysqli_real_escape_string($conn, $sessionId);
+    $res = mysqli_query($conn, "
+        SELECT mode FROM ChatbotSessions
+        WHERE session_id = '$safeSession'
+        LIMIT 1
+    ");
+
+    if ($res && mysqli_num_rows($res) > 0) {
+        $row = mysqli_fetch_assoc($res);
+        return $row['mode'] ?? 'bot';
+    }
+
+    return 'bot';
+}
+
+// Nếu admin đã tham gia cuộc trò chuyện thì bot tạm dừng.
+// Khách nhắn tiếp chỉ lưu vào DB để admin đọc, không trả lời tự động nữa.
+if (get_chat_mode($conn, $sessionId) === 'admin') {
+    save_chat_message($conn, $sessionId, $currentUserId, 'user', $message);
+
+    echo json_encode([
+        'session_id' => $sessionId,
+        'reply_html' => '',
+        'admin_mode' => true
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 $text = normalize_text($message);
 $reply = '';
 

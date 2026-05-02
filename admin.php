@@ -10,7 +10,7 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'ADMIN') {
 
 $tab = $_GET['tab'] ?? 'overview';
 
-// 2. XỬ LÝ CHATBOT GET
+// 2. XỬ LÝ ĐÁNH DẤU CHAT ĐÃ XỬ LÝ
 if (isset($_GET['mark_chat_answered'])) {
     $id = (int)$_GET['mark_chat_answered'];
     mysqli_query($conn, "UPDATE ChatbotRequests SET status = 'answered' WHERE id = $id");
@@ -18,8 +18,106 @@ if (isset($_GET['mark_chat_answered'])) {
     exit();
 }
 
-// 3. XỬ LÝ CÁC HÀNH ĐỘNG POST
+// Xử lý quản lý đánh giá sản phẩm
+if (isset($_GET['hide_review'])) {
+    $id = (int)$_GET['hide_review'];
+    mysqli_query($conn, "UPDATE ProductReviews SET status = 'hidden' WHERE id = $id");
+    header("Location: admin.php?tab=reviews");
+    exit();
+}
+
+if (isset($_GET['show_review'])) {
+    $id = (int)$_GET['show_review'];
+    mysqli_query($conn, "UPDATE ProductReviews SET status = 'visible' WHERE id = $id");
+    header("Location: admin.php?tab=reviews");
+    exit();
+}
+
+if (isset($_GET['delete_review'])) {
+    $id = (int)$_GET['delete_review'];
+    mysqli_query($conn, "DELETE FROM ProductReviews WHERE id = $id");
+    header("Location: admin.php?tab=reviews");
+    exit();
+}
+
+if (isset($_GET['toggle_home_review'])) {
+    $id = (int)$_GET['toggle_home_review'];
+    mysqli_query($conn, "UPDATE HomeReviews SET status = IF(status = 1, 0, 1) WHERE id = $id");
+    header("Location: admin.php?tab=reviews");
+    exit();
+}
+
+if (isset($_GET['delete_home_review'])) {
+    $id = (int)$_GET['delete_home_review'];
+    mysqli_query($conn, "DELETE FROM HomeReviews WHERE id = $id");
+    header("Location: admin.php?tab=reviews");
+    exit();
+}
+
+// 3. XỬ LÝ POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    // Admin trả lời khách trong chatbot
+    if (isset($_POST['admin_reply_chat'])) {
+        $session_id = mysqli_real_escape_string($conn, $_POST['session_id']);
+        $reply_message = mysqli_real_escape_string($conn, trim($_POST['reply_message']));
+
+        if ($session_id !== '' && $reply_message !== '') {
+            mysqli_query($conn, "
+                INSERT INTO ChatbotMessages (session_id, maND, sender, message)
+                VALUES ('$session_id', NULL, 'admin', '$reply_message')
+            ");
+
+            mysqli_query($conn, "
+                INSERT INTO ChatbotSessions (session_id, mode)
+                VALUES ('$session_id', 'admin')
+                ON DUPLICATE KEY UPDATE mode='admin'
+            ");
+
+            mysqli_query($conn, "
+                UPDATE ChatbotRequests
+                SET status='answered'
+                WHERE session_id='$session_id'
+            ");
+        }
+
+        header("Location: admin.php?tab=chatbot");
+        exit();
+    }
+
+    // Trả session về bot
+    if (isset($_POST['return_bot_chat'])) {
+        $session_id = mysqli_real_escape_string($conn, $_POST['session_id']);
+
+        mysqli_query($conn, "
+            INSERT INTO ChatbotSessions (session_id, mode)
+            VALUES ('$session_id', 'bot')
+            ON DUPLICATE KEY UPDATE mode='bot'
+        ");
+
+        header("Location: admin.php?tab=chatbot");
+        exit();
+    }
+
+    // Thêm review khách hàng hiển thị random ở Home
+    if (isset($_POST['add_home_review'])) {
+        $customer_name = mysqli_real_escape_string($conn, trim($_POST['customer_name']));
+        $content = mysqli_real_escape_string($conn, trim($_POST['content']));
+        $rating = (int)($_POST['rating'] ?? 5);
+        $rating = max(1, min(5, $rating));
+
+        if ($customer_name !== '' && $content !== '') {
+            mysqli_query($conn, "
+                INSERT INTO HomeReviews (customer_name, content, rating, status)
+                VALUES ('$customer_name', '$content', $rating, 1)
+            ");
+        }
+
+        header("Location: admin.php?tab=reviews");
+        exit();
+    }
+
+    // Xử lý đơn hàng
     if (isset($_POST['set_pending_id'])) {
         $id = $_POST['set_pending_id'];
         mysqli_query($conn, "UPDATE DonHang SET trangThai='CHO_XAC_NHAN' WHERE maDH='$id'");
@@ -38,7 +136,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             mysqli_query($conn, "UPDATE SanPham SET soLuong = soLuong + $qty WHERE maSP='$p_id'");
         }
         mysqli_query($conn, "UPDATE DonHang SET trangThai='DA_HUY' WHERE maDH='$order_id'");
-    } elseif (isset($_POST['user_action'])) {
+    }
+
+    // Xử lý người dùng
+    elseif (isset($_POST['user_action'])) {
         $user_id = $_POST['target_user_id'];
         $action = $_POST['user_action'];
 
@@ -49,7 +150,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } elseif ($action == 'unlock') {
             mysqli_query($conn, "UPDATE NguoiDung SET trangThai='ACTIVE' WHERE maND='$user_id'");
         }
-    } elseif (isset($_POST['add_discount'])) {
+    }
+
+    // Xử lý mã giảm giá
+    elseif (isset($_POST['add_discount'])) {
         $code = strtoupper(mysqli_real_escape_string($conn, trim($_POST['code'])));
         $discount_type = mysqli_real_escape_string($conn, $_POST['discount_type']);
         $discount_value = (float)($_POST['discount_value'] ?? 0);
@@ -118,25 +222,36 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
             <a href="admin.php?tab=overview" class="nav-link <?php echo $tab == 'overview' ? 'active' : ''; ?>">
                 <i class="fa-solid fa-chart-line me-2"></i>Tổng quan
             </a>
+
             <a href="admin.php?tab=products" class="nav-link <?php echo $tab == 'products' ? 'active' : ''; ?>">
                 <i class="fa-solid fa-box me-2"></i>Sản phẩm
             </a>
+
             <a href="admin.php?tab=orders" class="nav-link <?php echo $tab == 'orders' ? 'active' : ''; ?>">
                 <i class="fa-solid fa-shopping-bag me-2"></i>Đơn hàng
             </a>
+
             <a href="admin.php?tab=users" class="nav-link <?php echo $tab == 'users' ? 'active' : ''; ?>">
                 <i class="fa-solid fa-users me-2"></i>Tài khoản
             </a>
+
             <a href="admin.php?tab=discounts" class="nav-link <?php echo $tab == 'discounts' ? 'active' : ''; ?>">
                 <i class="fa-solid fa-tag me-2"></i>Mã giảm giá
             </a>
+
+            <a href="admin.php?tab=reviews" class="nav-link <?php echo $tab == 'reviews' ? 'active' : ''; ?>">
+                <i class="fa-solid fa-star me-2"></i>Đánh giá
+            </a>
+
             <a href="admin.php?tab=chatbot" class="nav-link <?php echo $tab == 'chatbot' ? 'active' : ''; ?>">
                 <i class="fa-solid fa-comments me-2"></i>Chatbot
             </a>
         </div>
 
         <div class="tab-content">
+
             <?php if ($tab == 'overview'): ?>
+
                 <div class="row g-4 mb-5">
                     <div class="col-6 col-md-3">
                         <div class="stat-card-modern shadow-sm">
@@ -145,6 +260,7 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                             <h2 class="value-v2"><?php echo number_format($revenue); ?>₫</h2>
                         </div>
                     </div>
+
                     <div class="col-6 col-md-3">
                         <div class="stat-card-modern shadow-sm">
                             <div class="icon-wrapper-v2" style="background: rgba(92, 102, 80, 0.15); color: #5C6650;"><i class="fa-solid fa-file-invoice"></i></div>
@@ -152,6 +268,7 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                             <h2 class="value-v2"><?php echo $total_orders; ?></h2>
                         </div>
                     </div>
+
                     <div class="col-6 col-md-3">
                         <div class="stat-card-modern shadow-sm">
                             <div class="icon-wrapper-v2" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B;"><i class="fa-solid fa-box-archive"></i></div>
@@ -159,6 +276,7 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                             <h2 class="value-v2"><?php echo $pending_orders; ?></h2>
                         </div>
                     </div>
+
                     <div class="col-6 col-md-3">
                         <div class="stat-card-modern shadow-sm">
                             <div class="icon-wrapper-v2" style="background: rgba(59, 130, 246, 0.15); color: #3B82F6;"><i class="fa-solid fa-cubes"></i></div>
@@ -216,6 +334,7 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                 </div>
 
             <?php elseif ($tab == 'products'): ?>
+
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <input type="text" class="form-control border-0 rounded-pill shadow-sm w-50" style="background-color:var(--admin-card);" placeholder="Tìm sản phẩm...">
                     <a href="add.php" class="btn text-white rounded-pill px-4 shadow-sm" style="background-color:var(--admin-primary);">+ Thêm sản phẩm</a>
@@ -256,6 +375,7 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                 </div>
 
             <?php elseif ($tab == 'orders'): ?>
+
                 <div class="stat-card-modern shadow-sm p-0 overflow-hidden">
                     <table class="table table-hover align-middle mb-0">
                         <thead style="background-color:#D4CEBE;">
@@ -294,6 +414,7 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                 </div>
 
             <?php elseif ($tab == 'users'): ?>
+
                 <div class="stat-card-modern shadow-sm p-0 overflow-hidden">
                     <table class="table table-hover align-middle mb-0">
                         <thead style="background-color:#D4CEBE;">
@@ -336,6 +457,7 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                 </div>
 
             <?php elseif ($tab == 'discounts'): ?>
+
                 <div class="admin-panel-v2 shadow-sm mb-4">
                     <h3 class="h6 fw-bold mb-4"><i class="fa-solid fa-tag me-2"></i>Tạo mã giảm giá mới</h3>
 
@@ -458,25 +580,98 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                     </div>
                 </div>
 
-            <?php elseif ($tab == 'chatbot'): ?>
-                <div class="admin-panel-v2 shadow-sm mb-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <div>
-                            <h3 class="h6 fw-bold mb-1">
-                                <i class="fa-solid fa-comments me-2"></i>Quản lý Chatbot
-                            </h3>
-                            <p class="text-muted small mb-0">Theo dõi lịch sử chat và các câu hỏi cần nhân viên xử lý.</p>
-                        </div>
-                    </div>
 
-                    <h4 class="h6 fw-bold mb-3">Câu hỏi khó chờ xử lý</h4>
+            <?php elseif ($tab == 'reviews'): ?>
+
+                <div class="admin-panel-v2 shadow-sm mb-4">
+                    <h3 class="h6 fw-bold mb-4"><i class="fa-solid fa-star me-2"></i>Đánh giá khách hàng ở Home</h3>
+
+                    <form method="POST" class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <label class="extra-small fw-bold text-muted mb-2">TÊN KHÁCH</label>
+                            <input type="text" name="customer_name" class="form-control rounded-xl border-0 bg-white" placeholder="Nguyễn An" required>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="extra-small fw-bold text-muted mb-2">SỐ SAO</label>
+                            <select name="rating" class="form-control rounded-xl border-0 bg-white">
+                                <option value="5">5 sao</option>
+                                <option value="4">4 sao</option>
+                                <option value="3">3 sao</option>
+                                <option value="2">2 sao</option>
+                                <option value="1">1 sao</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-5">
+                            <label class="extra-small fw-bold text-muted mb-2">NỘI DUNG</label>
+                            <input type="text" name="content" class="form-control rounded-xl border-0 bg-white" placeholder="Chất vải rất mịn, form áo đẹp..." required>
+                        </div>
+
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" name="add_home_review" class="btn btn-primary-v2 w-100 rounded-xl py-2">
+                                <i class="fa-solid fa-plus me-2"></i>Thêm
+                            </button>
+                        </div>
+                    </form>
 
                     <div class="table-responsive mb-5">
                         <table class="table table-hover align-middle mb-0">
                             <thead style="background-color:#D4CEBE;">
                                 <tr class="extra-small text-muted">
                                     <th>ID</th>
-                                    <th>USER</th>
+                                    <th>KHÁCH</th>
+                                    <th>NỘI DUNG</th>
+                                    <th>SAO</th>
+                                    <th>TRẠNG THÁI</th>
+                                    <th class="text-end">THAO TÁC</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $home_reviews = mysqli_query($conn, "SELECT * FROM HomeReviews ORDER BY id DESC");
+                                if ($home_reviews && mysqli_num_rows($home_reviews) > 0):
+                                    while ($hr = mysqli_fetch_assoc($home_reviews)):
+                                ?>
+                                        <tr class="small">
+                                            <td><?php echo $hr['id']; ?></td>
+                                            <td><?php echo htmlspecialchars($hr['customer_name']); ?></td>
+                                            <td style="max-width:420px;"><?php echo nl2br(htmlspecialchars($hr['content'])); ?></td>
+                                            <td><?php echo (int)$hr['rating']; ?> ★</td>
+                                            <td>
+                                                <?php if ((int)$hr['status'] === 1): ?>
+                                                    <span class="badge bg-success">Đang hiện</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-secondary">Đang ẩn</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td class="text-end">
+                                                <a href="admin.php?tab=reviews&toggle_home_review=<?php echo $hr['id']; ?>" class="btn btn-sm btn-warning">
+                                                    <?php echo ((int)$hr['status'] === 1) ? 'Ẩn' : 'Hiện'; ?>
+                                                </a>
+                                                <a href="admin.php?tab=reviews&delete_home_review=<?php echo $hr['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Xóa review home này?')">Xóa</a>
+                                            </td>
+                                        </tr>
+                                    <?php endwhile;
+                                else: ?>
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4 small">Chưa có review Home nào.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="h6 fw-bold mb-4"><i class="fa-solid fa-comment-dots me-2"></i>Đánh giá sản phẩm</h3>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead style="background-color:#D4CEBE;">
+                                <tr class="extra-small text-muted">
+                                    <th>ID</th>
+                                    <th>SẢN PHẨM</th>
+                                    <th>NGƯỜI ĐÁNH GIÁ</th>
+                                    <th>SAO</th>
                                     <th>NỘI DUNG</th>
                                     <th>TRẠNG THÁI</th>
                                     <th>THỜI GIAN</th>
@@ -485,14 +680,114 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                             </thead>
                             <tbody>
                                 <?php
+                                $product_reviews = mysqli_query($conn, "
+                                    SELECT r.*, p.ten AS product_name
+                                    FROM ProductReviews r
+                                    LEFT JOIN SanPham p ON r.product_id = p.maSP
+                                    ORDER BY r.created_at DESC
+                                ");
+                                if ($product_reviews && mysqli_num_rows($product_reviews) > 0):
+                                    while ($rv = mysqli_fetch_assoc($product_reviews)):
+                                ?>
+                                        <tr class="small">
+                                            <td><?php echo $rv['id']; ?></td>
+                                            <td style="max-width:180px;"><?php echo htmlspecialchars($rv['product_name'] ?? 'Sản phẩm đã xóa'); ?></td>
+                                            <td>
+                                                <?php echo htmlspecialchars($rv['user_name']); ?>
+                                                <?php if ((int)$rv['is_purchased'] === 1): ?>
+                                                    <br><span class="badge bg-success mt-1">Đã mua hàng</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo (int)$rv['rating']; ?> ★</td>
+                                            <td style="max-width:360px;"><?php echo nl2br(htmlspecialchars($rv['content'])); ?></td>
+                                            <td>
+                                                <?php if ($rv['status'] === 'visible'): ?>
+                                                    <span class="badge bg-success">Hiển thị</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-secondary">Đã ẩn</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo date('d/m/Y H:i', strtotime($rv['created_at'])); ?></td>
+                                            <td class="text-end">
+                                                <?php if ($rv['status'] === 'visible'): ?>
+                                                    <a href="admin.php?tab=reviews&hide_review=<?php echo $rv['id']; ?>" class="btn btn-sm btn-warning">Ẩn</a>
+                                                <?php else: ?>
+                                                    <a href="admin.php?tab=reviews&show_review=<?php echo $rv['id']; ?>" class="btn btn-sm btn-success">Hiện</a>
+                                                <?php endif; ?>
+                                                <a href="admin.php?tab=reviews&delete_review=<?php echo $rv['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Xóa đánh giá này?')">Xóa</a>
+                                            </td>
+                                        </tr>
+                                    <?php endwhile;
+                                else: ?>
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted py-4 small">Chưa có đánh giá sản phẩm nào.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            <?php elseif ($tab == 'chatbot'): ?>
+
+                <div class="admin-panel-v2 shadow-sm mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div>
+                            <h3 class="h6 fw-bold mb-1">
+                                <i class="fa-solid fa-comments me-2"></i>Quản lý Chatbot
+                            </h3>
+                            <p class="text-muted small mb-0">Admin trả lời khách trực tiếp. Khi admin trả lời, bot sẽ tắt cho phiên chat đó.</p>
+                        </div>
+                    </div>
+
+                    <h4 class="h6 fw-bold mb-3">Câu hỏi khách cần nhân viên xử lý</h4>
+
+                    <div class="table-responsive mb-5">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead style="background-color:#D4CEBE;">
+                                <tr class="extra-small text-muted">
+                                    <th>ID</th>
+                                    <th>SESSION</th>
+                                    <th>USER</th>
+                                    <th>NỘI DUNG</th>
+                                    <th>TRẠNG THÁI</th>
+                                    <th>THỜI GIAN</th>
+                                    <th class="text-end">TRẢ LỜI</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <?php
                                 $requests = mysqli_query($conn, "SELECT * FROM ChatbotRequests ORDER BY id DESC LIMIT 100");
+
                                 if ($requests && mysqli_num_rows($requests) > 0):
                                     while ($r = mysqli_fetch_assoc($requests)):
+                                        $session_safe = mysqli_real_escape_string($conn, $r['session_id']);
+                                        $modeRes = mysqli_query($conn, "SELECT mode FROM ChatbotSessions WHERE session_id='$session_safe' LIMIT 1");
+                                        $mode = 'bot';
+                                        if ($modeRes && mysqli_num_rows($modeRes) > 0) {
+                                            $mode = mysqli_fetch_assoc($modeRes)['mode'];
+                                        }
                                 ?>
                                         <tr class="small">
                                             <td><?php echo $r['id']; ?></td>
+
+                                            <td style="max-width:180px; word-break:break-all;">
+                                                <?php echo htmlspecialchars($r['session_id']); ?>
+                                                <br>
+                                                <?php if ($mode == 'admin'): ?>
+                                                    <span class="badge bg-danger mt-1">Admin đang chat</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-secondary mt-1">Bot đang hoạt động</span>
+                                                <?php endif; ?>
+                                            </td>
+
                                             <td><?php echo $r['maND'] ?: 'Guest'; ?></td>
-                                            <td style="max-width:420px;"><?php echo nl2br(htmlspecialchars($r['customer_message'])); ?></td>
+
+                                            <td style="max-width:360px;">
+                                                <?php echo nl2br(htmlspecialchars($r['customer_message'])); ?>
+                                            </td>
+
                                             <td>
                                                 <?php if ($r['status'] == 'pending'): ?>
                                                     <span class="badge bg-warning text-dark">Chờ xử lý</span>
@@ -500,21 +795,47 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                                                     <span class="badge bg-success">Đã xử lý</span>
                                                 <?php endif; ?>
                                             </td>
+
                                             <td><?php echo $r['created_at']; ?></td>
-                                            <td class="text-end">
+
+                                            <td class="text-end" style="min-width:360px;">
+                                                <form method="POST" class="d-flex gap-2 justify-content-end mb-2">
+                                                    <input type="hidden" name="session_id" value="<?php echo htmlspecialchars($r['session_id']); ?>">
+
+                                                    <input
+                                                        type="text"
+                                                        name="reply_message"
+                                                        class="form-control form-control-sm"
+                                                        placeholder="Nhập phản hồi cho khách..."
+                                                        required>
+
+                                                    <button type="submit" name="admin_reply_chat" class="btn btn-sm btn-success">
+                                                        Gửi
+                                                    </button>
+                                                </form>
+
+                                                <?php if ($mode == 'admin'): ?>
+                                                    <form method="POST" class="d-inline">
+                                                        <input type="hidden" name="session_id" value="<?php echo htmlspecialchars($r['session_id']); ?>">
+                                                        <button type="submit" name="return_bot_chat" class="btn btn-sm btn-warning">
+                                                            Trả về bot
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
+
                                                 <?php if ($r['status'] == 'pending'): ?>
-                                                    <a href="admin.php?tab=chatbot&mark_chat_answered=<?php echo $r['id']; ?>" class="btn btn-sm btn-success">
-                                                        Đã xử lý
+                                                    <a href="admin.php?tab=chatbot&mark_chat_answered=<?php echo $r['id']; ?>" class="btn btn-sm btn-light border">
+                                                        Đánh dấu xử lý
                                                     </a>
-                                                <?php else: ?>
-                                                    <span class="text-muted small">Xong</span>
                                                 <?php endif; ?>
                                             </td>
                                         </tr>
                                     <?php endwhile;
                                 else: ?>
                                     <tr>
-                                        <td colspan="6" class="text-center text-muted py-4 small">Chưa có câu hỏi nào.</td>
+                                        <td colspan="7" class="text-center text-muted py-4 small">
+                                            Chưa có câu hỏi khó nào.
+                                        </td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
@@ -535,37 +856,54 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                                     <th>THỜI GIAN</th>
                                 </tr>
                             </thead>
+
                             <tbody>
                                 <?php
                                 $logs = mysqli_query($conn, "SELECT * FROM ChatbotMessages ORDER BY id DESC LIMIT 150");
+
                                 if ($logs && mysqli_num_rows($logs) > 0):
                                     while ($log = mysqli_fetch_assoc($logs)):
                                 ?>
                                         <tr class="small">
                                             <td><?php echo $log['id']; ?></td>
-                                            <td style="max-width:180px; word-break:break-all;"><?php echo htmlspecialchars($log['session_id']); ?></td>
+
+                                            <td style="max-width:180px; word-break:break-all;">
+                                                <?php echo htmlspecialchars($log['session_id']); ?>
+                                            </td>
+
                                             <td><?php echo $log['maND'] ?: 'Guest'; ?></td>
+
                                             <td>
                                                 <?php if ($log['sender'] == 'user'): ?>
                                                     <span class="badge bg-primary">Khách</span>
+                                                <?php elseif ($log['sender'] == 'admin'): ?>
+                                                    <span class="badge bg-danger">Admin</span>
                                                 <?php else: ?>
                                                     <span class="badge bg-secondary">Bot</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td style="max-width:520px;"><?php echo nl2br(htmlspecialchars($log['message'])); ?></td>
+
+                                            <td style="max-width:520px;">
+                                                <?php echo nl2br(htmlspecialchars($log['message'])); ?>
+                                            </td>
+
                                             <td><?php echo $log['created_at']; ?></td>
                                         </tr>
                                     <?php endwhile;
                                 else: ?>
                                     <tr>
-                                        <td colspan="6" class="text-center text-muted py-4 small">Chưa có lịch sử chat.</td>
+                                        <td colspan="6" class="text-center text-muted py-4 small">
+                                            Chưa có lịch sử chat.
+                                        </td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
+
             <?php endif; ?>
+
         </div>
     </div>
 </main>
