@@ -1,13 +1,33 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th5 03, 2026 lúc 02:40 PM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.2.12
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-DROP DATABASE IF EXISTS shop_ptit;
-CREATE DATABASE shop_ptit
-CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE shop_ptit;
 
-CREATE TABLE `BaiViet` (
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Cơ sở dữ liệu: `shop_ptit`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `baiviet`
+--
+
+CREATE TABLE `baiviet` (
   `maBV` int(11) NOT NULL,
   `tieuDe` varchar(255) NOT NULL,
   `tomTat` text DEFAULT NULL,
@@ -18,12 +38,22 @@ CREATE TABLE `BaiViet` (
   `trangThai` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `BaiViet` (`maBV`, `tieuDe`, `tomTat`, `noiDung`, `hinhAnh`, `ngayDang`, `tacGia`, `trangThai`) VALUES
+--
+-- Đang đổ dữ liệu cho bảng `baiviet`
+--
+
+INSERT INTO `baiviet` (`maBV`, `tieuDe`, `tomTat`, `noiDung`, `hinhAnh`, `ngayDang`, `tacGia`, `trangThai`) VALUES
 (1, 'Xu hướng thời trang hè 2026', 'Các mẫu trang phục nổi bật cho mùa hè năm nay.', 'Nội dung bài viết mẫu 1...', 'assets/images/blog1.jpg', '2026-04-17 12:45:35', 'Admin', 1),
 (2, 'Cách phối đồ basic nhưng vẫn đẹp', 'Gợi ý mix đồ đơn giản cho nam và nữ.', 'Nội dung bài viết mẫu 2...', 'assets/images/blog2.jpg', '2026-04-17 12:45:35', 'Admin', 1),
 (3, 'Mẹo bảo quản quần áo bền đẹp', 'Một số mẹo giúp quần áo luôn mới.', 'Nội dung bài viết mẫu 3...', 'assets/images/blog3.jpg', '2026-04-17 12:45:35', 'Admin', 1);
 
-CREATE TABLE `ChiTietDonHang` (
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `chitietdonhang`
+--
+
+CREATE TABLE `chitietdonhang` (
   `maCTDH` bigint(20) NOT NULL,
   `maDH` bigint(20) DEFAULT NULL,
   `maSP` bigint(20) DEFAULT NULL,
@@ -34,7 +64,13 @@ CREATE TABLE `ChiTietDonHang` (
   `mauSac` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `ChiTietGioHang` (
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `chitietgiohang`
+--
+
+CREATE TABLE `chitietgiohang` (
   `maCTGH` bigint(20) NOT NULL,
   `maGH` bigint(20) DEFAULT NULL,
   `maSP` bigint(20) DEFAULT NULL,
@@ -43,13 +79,23 @@ CREATE TABLE `ChiTietGioHang` (
   `mauSac` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `DanhMuc` (
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `danhmuc`
+--
+
+CREATE TABLE `danhmuc` (
   `maDM` bigint(20) NOT NULL,
   `ten` varchar(100) DEFAULT NULL,
   `hinhAnh` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `DanhMuc` (`maDM`, `ten`, `hinhAnh`) VALUES
+--
+-- Đang đổ dữ liệu cho bảng `danhmuc`
+--
+
+INSERT INTO `danhmuc` (`maDM`, `ten`, `hinhAnh`) VALUES
 (1, 'Áo Thun', 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500'),
 (2, 'Quần Jeans', 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=500'),
 (3, 'Áo Khoác', 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500'),
@@ -57,6 +103,12 @@ INSERT INTO `DanhMuc` (`maDM`, `ten`, `hinhAnh`) VALUES
 (5, 'Áo Sơ Mi', 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500'),
 (6, 'Quần Short', 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500'),
 (7, 'Áo Len', 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=500');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `discount_codes`
+--
 
 CREATE TABLE `discount_codes` (
   `id` int(11) NOT NULL,
@@ -73,6 +125,10 @@ CREATE TABLE `discount_codes` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `discount_codes`
+--
+
 INSERT INTO `discount_codes` (`id`, `code`, `discount_type`, `discount_value`, `min_order_value`, `max_discount`, `usage_limit`, `used_count`, `start_date`, `end_date`, `is_active`, `created_at`) VALUES
 (1, 'MAU10', 'percent', 10.00, 200000.00, 50000.00, 100, 0, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-14 05:18:37'),
 (2, 'KHACHHANGTHANTHIET', 'fixed', 150000.00, 2990000.00, NULL, 50, 0, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-15 05:18:37'),
@@ -81,7 +137,13 @@ INSERT INTO `discount_codes` (`id`, `code`, `discount_type`, `discount_value`, `
 (10, 'GIAM5', 'percent', 5.00, 0.00, NULL, NULL, 0, NULL, NULL, 1, '2026-04-18 08:46:17'),
 (11, 'GIAMGIADAUNAM', 'percent', 10.00, 700000.00, NULL, NULL, 0, NULL, NULL, 1, '2026-04-18 09:16:11');
 
-CREATE TABLE `DonHang` (
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `donhang`
+--
+
+CREATE TABLE `donhang` (
   `maDH` bigint(20) NOT NULL,
   `maKH` bigint(20) DEFAULT NULL,
   `maNV` bigint(20) DEFAULT NULL,
@@ -96,29 +158,53 @@ CREATE TABLE `DonHang` (
   `ngayTao` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `DonHang` (`maDH`, `maKH`, `maNV`, `hoTen`, `email`, `soDienThoai`, `diaChi`, `tongTien`, `phiShip`, `phuongThucThanhToan`, `trangThai`, `ngayTao`) VALUES
+--
+-- Đang đổ dữ liệu cho bảng `donhang`
+--
+
+INSERT INTO `donhang` (`maDH`, `maKH`, `maNV`, `hoTen`, `email`, `soDienThoai`, `diaChi`, `tongTien`, `phiShip`, `phuongThucThanhToan`, `trangThai`, `ngayTao`) VALUES
 (1, 1, NULL, 'Người Dùng', 'user@email.com', '0912345678', '123 Đường ABC, Hà Nội', 3680000.00, 30000.00, 'COD', 'DA_GIAO_HANG', '2025-11-05 07:20:30'),
 (2, 1, NULL, 'Người Dùng', 'user@email.com', '0912345678', '123 Đường ABC, Hà Nội', 1330000.00, 30000.00, 'Chuyển khoản', 'DA_GIAO_HANG', '2026-04-17 03:56:27');
 
+-- --------------------------------------------------------
 
-CREATE TABLE `GioHang` (
+--
+-- Cấu trúc bảng cho bảng `giohang`
+--
+
+CREATE TABLE `giohang` (
   `maGH` bigint(20) NOT NULL,
   `maKH` bigint(20) DEFAULT NULL,
   `trangThai` varchar(50) DEFAULT 'Đang mua'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
 
-CREATE TABLE `KhachHang` (
+--
+-- Cấu trúc bảng cho bảng `khachhang`
+--
+
+CREATE TABLE `khachhang` (
   `maKH` bigint(20) NOT NULL,
   `maND` bigint(20) DEFAULT NULL,
   `diemTichLuy` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `KhachHang` (`maKH`, `maND`, `diemTichLuy`) VALUES
+--
+-- Đang đổ dữ liệu cho bảng `khachhang`
+--
+
+INSERT INTO `khachhang` (`maKH`, `maND`, `diemTichLuy`) VALUES
 (1, 2, 0),
 (2, 3, 0);
 
-CREATE TABLE `MaGiamGia` (
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `magiamgia`
+--
+
+CREATE TABLE `magiamgia` (
   `maGG` int(11) NOT NULL,
   `code` varchar(20) NOT NULL,
   `loaiGiam` enum('PERCENT','FIXED') NOT NULL DEFAULT 'PERCENT',
@@ -130,14 +216,23 @@ CREATE TABLE `MaGiamGia` (
   `ngayTao` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `magiamgia`
+--
 
-INSERT INTO `MaGiamGia` (`maGG`, `code`, `loaiGiam`, `giaTriGiam`, `phanTramGiam`, `donToiThieu`, `giamToiDa`, `trangThai`, `ngayTao`) VALUES
+INSERT INTO `magiamgia` (`maGG`, `code`, `loaiGiam`, `giaTriGiam`, `phanTramGiam`, `donToiThieu`, `giamToiDa`, `trangThai`, `ngayTao`) VALUES
 (1, 'MAU10', 'PERCENT', 10.00, 10, 200000, 50000.00, 'ACTIVE', '2026-04-18 00:14:50'),
 (2, 'GIAM50K', 'FIXED', 50000.00, 0, 500000, NULL, 'ACTIVE', '2026-04-18 00:14:50'),
 (3, 'GIAM100K', 'FIXED', 100000.00, 0, 1000000, NULL, 'ACTIVE', '2026-04-18 00:14:50'),
 (4, 'SALE15', 'PERCENT', 15.00, 15, 800000, 120000.00, 'ACTIVE', '2026-04-18 00:14:50');
 
-CREATE TABLE `NguoiDung` (
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `nguoidung`
+--
+
+CREATE TABLE `nguoidung` (
   `maND` bigint(20) NOT NULL,
   `tenDangNhap` varchar(50) NOT NULL,
   `matKhau` varchar(255) NOT NULL,
@@ -151,18 +246,33 @@ CREATE TABLE `NguoiDung` (
   `trangThai` varchar(20) DEFAULT 'ACTIVE'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `NguoiDung` (`maND`, `tenDangNhap`, `matKhau`, `ten`, `ngaySinh`, `gioiTinh`, `diaChi`, `soDienThoai`, `ngayTao`, `vaiTro`, `trangThai`) VALUES
+--
+-- Đang đổ dữ liệu cho bảng `nguoidung`
+--
+
+INSERT INTO `nguoidung` (`maND`, `tenDangNhap`, `matKhau`, `ten`, `ngaySinh`, `gioiTinh`, `diaChi`, `soDienThoai`, `ngayTao`, `vaiTro`, `trangThai`) VALUES
 (1, 'admin', '1', 'Quản Trị Viên', NULL, NULL, NULL, NULL, '2025-10-13 17:14:54', 'ADMIN', 'ACTIVE'),
 (2, 'user', '2', 'Người Dùng', NULL, NULL, NULL, NULL, '2025-10-13 17:14:54', 'USER', 'ACTIVE'),
 (3, 'anhvu', 'vu12122005@@', 'Anh Vũ Trần Lê', NULL, NULL, NULL, '1', '2026-04-17 05:25:57', 'USER', 'ACTIVE');
 
+-- --------------------------------------------------------
 
-CREATE TABLE `NhanVien` (
+--
+-- Cấu trúc bảng cho bảng `nhanvien`
+--
+
+CREATE TABLE `nhanvien` (
   `maNV` bigint(20) NOT NULL,
   `maND` bigint(20) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `luong` decimal(15,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `orderitems`
+--
 
 CREATE TABLE `orderitems` (
   `order_id` varchar(255) DEFAULT NULL,
@@ -174,6 +284,11 @@ CREATE TABLE `orderitems` (
   `mauSac` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `orders`
+--
 
 CREATE TABLE `orders` (
   `order_id` varchar(255) NOT NULL,
@@ -190,14 +305,25 @@ CREATE TABLE `orders` (
   `phuongThucThanhToan` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `QuanTriVien` (
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `quantrivien`
+--
+
+CREATE TABLE `quantrivien` (
   `maQTV` bigint(20) NOT NULL,
   `maND` bigint(20) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
 
-CREATE TABLE `SanPham` (
+--
+-- Cấu trúc bảng cho bảng `sanpham`
+--
+
+CREATE TABLE `sanpham` (
   `maSP` bigint(20) NOT NULL,
   `maDM` bigint(20) DEFAULT NULL,
   `maTH` bigint(20) DEFAULT NULL,
@@ -212,8 +338,11 @@ CREATE TABLE `SanPham` (
   `daBan` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `sanpham`
+--
 
-INSERT INTO `SanPham` (`maSP`, `maDM`, `maTH`, `ten`, `moTa`, `gia`, `soLuong`, `kichCo`, `mauSac`, `chatLieu`, `hinhAnh`, `daBan`) VALUES
+INSERT INTO `sanpham` (`maSP`, `maDM`, `maTH`, `ten`, `moTa`, `gia`, `soLuong`, `kichCo`, `mauSac`, `chatLieu`, `hinhAnh`, `daBan`) VALUES
 (1, 1, 1, 'Áo thun Nike Sportswear', 'Áo thun thể thao cotton thoáng mát', 350000.00, 50, 'S,M,L,XL', 'Đen', 'Cotton 100%', 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/025fcce7-dec4-455d-b089-4a45c4aed01d/AS+M+NK+DF+TEE+RUN+ENERGY+SP25.png', 120),
 (2, 1, 2, 'Áo thun Adidas Originals', 'Áo thun cổ tròn in logo Adidas', 320000.00, 40, 'M,L,XL', 'Trắng', 'Cotton', 'https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/4eb95e8f57de44f099accc38e8fa0e75_9366/Ao_DJau_Jacquard_adidas_Adicolor_Mau_xanh_da_troi_JW5879_21_model.jpg', 95),
 (3, 1, 7, 'Áo thun Puma Classic', 'Áo thun basic Puma, chất liệu mềm mại', 280000.00, 35, 'S,M,L', 'Xám', 'Cotton pha Spandex', 'https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_2000,h_2000/global/629636/02/mod01/fnd/VNM/fmt/png/%C3%81o-thun-nam-GRAPHICS-PUMA-Hotel-Relaxed', 75),
@@ -246,20 +375,20 @@ INSERT INTO `SanPham` (`maSP`, `maDM`, `maTH`, `ten`, `moTa`, `gia`, `soLuong`, 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `ThuongHieu`
+-- Cấu trúc bảng cho bảng `thuonghieu`
 --
 
-CREATE TABLE `ThuongHieu` (
+CREATE TABLE `thuonghieu` (
   `maTH` bigint(20) NOT NULL,
   `ten` varchar(100) DEFAULT NULL,
   `logo` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `ThuongHieu`
+-- Đang đổ dữ liệu cho bảng `thuonghieu`
 --
 
-INSERT INTO `ThuongHieu` (`maTH`, `ten`, `logo`) VALUES
+INSERT INTO `thuonghieu` (`maTH`, `ten`, `logo`) VALUES
 (1, 'Nike', 'https://logos-world.net/wp-content/uploads/2020/04/Nike-Logo.png'),
 (2, 'Adidas', 'https://logos-world.net/wp-content/uploads/2020/04/Adidas-Logo.png'),
 (3, 'Zara', 'https://logos-world.net/wp-content/uploads/2020/04/Zara-Logo.png'),
@@ -267,3 +396,318 @@ INSERT INTO `ThuongHieu` (`maTH`, `ten`, `logo`) VALUES
 (5, 'H&M', 'https://logos-world.net/wp-content/uploads/2020/04/HM-Logo.png'),
 (6, 'Gucci', 'https://logos-world.net/wp-content/uploads/2020/04/Gucci-Logo.png'),
 (7, 'Puma', 'https://logos-world.net/wp-content/uploads/2020/04/Puma-Logo.png');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `yeuthich`
+--
+
+CREATE TABLE `yeuthich` (
+  `maYT` bigint(20) NOT NULL,
+  `maND` bigint(20) NOT NULL,
+  `maSP` bigint(20) NOT NULL,
+  `ngayTao` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Chỉ mục cho các bảng đã đổ
+--
+
+--
+-- Chỉ mục cho bảng `baiviet`
+--
+ALTER TABLE `baiviet`
+  ADD PRIMARY KEY (`maBV`);
+
+--
+-- Chỉ mục cho bảng `chitietdonhang`
+--
+ALTER TABLE `chitietdonhang`
+  ADD PRIMARY KEY (`maCTDH`),
+  ADD KEY `maDH` (`maDH`),
+  ADD KEY `maSP` (`maSP`);
+
+--
+-- Chỉ mục cho bảng `chitietgiohang`
+--
+ALTER TABLE `chitietgiohang`
+  ADD PRIMARY KEY (`maCTGH`),
+  ADD KEY `maGH` (`maGH`),
+  ADD KEY `maSP` (`maSP`);
+
+--
+-- Chỉ mục cho bảng `danhmuc`
+--
+ALTER TABLE `danhmuc`
+  ADD PRIMARY KEY (`maDM`);
+
+--
+-- Chỉ mục cho bảng `discount_codes`
+--
+ALTER TABLE `discount_codes`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `code` (`code`);
+
+--
+-- Chỉ mục cho bảng `donhang`
+--
+ALTER TABLE `donhang`
+  ADD PRIMARY KEY (`maDH`),
+  ADD KEY `maKH` (`maKH`),
+  ADD KEY `maNV` (`maNV`);
+
+--
+-- Chỉ mục cho bảng `giohang`
+--
+ALTER TABLE `giohang`
+  ADD PRIMARY KEY (`maGH`),
+  ADD KEY `maKH` (`maKH`);
+
+--
+-- Chỉ mục cho bảng `khachhang`
+--
+ALTER TABLE `khachhang`
+  ADD PRIMARY KEY (`maKH`),
+  ADD KEY `maND` (`maND`);
+
+--
+-- Chỉ mục cho bảng `magiamgia`
+--
+ALTER TABLE `magiamgia`
+  ADD PRIMARY KEY (`maGG`),
+  ADD UNIQUE KEY `code` (`code`);
+
+--
+-- Chỉ mục cho bảng `nguoidung`
+--
+ALTER TABLE `nguoidung`
+  ADD PRIMARY KEY (`maND`),
+  ADD UNIQUE KEY `tenDangNhap` (`tenDangNhap`);
+
+--
+-- Chỉ mục cho bảng `nhanvien`
+--
+ALTER TABLE `nhanvien`
+  ADD PRIMARY KEY (`maNV`),
+  ADD KEY `maND` (`maND`);
+
+--
+-- Chỉ mục cho bảng `orderitems`
+--
+ALTER TABLE `orderitems`
+  ADD KEY `order_id` (`order_id`),
+  ADD KEY `maSP` (`maSP`);
+
+--
+-- Chỉ mục cho bảng `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`order_id`),
+  ADD KEY `maKH` (`maKH`),
+  ADD KEY `maNV` (`maNV`);
+
+--
+-- Chỉ mục cho bảng `quantrivien`
+--
+ALTER TABLE `quantrivien`
+  ADD PRIMARY KEY (`maQTV`),
+  ADD KEY `maND` (`maND`);
+
+--
+-- Chỉ mục cho bảng `sanpham`
+--
+ALTER TABLE `sanpham`
+  ADD PRIMARY KEY (`maSP`),
+  ADD KEY `maDM` (`maDM`),
+  ADD KEY `maTH` (`maTH`);
+
+--
+-- Chỉ mục cho bảng `thuonghieu`
+--
+ALTER TABLE `thuonghieu`
+  ADD PRIMARY KEY (`maTH`);
+
+--
+-- Chỉ mục cho bảng `yeuthich`
+--
+ALTER TABLE `yeuthich`
+  ADD PRIMARY KEY (`maYT`),
+  ADD KEY `fk_yeuthich_nguoidung` (`maND`),
+  ADD KEY `fk_yeuthich_sanpham` (`maSP`);
+
+--
+-- AUTO_INCREMENT cho các bảng đã đổ
+--
+
+--
+-- AUTO_INCREMENT cho bảng `baiviet`
+--
+ALTER TABLE `baiviet`
+  MODIFY `maBV` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT cho bảng `chitietdonhang`
+--
+ALTER TABLE `chitietdonhang`
+  MODIFY `maCTDH` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT cho bảng `chitietgiohang`
+--
+ALTER TABLE `chitietgiohang`
+  MODIFY `maCTGH` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `danhmuc`
+--
+ALTER TABLE `danhmuc`
+  MODIFY `maDM` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT cho bảng `discount_codes`
+--
+ALTER TABLE `discount_codes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT cho bảng `donhang`
+--
+ALTER TABLE `donhang`
+  MODIFY `maDH` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT cho bảng `giohang`
+--
+ALTER TABLE `giohang`
+  MODIFY `maGH` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `khachhang`
+--
+ALTER TABLE `khachhang`
+  MODIFY `maKH` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT cho bảng `magiamgia`
+--
+ALTER TABLE `magiamgia`
+  MODIFY `maGG` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT cho bảng `nguoidung`
+--
+ALTER TABLE `nguoidung`
+  MODIFY `maND` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT cho bảng `nhanvien`
+--
+ALTER TABLE `nhanvien`
+  MODIFY `maNV` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `quantrivien`
+--
+ALTER TABLE `quantrivien`
+  MODIFY `maQTV` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `sanpham`
+--
+ALTER TABLE `sanpham`
+  MODIFY `maSP` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+
+--
+-- AUTO_INCREMENT cho bảng `thuonghieu`
+--
+ALTER TABLE `thuonghieu`
+  MODIFY `maTH` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT cho bảng `yeuthich`
+--
+ALTER TABLE `yeuthich`
+  MODIFY `maYT` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- Các ràng buộc cho các bảng đã đổ
+--
+
+--
+-- Các ràng buộc cho bảng `chitietdonhang`
+--
+ALTER TABLE `chitietdonhang`
+  ADD CONSTRAINT `chitietdonhang_ibfk_1` FOREIGN KEY (`maDH`) REFERENCES `donhang` (`maDH`) ON DELETE CASCADE,
+  ADD CONSTRAINT `chitietdonhang_ibfk_2` FOREIGN KEY (`maSP`) REFERENCES `sanpham` (`maSP`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `chitietgiohang`
+--
+ALTER TABLE `chitietgiohang`
+  ADD CONSTRAINT `chitietgiohang_ibfk_1` FOREIGN KEY (`maGH`) REFERENCES `giohang` (`maGH`) ON DELETE CASCADE,
+  ADD CONSTRAINT `chitietgiohang_ibfk_2` FOREIGN KEY (`maSP`) REFERENCES `sanpham` (`maSP`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `donhang`
+--
+ALTER TABLE `donhang`
+  ADD CONSTRAINT `donhang_ibfk_1` FOREIGN KEY (`maKH`) REFERENCES `khachhang` (`maKH`) ON DELETE CASCADE,
+  ADD CONSTRAINT `donhang_ibfk_2` FOREIGN KEY (`maNV`) REFERENCES `nhanvien` (`maNV`) ON DELETE SET NULL;
+
+--
+-- Các ràng buộc cho bảng `giohang`
+--
+ALTER TABLE `giohang`
+  ADD CONSTRAINT `giohang_ibfk_1` FOREIGN KEY (`maKH`) REFERENCES `khachhang` (`maKH`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `khachhang`
+--
+ALTER TABLE `khachhang`
+  ADD CONSTRAINT `khachhang_ibfk_1` FOREIGN KEY (`maND`) REFERENCES `nguoidung` (`maND`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `nhanvien`
+--
+ALTER TABLE `nhanvien`
+  ADD CONSTRAINT `nhanvien_ibfk_1` FOREIGN KEY (`maND`) REFERENCES `nguoidung` (`maND`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `orderitems`
+--
+ALTER TABLE `orderitems`
+  ADD CONSTRAINT `orderitems_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `orderitems_ibfk_2` FOREIGN KEY (`maSP`) REFERENCES `sanpham` (`maSP`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `orders`
+--
+ALTER TABLE `orders`
+  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`maKH`) REFERENCES `khachhang` (`maKH`) ON DELETE CASCADE,
+  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`maNV`) REFERENCES `nhanvien` (`maNV`) ON DELETE SET NULL;
+
+--
+-- Các ràng buộc cho bảng `quantrivien`
+--
+ALTER TABLE `quantrivien`
+  ADD CONSTRAINT `quantrivien_ibfk_1` FOREIGN KEY (`maND`) REFERENCES `nguoidung` (`maND`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `sanpham`
+--
+ALTER TABLE `sanpham`
+  ADD CONSTRAINT `sanpham_ibfk_1` FOREIGN KEY (`maDM`) REFERENCES `danhmuc` (`maDM`) ON DELETE SET NULL,
+  ADD CONSTRAINT `sanpham_ibfk_2` FOREIGN KEY (`maTH`) REFERENCES `thuonghieu` (`maTH`) ON DELETE SET NULL;
+
+--
+-- Các ràng buộc cho bảng `yeuthich`
+--
+ALTER TABLE `yeuthich`
+  ADD CONSTRAINT `fk_yeuthich_nguoidung` FOREIGN KEY (`maND`) REFERENCES `nguoidung` (`maND`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_yeuthich_sanpham` FOREIGN KEY (`maSP`) REFERENCES `sanpham` (`maSP`) ON DELETE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
