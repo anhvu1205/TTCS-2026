@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 03, 2026 lúc 02:40 PM
+-- Thời gian đã tạo: Th5 04, 2026 lúc 01:21 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -46,6 +46,101 @@ INSERT INTO `baiviet` (`maBV`, `tieuDe`, `tomTat`, `noiDung`, `hinhAnh`, `ngayDa
 (1, 'Xu hướng thời trang hè 2026', 'Các mẫu trang phục nổi bật cho mùa hè năm nay.', 'Nội dung bài viết mẫu 1...', 'assets/images/blog1.jpg', '2026-04-17 12:45:35', 'Admin', 1),
 (2, 'Cách phối đồ basic nhưng vẫn đẹp', 'Gợi ý mix đồ đơn giản cho nam và nữ.', 'Nội dung bài viết mẫu 2...', 'assets/images/blog2.jpg', '2026-04-17 12:45:35', 'Admin', 1),
 (3, 'Mẹo bảo quản quần áo bền đẹp', 'Một số mẹo giúp quần áo luôn mới.', 'Nội dung bài viết mẫu 3...', 'assets/images/blog3.jpg', '2026-04-17 12:45:35', 'Admin', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `chatbotmessages`
+--
+
+CREATE TABLE `chatbotmessages` (
+  `id` int(11) NOT NULL,
+  `session_id` varchar(100) NOT NULL,
+  `maND` int(11) DEFAULT NULL,
+  `sender` enum('user','bot','admin') NOT NULL,
+  `message` text NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `chatbotmessages`
+--
+
+INSERT INTO `chatbotmessages` (`id`, `session_id`, `maND`, `sender`, `message`, `created_at`) VALUES
+(1, 'sess_3_blcc3l0iyu_1777174388767', 3, 'user', 'Tư vấn áo', '2026-04-26 10:33:08'),
+(2, 'sess_3_blcc3l0iyu_1777174388767', 3, 'bot', '\r\n        Bạn muốn mình tư vấn theo hướng nào?\r\n        Áo\r\n        Quần\r\n        Váy\r\n        Dưới 500k\r\n        Mã giảm giá\r\n    ', '2026-04-26 10:33:08'),
+(3, 'sess_3_blcc3l0iyu_1777174388767', 3, 'user', 'Tư vấn áo', '2026-04-26 10:33:11'),
+(4, 'sess_3_blcc3l0iyu_1777174388767', 3, 'bot', '\r\n        Bạn muốn mình tư vấn theo hướng nào?\r\n        Áo\r\n        Quần\r\n        Váy\r\n        Dưới 500k\r\n        Mã giảm giá\r\n    ', '2026-04-26 10:33:11'),
+(5, 'sess_3_blcc3l0iyu_1777174388767', 3, 'user', 'Sản phẩm dưới 500k', '2026-04-26 10:33:13'),
+(6, 'sess_3_blcc3l0iyu_1777174388767', 3, 'bot', 'Mình lọc vài sản phẩm dưới 500.000₫ cho bạn:\r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo thun Uniqlo Airism\r\n                    250.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        \r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo thun H&amp;M Basic\r\n                    250.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        \r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo thun Puma Classic\r\n                    280.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        \r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Quần short Puma Basic\r\n                    280.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        ', '2026-04-26 10:33:13'),
+(7, 'sess_guest_hcckjj92rcm_1777191616404', NULL, 'user', 'Tư vấn áo', '2026-04-26 15:20:16'),
+(8, 'sess_guest_hcckjj92rcm_1777191616404', NULL, 'bot', '\r\n        Bạn muốn chọn áo theo phong cách nào?\r\n        Đi làm\r\n        Đi chơi\r\n        Basic\r\n        Giá rẻ\r\n        Áo sơ mi\r\n        Áo thun\r\n    ', '2026-04-26 15:20:16'),
+(9, 'sess_guest_hcckjj92rcm_1777191616404', NULL, 'user', 'Áo basic', '2026-04-26 15:20:18'),
+(10, 'sess_guest_hcckjj92rcm_1777191616404', NULL, 'bot', 'Phong cách áo basic/tối giản thì mình gợi ý vài mẫu dễ mặc này:\r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo thun Uniqlo Airism\r\n                    250.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        \r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo thun H&amp;M Basic\r\n                    250.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        \r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo thun Puma Classic\r\n                    280.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        \r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo thun Adidas Originals\r\n                    320.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        ', '2026-04-26 15:20:18'),
+(11, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'user', 'Tư vấn áo', '2026-04-26 15:22:03'),
+(12, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'bot', '\r\n        Bạn muốn chọn áo theo phong cách nào?\r\n        Đi làm\r\n        Đi chơi\r\n        Basic\r\n        Giá rẻ\r\n        Áo sơ mi\r\n        Áo thun\r\n    ', '2026-04-26 15:22:03'),
+(13, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'user', 'Áo sơ mi', '2026-04-26 15:22:05'),
+(14, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'bot', 'Mình chọn vài mẫu áo sơ mi hợp với phong cách SimpleFit cho bạn:\r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo sơ mi Uniqlo Premium\r\n                    650.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        \r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo sơ mi kẻ sọc H&amp;M\r\n                    480.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        \r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo sơ mi trắng Zara\r\n                    550.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        \r\n    Bạn muốn mình lọc tiếp theo giá rẻ hơn, đi chơi hay đi làm?', '2026-04-26 15:22:05'),
+(15, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'user', 'giá rẻ hơn', '2026-04-26 15:22:16'),
+(16, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'bot', 'Mình lọc vài mẫu giá mềm hơn cho bạn:\r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo sơ mi kẻ sọc H&amp;M\r\n                    480.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        \r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo sơ mi trắng Zara\r\n                    550.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        \r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo sơ mi Uniqlo Premium\r\n                    650.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        ', '2026-04-26 15:22:16'),
+(17, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'user', 'Có mã giảm giá không', '2026-04-26 15:22:22'),
+(18, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'bot', '\r\n        Shop đang có mã giảm giá 🎁\r\n        • SALE10: giảm 10% cho đơn từ 300.000₫\r\n        • FREESTYLE20: giảm 20% cho đơn từ 800.000₫\r\n        Bạn có thể nhập mã ở trang giỏ hàng khi thanh toán nhé.\r\n        Gợi ý sản phẩm dễ áp mã\r\n    ', '2026-04-26 15:22:22'),
+(19, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'user', 'Ship bao lâu', '2026-04-26 15:22:27'),
+(20, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'bot', '\r\n        Shop hỗ trợ giao hàng toàn quốc 🚚\r\n        • Nội thành: khoảng 1 - 2 ngày\r\n        • Ngoại tỉnh: khoảng 2 - 5 ngày\r\n        • Đơn từ 500.000₫ có thể được miễn phí ship\r\n        Bạn muốn mình gợi ý vài sản phẩm dễ đủ điều kiện freeship không?\r\n        Xem hàng mới\r\n        Dưới 500k\r\n    ', '2026-04-26 15:22:27'),
+(21, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'user', 'cần 1 bộ vest', '2026-04-26 15:22:50'),
+(22, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'bot', '\r\n        Shop đã ghi nhận nội dung này, nhân viên shop sẽ kiểm tra và phản hồi bạn sớm nhất.\r\n        Trong lúc chờ, bạn có thể chọn nhanh một nhu cầu bên dưới:\r\n        Áo\r\n        Quần\r\n        Váy\r\n        Dưới 500k\r\n        Mã giảm giá\r\n    ', '2026-04-26 15:22:50'),
+(23, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'user', 'cần 1 bộ vest', '2026-05-01 11:15:42'),
+(24, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'bot', '\r\n        Shop đã ghi nhận nội dung này, nhân viên shop sẽ kiểm tra và phản hồi bạn sớm nhất.\r\n        Trong lúc chờ, bạn có thể chọn nhanh một nhu cầu bên dưới:\r\n        Áo\r\n        Quần\r\n        Váy\r\n        Dưới 500k\r\n        Mã giảm giá\r\n    ', '2026-05-01 11:15:42'),
+(25, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'admin', 'Xin chào quý khách! Hiện tại thì shop chưa kinh doanh các mặt hàng liên quan đến vest ạ!', '2026-05-01 11:56:05'),
+(26, 'sess_1_1qrfq5yx4mf_1777626547919', 1, 'user', 'hello', '2026-05-01 17:03:45'),
+(27, 'sess_1_1qrfq5yx4mf_1777626547919', 1, 'bot', 'Xin chào 👋 Mình có thể tư vấn áo, quần, váy, sản phẩm theo giá hoặc hỗ trợ thông tin ship/đổi trả cho bạn.', '2026-05-01 17:03:45'),
+(28, 'sess_1_1qrfq5yx4mf_1777626547919', 1, 'user', 'Tư vấn áo', '2026-05-01 17:03:48'),
+(29, 'sess_1_1qrfq5yx4mf_1777626547919', 1, 'bot', '\r\n        Bạn muốn chọn áo theo phong cách nào?\r\n        Đi làm\r\n        Đi chơi\r\n        Basic\r\n        Giá rẻ\r\n        Áo sơ mi\r\n        Áo thun\r\n    ', '2026-05-01 17:03:48'),
+(30, 'sess_1_1qrfq5yx4mf_1777626547919', 1, 'user', 'Áo đi chơi', '2026-05-01 17:03:49'),
+(31, 'sess_1_1qrfq5yx4mf_1777626547919', 1, 'bot', 'Nếu đi chơi, bạn có thể chọn vài mẫu áo thoải mái, dễ phối này:\r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo len Zara\r\n                    1.280.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        \r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo nỉ H&amp;M\r\n                    399.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        \r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo len Gucci\r\n                    1.500.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        \r\n            \r\n                \r\n                    \r\n                \r\n\r\n                \r\n                    Áo sơ mi Uniqlo Premium\r\n                    650.000₫\r\n\r\n                    \r\n                        Xem\r\n                        + Giỏ\r\n                    \r\n                \r\n            \r\n        ', '2026-05-01 17:03:49');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `chatbotrequests`
+--
+
+CREATE TABLE `chatbotrequests` (
+  `id` int(11) NOT NULL,
+  `session_id` varchar(100) NOT NULL,
+  `maND` int(11) DEFAULT NULL,
+  `customer_message` text NOT NULL,
+  `status` enum('pending','answered') DEFAULT 'pending',
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `chatbotrequests`
+--
+
+INSERT INTO `chatbotrequests` (`id`, `session_id`, `maND`, `customer_message`, `status`, `created_at`) VALUES
+(1, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'cần 1 bộ vest', 'answered', '2026-04-26 15:22:50'),
+(2, 'sess_guest_hb40kj9q71q_1777191723787', NULL, 'cần 1 bộ vest', 'answered', '2026-05-01 11:15:42');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `chatbotsessions`
+--
+
+CREATE TABLE `chatbotsessions` (
+  `session_id` varchar(100) NOT NULL,
+  `maND` int(11) DEFAULT NULL,
+  `mode` enum('bot','admin') DEFAULT 'bot',
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `chatbotsessions`
+--
+
+INSERT INTO `chatbotsessions` (`session_id`, `maND`, `mode`, `updated_at`) VALUES
+('sess_guest_hb40kj9q71q_1777191723787', NULL, 'admin', '2026-05-01 11:56:05');
 
 -- --------------------------------------------------------
 
@@ -123,19 +218,14 @@ CREATE TABLE `discount_codes` (
   `end_date` datetime DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `discount_codes`
 --
 
 INSERT INTO `discount_codes` (`id`, `code`, `discount_type`, `discount_value`, `min_order_value`, `max_discount`, `usage_limit`, `used_count`, `start_date`, `end_date`, `is_active`, `created_at`) VALUES
-(1, 'MAU10', 'percent', 10.00, 200000.00, 50000.00, 100, 0, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-14 05:18:37'),
-(2, 'KHACHHANGTHANTHIET', 'fixed', 150000.00, 2990000.00, NULL, 50, 0, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-15 05:18:37'),
-(8, 'UUDAIMUAHE', 'fixed', 100000.00, 1000000.00, 0.00, 100, 0, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-15 06:20:54'),
-(9, 'PTIT2026', 'fixed', 100000.00, 1000000.00, NULL, NULL, 0, NULL, NULL, 1, '2026-04-18 00:51:52'),
-(10, 'GIAM5', 'percent', 5.00, 0.00, NULL, NULL, 0, NULL, NULL, 1, '2026-04-18 08:46:17'),
-(11, 'GIAMGIADAUNAM', 'percent', 10.00, 700000.00, NULL, NULL, 0, NULL, NULL, 1, '2026-04-18 09:16:11');
+(1, 'PTIT2026', 'percent', 10.00, 500000.00, NULL, NULL, 0, NULL, NULL, 1, '2026-05-04 11:21:01');
 
 -- --------------------------------------------------------
 
@@ -177,6 +267,32 @@ CREATE TABLE `giohang` (
   `maKH` bigint(20) DEFAULT NULL,
   `trangThai` varchar(50) DEFAULT 'Đang mua'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `homereviews`
+--
+
+CREATE TABLE `homereviews` (
+  `id` int(11) NOT NULL,
+  `customer_name` varchar(100) NOT NULL,
+  `content` text NOT NULL,
+  `rating` int(11) DEFAULT 5,
+  `status` tinyint(4) DEFAULT 1,
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `homereviews`
+--
+
+INSERT INTO `homereviews` (`id`, `customer_name`, `content`, `rating`, `status`, `created_at`) VALUES
+(1, 'Nguyễn An', 'Chất vải rất mịn, form áo cực kỳ tôn dáng.', 5, 1, '2026-05-01 17:10:13'),
+(2, 'Trần Bình', 'Giao hàng nhanh, đóng gói cẩn thận, sản phẩm giống ảnh.', 5, 1, '2026-05-01 17:10:13'),
+(3, 'Lê Chi', 'Áo sơ mi mặc đi làm rất lịch sự, dễ phối với quần âu.', 4, 1, '2026-05-01 17:10:13'),
+(4, 'Minh Anh', 'Shop tư vấn nhiệt tình, chất liệu mặc thoải mái.', 5, 1, '2026-05-01 17:10:13'),
+(5, 'Bảo Ngọc', 'Phong cách tối giản, màu sắc đẹp, rất hợp gu mình.', 5, 1, '2026-05-01 17:10:13');
 
 -- --------------------------------------------------------
 
@@ -271,22 +387,6 @@ CREATE TABLE `nhanvien` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `orderitems`
---
-
-CREATE TABLE `orderitems` (
-  `order_id` varchar(255) DEFAULT NULL,
-  `maSP` bigint(20) DEFAULT NULL,
-  `soLuong` int(11) DEFAULT NULL,
-  `donGia` bigint(20) DEFAULT NULL,
-  `thanhTien` bigint(20) DEFAULT NULL,
-  `kichCo` varchar(50) DEFAULT NULL,
-  `mauSac` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Cấu trúc bảng cho bảng `orders`
 --
 
@@ -304,6 +404,31 @@ CREATE TABLE `orders` (
   `soDienThoai` varchar(15) DEFAULT NULL,
   `phuongThucThanhToan` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `productreviews`
+--
+
+CREATE TABLE `productreviews` (
+  `id` int(11) NOT NULL,
+  `product_id` bigint(20) NOT NULL,
+  `user_id` bigint(20) DEFAULT NULL,
+  `user_name` varchar(100) NOT NULL,
+  `rating` int(11) NOT NULL DEFAULT 5,
+  `content` text NOT NULL,
+  `is_purchased` tinyint(4) DEFAULT 0,
+  `status` enum('visible','hidden') DEFAULT 'visible',
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `productreviews`
+--
+
+INSERT INTO `productreviews` (`id`, `product_id`, `user_id`, `user_name`, `rating`, `content`, `is_purchased`, `status`, `created_at`) VALUES
+(1, 28, 3, 'Anh Vũ Trần Lê', 5, 'Sản phẩm chất lượng cao, rất đáng mua!', 0, 'visible', '2026-05-01 17:19:24');
 
 -- --------------------------------------------------------
 
@@ -421,6 +546,24 @@ ALTER TABLE `baiviet`
   ADD PRIMARY KEY (`maBV`);
 
 --
+-- Chỉ mục cho bảng `chatbotmessages`
+--
+ALTER TABLE `chatbotmessages`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `chatbotrequests`
+--
+ALTER TABLE `chatbotrequests`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `chatbotsessions`
+--
+ALTER TABLE `chatbotsessions`
+  ADD PRIMARY KEY (`session_id`);
+
+--
 -- Chỉ mục cho bảng `chitietdonhang`
 --
 ALTER TABLE `chitietdonhang`
@@ -465,6 +608,12 @@ ALTER TABLE `giohang`
   ADD KEY `maKH` (`maKH`);
 
 --
+-- Chỉ mục cho bảng `homereviews`
+--
+ALTER TABLE `homereviews`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Chỉ mục cho bảng `khachhang`
 --
 ALTER TABLE `khachhang`
@@ -493,19 +642,20 @@ ALTER TABLE `nhanvien`
   ADD KEY `maND` (`maND`);
 
 --
--- Chỉ mục cho bảng `orderitems`
---
-ALTER TABLE `orderitems`
-  ADD KEY `order_id` (`order_id`),
-  ADD KEY `maSP` (`maSP`);
-
---
 -- Chỉ mục cho bảng `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`order_id`),
   ADD KEY `maKH` (`maKH`),
   ADD KEY `maNV` (`maNV`);
+
+--
+-- Chỉ mục cho bảng `productreviews`
+--
+ALTER TABLE `productreviews`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_product_reviews_product` (`product_id`),
+  ADD KEY `idx_product_reviews_user` (`user_id`);
 
 --
 -- Chỉ mục cho bảng `quantrivien`
@@ -547,6 +697,18 @@ ALTER TABLE `baiviet`
   MODIFY `maBV` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT cho bảng `chatbotmessages`
+--
+ALTER TABLE `chatbotmessages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+
+--
+-- AUTO_INCREMENT cho bảng `chatbotrequests`
+--
+ALTER TABLE `chatbotrequests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT cho bảng `chitietdonhang`
 --
 ALTER TABLE `chitietdonhang`
@@ -568,7 +730,7 @@ ALTER TABLE `danhmuc`
 -- AUTO_INCREMENT cho bảng `discount_codes`
 --
 ALTER TABLE `discount_codes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `donhang`
@@ -581,6 +743,12 @@ ALTER TABLE `donhang`
 --
 ALTER TABLE `giohang`
   MODIFY `maGH` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `homereviews`
+--
+ALTER TABLE `homereviews`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `khachhang`
@@ -605,6 +773,12 @@ ALTER TABLE `nguoidung`
 --
 ALTER TABLE `nhanvien`
   MODIFY `maNV` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `productreviews`
+--
+ALTER TABLE `productreviews`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `quantrivien`
@@ -674,18 +848,18 @@ ALTER TABLE `nhanvien`
   ADD CONSTRAINT `nhanvien_ibfk_1` FOREIGN KEY (`maND`) REFERENCES `nguoidung` (`maND`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `orderitems`
---
-ALTER TABLE `orderitems`
-  ADD CONSTRAINT `orderitems_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `orderitems_ibfk_2` FOREIGN KEY (`maSP`) REFERENCES `sanpham` (`maSP`) ON DELETE CASCADE;
-
---
 -- Các ràng buộc cho bảng `orders`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`maKH`) REFERENCES `khachhang` (`maKH`) ON DELETE CASCADE,
   ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`maNV`) REFERENCES `nhanvien` (`maNV`) ON DELETE SET NULL;
+
+--
+-- Các ràng buộc cho bảng `productreviews`
+--
+ALTER TABLE `productreviews`
+  ADD CONSTRAINT `fk_product_reviews_product` FOREIGN KEY (`product_id`) REFERENCES `sanpham` (`maSP`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_product_reviews_user` FOREIGN KEY (`user_id`) REFERENCES `nguoidung` (`maND`) ON DELETE SET NULL;
 
 --
 -- Các ràng buộc cho bảng `quantrivien`
