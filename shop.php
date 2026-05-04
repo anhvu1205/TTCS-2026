@@ -165,143 +165,172 @@ include 'includes/header.php';
             </div>
         </div>
     </section>
-
-    <section class="best-sellers-section">
-        <div class="container-fluid max-w-7xl mx-auto">
-            <div class="d-flex align-items-end justify-content-between mb-5">
-                <div>
-                    <p class="best-seller-tag">Best Sellers</p>
-                    <h2 class="best-seller-title">Sản phẩm bán chạy</h2>
-                </div>
-                <div class="d-none d-md-flex gap-3">
-                    <button onclick="scrollSlider(-1)" class="btn-scroll-nav"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button onclick="scrollSlider(1)" class="btn-scroll-nav"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
+    <div class="container-fluid max-w-7xl mx-auto">
+        <div class="d-flex align-items-end justify-content-between mb-5">
+            <div>
+                <p class="best-seller-tag">Best Sellers</p>
+                <h2 class="best-seller-title">Sản phẩm bán chạy</h2>
             </div>
-
-            <div id="bestSellerSlider" class="best-seller-slider-wrapper">
-                <?php
-                $sql_best = "SELECT maSP as id, ten as name, gia as price, hinhAnh as image, soLuong FROM SanPham ORDER BY maSP DESC LIMIT 10";
-                $res_best = mysqli_query($conn, $sql_best);
-                if (mysqli_num_rows($res_best) > 0) :
-                    while ($row = mysqli_fetch_assoc($res_best)) :
-                        $is_wishlisted = false;
-                        if (isset($_SESSION['user'])) {
-                            $u_id = $_SESSION['user']['id'];
-                            $p_id = $row['id'];
-                            $check_heart = mysqli_query($conn, "SELECT * FROM YeuThich WHERE maND = '$u_id' AND maSP = '$p_id'");
-                            if ($check_heart && mysqli_num_rows($check_heart) > 0) {
-                                $is_wishlisted = true;
-                            }
-                        }
-                ?>
-                        <div class="best-seller-item">
-                            <div class="product-card-v3">
-                                <div class="product-img-wrapper-v3">
-                                    <a href="detail.php?id=<?php echo $row['id']; ?>">
-                                        <img src="<?php echo $row['image']; ?>" class="product-img-main-v3" alt="<?php echo htmlspecialchars($row['name']); ?>">
-                                    </a>
-
-                                    <button class="btn-wishlist-v3 add-to-wishlist" data-id="<?php echo $row['id']; ?>" title="Thêm vào yêu thích">
-                                        <i class="<?php echo $is_wishlisted ? 'fa-solid text-danger' : 'fa-regular'; ?> fa-heart"></i>
-                                    </button>
-                                    <form action="cart.php" method="POST" class="quick-add-form-v3">
-                                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
-                                        <?php if ($row['soLuong'] > 0): ?>
-                                            <button type="submit" name="add_to_cart" class="btn-quick-add-v3">
-                                                <i class="fa-solid fa-cart-plus me-2"></i>THÊM VÀO GIỎ HÀNG
-                                            </button>
-                                        <?php else: ?>
-                                            <button type="button" class="btn-quick-add-v3 disabled" style="background: #999; cursor: not-allowed;">
-                                                <i class="fa-solid fa-xmark me-2"></i>HẾT HÀNG
-                                            </button>
-                                        <?php endif; ?>
-                                    </form>
-                                </div>
-
-                                <div class="product-info-v3 text-center">
-                                    <h6 class="product-name-v3 mb-1">
-                                        <a href="detail.php?id=<?php echo $row['id']; ?>" style="color: inherit; text-decoration: none;">
-                                            <?php echo htmlspecialchars($row['name']); ?>
-                                        </a>
-                                    </h6>
-                                    <p class="product-price-v3 mb-0"><?php echo number_format($row['price']); ?>₫</p>
-                                </div>
-                            </div>
-                        </div>
-                <?php endwhile;
-                endif; ?>
+            <div class="d-none d-md-flex gap-3">
+                <button onclick="scrollSlider(-1)" class="btn-scroll-nav"><i class="fa-solid fa-chevron-left"></i></button>
+                <button onclick="scrollSlider(1)" class="btn-scroll-nav"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </div>
+
+        <div id="bestSellerSlider" class="best-seller-slider-wrapper">
+            <?php
+            $sql_best = "SELECT maSP as id, ten as name, gia as price, hinhAnh as image, soLuong FROM SanPham ORDER BY maSP DESC LIMIT 10";
+            $res_best = mysqli_query($conn, $sql_best);
+            if (mysqli_num_rows($res_best) > 0) :
+                while ($row = mysqli_fetch_assoc($res_best)) :
+                    $is_wishlisted = false;
+                    if (isset($_SESSION['user'])) {
+                        $u_id = $_SESSION['user']['id'];
+                        $p_id = $row['id'];
+                        $check_heart = mysqli_query($conn, "SELECT * FROM YeuThich WHERE maND = '$u_id' AND maSP = '$p_id'");
+                        if ($check_heart && mysqli_num_rows($check_heart) > 0) {
+                            $is_wishlisted = true;
+                        }
+                    }
+            ?>
+                    <div class="best-seller-item">
+                        <div class="product-card-v3">
+                            <div class="product-img-wrapper-v3">
+                                <a href="detail.php?id=<?php echo $row['id']; ?>">
+                                    <img src="<?php echo $row['image']; ?>" class="product-img-main-v3" alt="<?php echo htmlspecialchars($row['name']); ?>">
+                                </a>
+
+                                <button class="btn-wishlist-v3 add-to-wishlist" data-id="<?php echo $row['id']; ?>" title="Thêm vào yêu thích">
+                                    <i class="<?php echo $is_wishlisted ? 'fa-solid text-danger' : 'fa-regular'; ?> fa-heart"></i>
+                                </button>
+                                <form action="cart.php" method="POST" class="quick-add-form-v3">
+                                    <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                    <?php if ($row['soLuong'] > 0): ?>
+                                        <button type="submit" name="add_to_cart" class="btn-quick-add-v3">
+                                            <i class="fa-solid fa-cart-plus me-2"></i>THÊM VÀO GIỎ HÀNG
+                                        </button>
+                                    <?php else: ?>
+                                        <button type="button" class="btn-quick-add-v3 disabled" style="background: #999; cursor: not-allowed;">
+                                            <i class="fa-solid fa-xmark me-2"></i>HẾT HÀNG
+                                        </button>
+                                    <?php endif; ?>
+                                </form>
+                            </div>
+
+                            <div class="product-info-v3 text-center">
+                                <h6 class="product-name-v3 mb-1">
+                                    <a href="detail.php?id=<?php echo $row['id']; ?>" style="color: inherit; text-decoration: none;">
+                                        <?php echo htmlspecialchars($row['name']); ?>
+                                    </a>
+                                </h6>
+                                <p class="product-price-v3 mb-0"><?php echo number_format($row['price']); ?>₫</p>
+                            </div>
+                        </div>
+                    </div>
+            <?php endwhile;
+            endif; ?>
+        </div>
+    </div>
     </section>
 
     <section class="review-slider-section">
-        <div class="container max-w-3xl mx-auto text-center">
-            <p class="review-tag">Reviews</p>
-            <h2 class="review-main-title">Khách hàng nói gì về chúng tôi</h2>
-            <div class="review-container position-relative">
-                <div id="review-content">
-                    <?php
-                    $reviews = [];
-                    $review_query = mysqli_query($conn, "SELECT customer_name, content, rating FROM HomeReviews WHERE status = 1 ORDER BY RAND() LIMIT 5");
+        <?php
+        $sql_cmt = "
+    SELECT 
+        pr.user_name,
+        pr.content,
+        pr.rating,
+        sp.ten as tenSanPham
+    FROM productreviews pr
+    LEFT JOIN sanpham sp ON pr.product_id = sp.maSP
+    WHERE pr.status = 'visible' AND pr.rating >= 4
+    ORDER BY pr.created_at DESC
+    LIMIT 6
+";
 
-                    if ($review_query && mysqli_num_rows($review_query) > 0) {
-                        while ($row = mysqli_fetch_assoc($review_query)) {
-                            $reviews[] = [
-                                'name' => $row['customer_name'],
-                                'rating' => (int)$row['rating'],
-                                'comment' => $row['content']
-                            ];
-                        }
-                    } else {
-                        $reviews = [
-                            ['name' => 'Nguyễn An', 'rating' => 5, 'comment' => 'Chất vải rất mịn, form áo cực kỳ tôn dáng.'],
-                            ['name' => 'Trần Bình', 'rating' => 5, 'comment' => 'Giao hàng nhanh, đóng gói cẩn thận.'],
-                            ['name' => 'Lê Chi', 'rating' => 4, 'comment' => 'Áo sơ mi mặc đi làm rất lịch sự.'],
-                        ];
-                    }
+        $res_cmt = mysqli_query($conn, $sql_cmt);
+        ?>
+        <section class="review-slider-section">
+            <div class="container max-w-3xl mx-auto text-center">
+                <p class="review-tag">Reviews</p>
+                <h2 class="review-main-title">Khách hàng nói gì</h2>
 
-                    foreach ($reviews as $index => $rev) :
-                        $rating = max(1, min(5, (int)$rev['rating']));
-                    ?>
-                        <div class="review-item <?php echo $index === 0 ? 'active' : ''; ?>" id="rev-<?php echo $index; ?>">
-                            <div class="star-rating mb-4">
-                                <?php for ($i = 0; $i < 5; $i++) : ?>
-                                    <i class="fa-solid fa-star" style="color: <?php echo $i < $rating ? '#C4622D' : '#333'; ?>"></i>
-                                <?php endfor; ?>
-                            </div>
-                            <p class="review-comment">"<?php echo htmlspecialchars($rev['comment']); ?>"</p>
-                            <p class="review-customer">— <?php echo htmlspecialchars($rev['name']); ?></p>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <div class="d-flex justify-content-center gap-3 mt-5">
-                    <button onclick="changeReview(-1)" class="btn-review-nav"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button onclick="changeReview(1)" class="btn-review-nav"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
-            </div>
-        </div>
-    </section>
+                <div class="review-container position-relative mt-4">
 
-    <section class="newsletter-section">
-        <div class="container max-w-7xl mx-auto px-lg-5">
-            <div class="newsletter-card position-relative overflow-hidden">
-                <div class="deco-circle circle-top"></div>
-                <div class="deco-circle circle-bottom"></div>
-                <div class="newsletter-content position-relative" id="newsletter-area">
-                    <div class="newsletter-badge mb-4">
-                        <i class="fa-solid fa-sparkles me-2"></i><span>Ưu đãi độc quyền</span>
+                    <div id="review-slider">
+                        <?php if ($res_cmt && mysqli_num_rows($res_cmt) > 0): ?>
+
+                            <?php $i = 0; ?>
+                            <?php while ($cmt = mysqli_fetch_assoc($res_cmt)): ?>
+                                <?php $rating = max(1, min(5, (int)$cmt['rating'])); ?>
+
+                                <div class="review-item <?php echo $i === 0 ? 'active' : ''; ?>">
+
+                                    <!-- Star -->
+                                    <div class="mb-3">
+                                        <?php for ($j = 0; $j < 5; $j++): ?>
+                                            <i class="fa-solid fa-star"
+                                                style="color: <?php echo $j < $rating ? '#C4622D' : '#ccc'; ?>"></i>
+                                        <?php endfor; ?>
+                                    </div>
+
+                                    <!-- Content -->
+                                    <p class="review-comment">
+                                        "<?php echo htmlspecialchars($cmt['content']); ?>"
+                                    </p>
+
+                                    <!-- User -->
+                                    <p class="review-customer mt-3">
+                                        — <?php echo htmlspecialchars($cmt['user_name']); ?>
+                                        <br>
+                                        <small style="color:#999;">
+                                            <?php echo htmlspecialchars($cmt['tenSanPham']); ?>
+                                        </small>
+                                    </p>
+
+                                </div>
+
+                                <?php $i++; ?>
+                            <?php endwhile; ?>
+
+                        <?php else: ?>
+                            <p>Chưa có đánh giá nào</p>
+                        <?php endif; ?>
                     </div>
-                    <h2 class="newsletter-title">Nhận ưu đãi độc quyền</h2>
-                    <p class="newsletter-desc">Đăng ký để nhận thông báo về bộ sưu tập mới.</p>
-                    <form id="newsletter-form" class="newsletter-form-ui d-flex gap-2 mx-auto">
-                        <input type="email" id="newsletter-email" placeholder="Email của bạn..." required class="newsletter-input">
-                        <button type="submit" class="btn-newsletter-submit"><i class="fa-solid fa-arrow-right"></i></button>
-                    </form>
+
+                    <!-- NAV -->
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <button onclick="changeReview(-1)" class="btn-review-nav">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button onclick="changeReview(1)" class="btn-review-nav">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <section class="newsletter-section">
+            <div class="container max-w-7xl mx-auto px-lg-5">
+                <div class="newsletter-card position-relative overflow-hidden">
+                    <div class="deco-circle circle-top"></div>
+                    <div class="deco-circle circle-bottom"></div>
+                    <div class="newsletter-content position-relative" id="newsletter-area">
+                        <div class="newsletter-badge mb-4">
+                            <i class="fa-solid fa-sparkles me-2"></i><span>Ưu đãi độc quyền</span>
+                        </div>
+                        <h2 class="newsletter-title">Nhận ưu đãi độc quyền</h2>
+                        <p class="newsletter-desc">Đăng ký để nhận thông báo về bộ sưu tập mới.</p>
+                        <form id="newsletter-form" class="newsletter-form-ui d-flex gap-2 mx-auto">
+                            <input type="email" id="newsletter-email" placeholder="Email của bạn..." required class="newsletter-input">
+                            <button type="submit" class="btn-newsletter-submit"><i class="fa-solid fa-arrow-right"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
 </main>
 
 <script>

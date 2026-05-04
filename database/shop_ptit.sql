@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 04, 2026 lúc 01:21 PM
+-- Thời gian đã tạo: Th5 04, 2026 lúc 03:22 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -140,7 +140,7 @@ CREATE TABLE `chatbotsessions` (
 --
 
 INSERT INTO `chatbotsessions` (`session_id`, `maND`, `mode`, `updated_at`) VALUES
-('sess_guest_hb40kj9q71q_1777191723787', NULL, 'admin', '2026-05-01 11:56:05');
+('sess_guest_hb40kj9q71q_1777191723787', NULL, 'bot', '2026-05-04 18:23:58');
 
 -- --------------------------------------------------------
 
@@ -225,7 +225,8 @@ CREATE TABLE `discount_codes` (
 --
 
 INSERT INTO `discount_codes` (`id`, `code`, `discount_type`, `discount_value`, `min_order_value`, `max_discount`, `usage_limit`, `used_count`, `start_date`, `end_date`, `is_active`, `created_at`) VALUES
-(1, 'PTIT2026', 'percent', 10.00, 500000.00, NULL, NULL, 0, NULL, NULL, 1, '2026-05-04 11:21:01');
+(3, 'DINHNOCKICHTRAN', 'percent', 15.00, 1199999.00, 200000.00, NULL, 0, NULL, NULL, 1, '2026-05-04 11:26:52'),
+(4, 'PTIT2026', 'fixed', 50000.00, 999999.00, NULL, NULL, 0, NULL, NULL, 1, '2026-05-04 11:27:38');
 
 -- --------------------------------------------------------
 
@@ -312,7 +313,8 @@ CREATE TABLE `khachhang` (
 
 INSERT INTO `khachhang` (`maKH`, `maND`, `diemTichLuy`) VALUES
 (1, 2, 0),
-(2, 3, 0);
+(2, 3, 0),
+(5, 6, 0);
 
 -- --------------------------------------------------------
 
@@ -369,7 +371,8 @@ CREATE TABLE `nguoidung` (
 INSERT INTO `nguoidung` (`maND`, `tenDangNhap`, `matKhau`, `ten`, `ngaySinh`, `gioiTinh`, `diaChi`, `soDienThoai`, `ngayTao`, `vaiTro`, `trangThai`) VALUES
 (1, 'admin', '1', 'Quản Trị Viên', NULL, NULL, NULL, NULL, '2025-10-13 17:14:54', 'ADMIN', 'ACTIVE'),
 (2, 'user', '2', 'Người Dùng', NULL, NULL, NULL, NULL, '2025-10-13 17:14:54', 'USER', 'ACTIVE'),
-(3, 'anhvu', 'vu12122005@@', 'Anh Vũ Trần Lê', NULL, NULL, NULL, '1', '2026-04-17 05:25:57', 'USER', 'ACTIVE');
+(3, 'anhvu', 'vu12122005@@', 'Anh Vũ Trần Lê', NULL, NULL, NULL, '1', '2026-04-17 05:25:57', 'USER', 'ACTIVE'),
+(6, 'abcd', '1', 'Trần Hà Linh Côn', NULL, NULL, NULL, '0945123789', '2026-05-04 13:17:35', 'USER', 'ACTIVE');
 
 -- --------------------------------------------------------
 
@@ -428,7 +431,10 @@ CREATE TABLE `productreviews` (
 --
 
 INSERT INTO `productreviews` (`id`, `product_id`, `user_id`, `user_name`, `rating`, `content`, `is_purchased`, `status`, `created_at`) VALUES
-(1, 28, 3, 'Anh Vũ Trần Lê', 5, 'Sản phẩm chất lượng cao, rất đáng mua!', 0, 'visible', '2026-05-01 17:19:24');
+(1, 28, 3, 'Anh Vũ Trần Lê', 5, 'Sản phẩm chất lượng cao, rất đáng mua!', 0, 'visible', '2026-05-01 17:19:24'),
+(2, 27, 3, 'Anh Vũ Trần Lê', 5, 'Sản phẩm chất lượng xuất sắc', 0, 'visible', '2026-05-04 19:51:10'),
+(3, 25, 6, 'Trần Hà Linh Côn', 2, 'quần không đúng chất lượng', 0, 'visible', '2026-05-04 20:18:02'),
+(4, 27, 6, 'Trần Hà Linh Côn', 4, 'Sản phẩm chất lượng ổn, giá cả phải chăng. Nên mua hàng ở shop', 0, 'visible', '2026-05-04 20:21:30');
 
 -- --------------------------------------------------------
 
@@ -730,7 +736,7 @@ ALTER TABLE `danhmuc`
 -- AUTO_INCREMENT cho bảng `discount_codes`
 --
 ALTER TABLE `discount_codes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `donhang`
@@ -754,7 +760,7 @@ ALTER TABLE `homereviews`
 -- AUTO_INCREMENT cho bảng `khachhang`
 --
 ALTER TABLE `khachhang`
-  MODIFY `maKH` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `maKH` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `magiamgia`
@@ -766,7 +772,7 @@ ALTER TABLE `magiamgia`
 -- AUTO_INCREMENT cho bảng `nguoidung`
 --
 ALTER TABLE `nguoidung`
-  MODIFY `maND` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `maND` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `nhanvien`
@@ -778,7 +784,7 @@ ALTER TABLE `nhanvien`
 -- AUTO_INCREMENT cho bảng `productreviews`
 --
 ALTER TABLE `productreviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `quantrivien`
