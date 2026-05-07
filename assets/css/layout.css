@@ -1,0 +1,393 @@
+/* Chứa Header (Navbar) và Footer dùng chung cho toàn bộ các trang. */
+/* --- HEADER --- */
+/* --- LOGO TEXT MỚI: THANH MẢNH & SANG TRỌNG --- */
+.logo-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.1;
+    /* Tăng nhẹ để không dính chữ */
+    transition: 0.3s;
+}
+
+.logo-main {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    /* Giảm size xuống cho thanh thoát */
+    font-weight: 600;
+    /* Chữ mảnh hơn mới sang */
+    color: #1A1A1A;
+    letter-spacing: 6px;
+    /* Giãn rộng hơn nữa */
+    text-transform: uppercase;
+}
+
+.logo-sub {
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    /* Thu nhỏ phần sub */
+    font-weight: 700;
+    color: #C4622D;
+    letter-spacing: 12px;
+    /* Giãn cực rộng để bằng chiều ngang chữ trên */
+    text-transform: uppercase;
+    margin-top: 4px;
+    margin-left: 12px;
+    /* Bù trừ khoảng cách để căn giữa tuyệt đối */
+    opacity: 0.8;
+}
+
+/* Hiệu ứng Hover mượt mà */
+.navbar-brand:hover .logo-text-wrapper {
+    transform: scale(0.98);
+    opacity: 0.7;
+}
+
+/* Điều chỉnh lại Navbar Brand để không bị dãn */
+.navbar-brand {
+    min-width: fit-content !important;
+    padding: 0 !important;
+}
+@media (max-width: 991px) {
+    .logo-ptit {
+        width: 110px;
+        max-height: 30px;
+    }
+}
+.nav-custom-ptit {
+    background-color: #FAF7F2;
+    /* Màu be sáng của nền trang */
+    padding: 15px 0;
+    transition: 0.3s;
+    border-bottom: 1px solid #EDE8DF;
+    /* Đường kẻ mờ tạo sự phân chia */
+}
+
+/* Phong cách Menu chính */
+.nav-link-ptit {
+    font-family: Arial, Helvetica, sans-serif;
+    /* Sử dụng Arial để tránh lỗi font Việt */
+    font-size: 14px;
+    font-weight: 700;
+    /* Tăng độ đậm */
+    color: #1A1A1A !important;
+    text-transform: uppercase;
+    /* In hoa */
+    letter-spacing: 1px;
+    padding: 10px 15px !important;
+    transition: 0.3s;
+}
+
+.nav-link-ptit:hover,
+.nav-link-ptit.active {
+    color: #C4622D !important;
+    /* Đổi màu khi hover */
+}
+
+/* Phong cách Icons bên phải */
+.icon-link {
+    color: #1A1A1A;
+    font-size: 18px;
+    transition: 0.3s;
+    text-decoration: none;
+}
+
+.icon-link:hover {
+    color: #C4622D;
+    transform: scale(1.1);
+}
+
+/* Badge số lượng giỏ hàng */
+.cart-badge-ptit {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background-color: #C4622D;
+    color: #ffffff;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+}
+
+/* Tìm kiếm */
+/* --- PHẦN TÌM KIẾM ĐÃ TINH CHỈNH CHUẨN HÌNH 2 --- */
+
+/* 1. LỚP NỀN MỜ BAO PHỦ TOÀN MÀN HÌNH */
+.search-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    /* Làm tối nền */
+    backdrop-filter: blur(8px) !important;
+    /* Hiệu ứng mờ nền cao cấp */
+    z-index: 9999 !important;
+    display: none;
+    /* Mặc định ẩn, JS gọi fadeIn */
+    align-items: center;
+    justify-content: center;
+}
+
+/* 2. KHUNG TÌM KIẾM BO TRÒN MẠNH (ROUNDED-40PX) */
+.search-modal-container {
+    background: #FAF7F2 !important;
+    /* Màu kem nhạt chuẩn Simple Fit */
+    width: 90% !important;
+    max-width: 850px !important;
+    padding: 50px !important;
+    border-radius: 40px !important;
+    /* Bo góc cực tròn như hình 2 */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    border: none !important;
+}
+
+/* 3. TINH CHỈNH CÁC NÚT TAB (TÌM KIẾM / AI) */
+.btn-search-tab {
+    border: none !important;
+    /* Xóa bỏ viền đen thô kệch của hình 1 */
+    padding: 10px 25px !important;
+    border-radius: 50px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    background: #EFEBE5 !important;
+    /* Màu nền xám nhạt trung tính */
+    color: #8C8279 !important;
+    transition: 0.3s !important;
+    outline: none !important;
+    box-shadow: none !important;
+    margin-right: 8px;
+}
+
+.btn-search-tab.active {
+    background: #C4622D !important;
+    /* Màu cam đất đặc trưng */
+    color: white !important;
+}
+
+/* 4. Ô NHẬP LIỆU CHỮ TO VÀ SẠCH */
+.search-input-group {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #E8E2D6 !important;
+    margin-bottom: 30px;
+
+    /* KÉO DÀI GẠCH NGANG TRÀN LỀ */
+    width: calc(100% + 100px) !important;
+    /* Cộng thêm 100px (tổng padding 2 bên của cha) */
+    margin-left: -50px !important;
+    /* Kéo ngược về bên trái 50px */
+    padding: 0 50px !important;
+    /* Thêm padding trong để chữ không dính vách */
+    position: relative;
+}
+
+/* Ép các icon và nút X không được có viền đen */
+.search-icon-left,
+.close-search-btn {
+    border: none !important;
+    background: transparent !important;
+    color: #8C8279 !important;
+    font-size: 20px !important;
+    padding: 10px !important;
+    cursor: pointer !important;
+    /* ÉP NỔI LÊN ĐỂ KHÔNG BỊ INPUT CHE MẤT NÚT X */
+    z-index: 9999 !important;
+    position: relative;
+    outline: none !important;
+}
+/* Đảm bảo ô nhập liệu không chiếm chỗ của gạch ngang */
+.search-input-group input {
+    flex-grow: 1;
+    border: none !important;
+    background: transparent !important;
+    font-size: 24px !important;
+    padding: 20px 0 !important;
+    outline: none !important;
+    /* CHỪA CHỖ CHO NÚT X KHÔNG ĐÈ LÊN */
+    padding-right: 40px !important;
+}
+
+.search-input-group input::placeholder {
+    color: #8C8279;
+    opacity: 0.6;
+}
+
+/* 5. CÁC NÚT DANH MỤC GỢI Ý */
+.cat-pill {
+    background: #EFEBE5 !important;
+    color: #4A4A4A !important;
+    padding: 12px 28px !important;
+    border-radius: 50px !important;
+    font-size: 14px !important;
+    text-decoration: none !important;
+    transition: 0.3s !important;
+    display: inline-block;
+}
+
+.cat-pill:hover {
+    background: #C4622D !important;
+    color: white !important;
+    transform: translateY(-2px);
+}
+
+/* Dropdown kết quả AJAX */
+#live-search-results {
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    /* Ẩn scrollbar cho tinh tế */
+}
+
+/* --- FOOTER --- */
+.main-footer {
+    background-color: #1A1A1A;
+    /* Màu đen chủ đạo */
+    color: #ffffff;
+    padding: 80px 0 40px;
+    margin-top: 60px;
+}
+
+.footer-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+}
+
+.footer-brand .highlight {
+    color: #C4622D;
+    /* Màu cam đất của thương hiệu */
+}
+
+.footer-tagline {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    color: #8C8279;
+    line-height: 1.8;
+}
+
+.footer-title {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+    color: #ffffff;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 12px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    color: #8C8279;
+    transition: 0.3s;
+}
+
+.footer-links li a {
+    color: #8C8279;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.footer-links li a:hover,
+.footer-links li:hover {
+    color: #C4622D;
+    padding-left: 5px;
+}
+
+/* Icons mạng xã hội */
+.social-icon {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.social-icon:hover {
+    background-color: #C4622D;
+    color: #ffffff;
+    transform: translateY(-3px);
+}
+
+.footer-bottom {
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+    font-size: 12px;
+    color: #555;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* --- BACK TO TOP DYNAMIC BUTTON --- */
+.back-to-top-btn {
+    position: fixed;
+    /* Cố định vị trí so với cửa sổ trình duyệt */
+    bottom: 30px;
+    right: 30px;
+    width: 46px;
+    height: 46px;
+    background-color: #C4622D;
+    /* Màu thương hiệu SIMPLE FIT */
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    /* Mặc định ẩn */
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    z-index: 9999;
+    /* Luôn nằm trên cùng */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    /* Hiệu ứng trồi lên khi xuất hiện */
+}
+
+/* Khi nút ở trạng thái hiển thị */
+.back-to-top-btn.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.back-to-top-btn:hover {
+    background-color: #a34f24;
+    transform: translateY(-5px);
+    /* Nhô lên nhẹ khi di chuột vào */
+    box-shadow: 0 6px 20px rgba(196, 98, 45, 0.3);
+}
+
+/* Tối ưu cho điện thoại */
+@media (max-width: 768px) {
+    .back-to-top-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+}

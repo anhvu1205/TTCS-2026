@@ -1,0 +1,73 @@
+/* Chứa các thiết lập gốc, biến màu sắc và cấu trúc khung cơ bản. CSS */
+/* TRANG CHỦ & CẤU HÌNH GỐC */
+:root {
+    --mau-bg: #FAF7F2;
+    --mau-gold: #C4622D;
+    --mau-text: #1A1A1A;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--mau-bg);
+    color: var(--mau-text);
+}
+
+.max-w-7xl {
+    max-width: 1280px;
+}
+
+.max-w-3xl {
+    max-width: 768px;
+}
+
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Xóa gạch chân mặc định cho tất cả các thẻ link */
+a {
+    text-decoration: none !important;
+    color: inherit;
+}
+
+
+/* Thông báo */
+.announcement-bar-container {
+    background-color: #5C6650;
+    color: #ffffff;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    padding: 10px 40px;
+    position: relative;
+    font-family: 'DM Sans', sans-serif;
+    text-transform: uppercase;
+    z-index: 1050;
+    /* Đảm bảo nằm trên Menu */
+}
+
+.close-announcement {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+    cursor: pointer;
+}
+
+.close-announcement:hover {
+    opacity: 1;
+}
+
+.announcement-content {
+    transition: opacity 0.5s ease-in-out;
+}
