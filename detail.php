@@ -81,29 +81,29 @@ if (isset($_GET['id'])) {
                     <form action="cart.php" method="POST">
                         <input type="hidden" name="id" value="<?php echo $product['maSP']; ?>">
 
-                        <?php if(!empty($sizes)): ?>
-                        <p class="small text-muted mb-4"><strong>Chất liệu:</strong> <?php echo htmlspecialchars($product['chatLieu'] ?: 'Cotton'); ?></p>
-                        <div class="mb-4">
-                            <label class="fw-bold small mb-3 d-block">CHỌN SIZE:</label>
-                            <div class="d-flex flex-wrap gap-2">
-                                <?php foreach($sizes as $index => $s): ?>
-                                    <input type="radio" name="size" value="<?php echo trim($s); ?>" id="size-<?php echo $index; ?>" class="btn-check" <?php echo $index === 0 ? 'checked' : ''; ?>>
-                                    <label class="btn btn-outline-dark rounded-3 px-4 py-2 fw-medium" for="size-<?php echo $index; ?>"><?php echo trim($s); ?></label>
-                                <?php endforeach; ?>
+                        <?php if (!empty($sizes)): ?>
+                            <p class="small text-muted mb-4"><strong>Chất liệu:</strong> <?php echo htmlspecialchars($product['chatLieu'] ?: 'Cotton'); ?></p>
+                            <div class="mb-4">
+                                <label class="fw-bold small mb-3 d-block">CHỌN SIZE:</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <?php foreach ($sizes as $index => $s): ?>
+                                        <input type="radio" name="size" value="<?php echo trim($s); ?>" id="size-<?php echo $index; ?>" class="btn-check" <?php echo $index === 0 ? 'checked' : ''; ?>>
+                                        <label class="btn btn-outline-dark rounded-3 px-4 py-2 fw-medium" for="size-<?php echo $index; ?>"><?php echo trim($s); ?></label>
+                                    <?php endforeach; ?>
+                                </div>
                             </div>
-                        </div>
                         <?php endif; ?>
 
-                        <?php if(!empty($colors)): ?>
-                        <div class="mb-4">
-                            <label class="fw-bold small mb-3 d-block">CHỌN MÀU SẮC:</label>
-                            <div class="d-flex flex-wrap gap-2">
-                                <?php foreach($colors as $index => $c): ?>
-                                    <input type="radio" name="color" value="<?php echo trim($c); ?>" id="color-<?php echo $index; ?>" class="btn-check" <?php echo $index === 0 ? 'checked' : ''; ?>>
-                                    <label class="btn btn-outline-dark rounded-3 px-3 py-2 fw-medium" for="color-<?php echo $index; ?>"><?php echo trim($c); ?></label>
-                                <?php endforeach; ?>
+                        <?php if (!empty($colors)): ?>
+                            <div class="mb-4">
+                                <label class="fw-bold small mb-3 d-block">CHỌN MÀU SẮC:</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <?php foreach ($colors as $index => $c): ?>
+                                        <input type="radio" name="color" value="<?php echo trim($c); ?>" id="color-<?php echo $index; ?>" class="btn-check" <?php echo $index === 0 ? 'checked' : ''; ?>>
+                                        <label class="btn btn-outline-dark rounded-3 px-3 py-2 fw-medium" for="color-<?php echo $index; ?>"><?php echo trim($c); ?></label>
+                                    <?php endforeach; ?>
+                                </div>
                             </div>
-                        </div>
                         <?php endif; ?>
 
                         <!-- SỐ LƯỢNG + NÚT THÊM GIỎ -->
@@ -114,8 +114,8 @@ if (isset($_GET['id'])) {
                                     <button class="btn btn-link text-dark border-0 px-3" type="button" id="qtyMinus">
                                         <i class="fa-solid fa-minus small"></i>
                                     </button>
-                                    <input type="text" name="quantity" id="productQty" value="1" 
-                                        data-stock="<?php echo $stock; ?>" 
+                                    <input type="text" name="quantity" id="productQty" value="1"
+                                        data-stock="<?php echo $stock; ?>"
                                         class="form-control border-0 text-center fw-bold" readonly>
                                     <button class="btn btn-link text-dark border-0 px-3" type="button" id="qtyPlus">
                                         <i class="fa-solid fa-plus small"></i>
@@ -143,48 +143,48 @@ if (isset($_GET['id'])) {
         $res_related = mysqli_query($conn, $sql_related);
         if (mysqli_num_rows($res_related) > 0):
         ?>
-        <div class="mt-5 pt-5 border-top">
-            <h3 class="fw-light mb-5">Sản phẩm <span style="color: #BFA77F;">tương tự</span></h3>
-            <div class="row g-4">
-                <?php while($rel = mysqli_fetch_assoc($res_related)): ?>
-                <div class="col-6 col-md-3">
-                    <div class="product-card-v3 h-100">
-                        <div class="product-img-wrapper-v3">
-                            <a href="detail.php?id=<?php echo $rel['id']; ?>">
-                                <img src="<?php echo $rel['image']; ?>" class="product-img-main-v3" alt="<?php echo htmlspecialchars($rel['name']); ?>">
-                            </a>
-                            
-                            <button class="btn-wishlist-v3 add-to-wishlist" data-id="<?php echo $row['id']; ?>" title="Thêm vào yêu thích">
-                                <i class="<?php echo $is_wishlisted ? 'fa-solid text-danger' : 'fa-regular'; ?> fa-heart"></i>
-                            </button>
-                            
-                            <form action="cart.php" method="POST" class="quick-add-form-v3">
-                                <input type="hidden" name="id" value="<?php echo $rel['id']; ?>">
-                                
-                                <?php if ($rel['soLuong'] > 0): ?>
-                                    <button type="submit" name="add_to_cart" class="btn-quick-add-v3">
-                                        <i class="fa-solid fa-cart-plus me-2"></i>THÊM VÀO GIỎ HÀNG
+            <div class="mt-5 pt-5 border-top">
+                <h3 class="fw-light mb-5">Sản phẩm <span style="color: #BFA77F;">tương tự</span></h3>
+                <div class="row g-4">
+                    <?php while ($rel = mysqli_fetch_assoc($res_related)): ?>
+                        <div class="col-6 col-md-3">
+                            <div class="product-card-v3 h-100">
+                                <div class="product-img-wrapper-v3">
+                                    <a href="detail.php?id=<?php echo $rel['id']; ?>">
+                                        <img src="<?php echo $rel['image']; ?>" class="product-img-main-v3" alt="<?php echo htmlspecialchars($rel['name']); ?>">
+                                    </a>
+
+                                    <button class="btn-wishlist-v3 add-to-wishlist" data-id="<?php echo $row['id']; ?>" title="Thêm vào yêu thích">
+                                        <i class="<?php echo $is_wishlisted ? 'fa-solid text-danger' : 'fa-regular'; ?> fa-heart"></i>
                                     </button>
-                                <?php else: ?>
-                                    <button type="button" class="btn-quick-add-v3 disabled" disabled style="background-color: #999; opacity: 0.8;">
-                                        <i class="fa-solid fa-xmark me-2"></i>HẾT HÀNG
-                                    </button>
-                                <?php endif; ?>
-                            </form>
+
+                                    <form action="cart.php" method="POST" class="quick-add-form-v3">
+                                        <input type="hidden" name="id" value="<?php echo $rel['id']; ?>">
+
+                                        <?php if ($rel['soLuong'] > 0): ?>
+                                            <button type="submit" name="add_to_cart" class="btn-quick-add-v3">
+                                                <i class="fa-solid fa-cart-plus me-2"></i>THÊM VÀO GIỎ HÀNG
+                                            </button>
+                                        <?php else: ?>
+                                            <button type="button" class="btn-quick-add-v3 disabled" disabled style="background-color: #999; opacity: 0.8;">
+                                                <i class="fa-solid fa-xmark me-2"></i>HẾT HÀNG
+                                            </button>
+                                        <?php endif; ?>
+                                    </form>
+                                </div>
+                                <div class="product-info-v3 mt-3 text-center">
+                                    <h6 class="product-name-v3 mb-1">
+                                        <a href="detail.php?id=<?php echo $rel['id']; ?>" style="text-decoration: none; color: inherit;">
+                                            <?php echo htmlspecialchars($rel['name']); ?>
+                                        </a>
+                                    </h6>
+                                    <p class="product-price-v3 mb-0"><?php echo number_format($rel['price']); ?>₫</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="product-info-v3 mt-3 text-center">
-                            <h6 class="product-name-v3 mb-1">
-                                <a href="detail.php?id=<?php echo $rel['id']; ?>" style="text-decoration: none; color: inherit;">
-                                    <?php echo htmlspecialchars($rel['name']); ?>
-                                </a>
-                            </h6>
-                            <p class="product-price-v3 mb-0"><?php echo number_format($rel['price']); ?>₫</p>
-                        </div>
-                    </div>
+                    <?php endwhile; ?>
                 </div>
-                <?php endwhile; ?>
             </div>
-        </div>
         <?php endif; ?>
 
 
@@ -215,7 +215,7 @@ if (isset($_GET['id'])) {
                     JOIN ChiTietDonHang ct ON dh.maDH = ct.maDH
                     WHERE dh.maKH = $maKH_current
                       AND ct.maSP = $product_id
-                      AND dh.trangThai IN ('HOAN_TAT', 'DA_GIAO_HANG')
+                      AND dh.trangThai IN ('Hoàn tất', 'Đã giao hàng')
                     LIMIT 1
                 ");
                 $has_purchased_current_product = ($res_bought && mysqli_num_rows($res_bought) > 0) ? 1 : 0;
@@ -284,7 +284,7 @@ if (isset($_GET['id'])) {
 
                                 <textarea name="content" class="form-control mb-3" rows="3" placeholder="Viết đánh giá của bạn về sản phẩm..." required></textarea>
 
-                                    <div class="small text-success mb-3"><i class="fa-solid fa-check-circle me-1"></i>Tài khoản của bạn đã mua sản phẩm này.</div>
+                                <div class="small text-success mb-3"><i class="fa-solid fa-check-circle me-1"></i>Tài khoản của bạn đã mua sản phẩm này.</div>
 
                                 <button type="submit" class="btn btn-dark rounded-pill px-4">Gửi đánh giá</button>
                             </form>
