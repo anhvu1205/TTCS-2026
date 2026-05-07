@@ -10,7 +10,12 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-$user = $_SESSION['user'];
+// LẤY THÔNG TIN MỚI NHẤT TỪ DATABASE (Thay vì dùng Session cũ)
+$user_session = $_SESSION['user'];
+$user_id = $user_session['id'] ?? $user_session['maND'];
+$res_fresh_user = mysqli_query($conn, "SELECT * FROM NguoiDung WHERE maND = '$user_id'");
+$fresh_user = mysqli_fetch_assoc($res_fresh_user);
+
 $cartItems = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
 
 if (empty($cartItems) && !isset($_GET['step'])) {
@@ -27,9 +32,10 @@ $shipping = ($subtotal >= 500000 || $subtotal == 0) ? 0 : 30000;
 $total = max(($subtotal - $discountAmount), 0) + $shipping;
 
 // 3. XỬ LÝ KHI ẤN NÚT XÁC NHẬN ĐẶT HÀNG
-if (isset($_POST['confirm_order'])) {
-    $maND = $user['maND'] ?? $user['id'];
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_order'])) {
+    $maND = $fresh_user['maND'];
 
+    // Tìm maKH tương ứng
     $res_kh = mysqli_query($conn, "SELECT maKH FROM KhachHang WHERE maND = '$maND'");
     if (mysqli_num_rows($res_kh) > 0) {
         $kh = mysqli_fetch_assoc($res_kh);
@@ -45,7 +51,8 @@ if (isset($_POST['confirm_order'])) {
     $note = mysqli_real_escape_string($conn, $_POST['note']);
     $payment_method = $_POST['payment_method'];
 
-    $trangThai = ($payment_method === 'QR') ? 'CHUA_THANH_TOAN' : 'CHO_XAC_NHAN';
+// Đồng bộ trạng thái với trang Admin (pending cho COD, CHUA_THANH_TOAN cho QR)
+    $trangThai = ($payment_method === 'QR') ? 'CHUA_THANH_TOAN' : 'Chờ xác nhận';
 
     $sql_order = "INSERT INTO DonHang (maKH, hoTen, soDienThoai, diaChi, tongTien, phiShip, phuongThucThanhToan, trangThai) 
                   VALUES ('$maKH', '$fullname', '$phone', '$address', '$total', '$shipping', '$payment_method', '$trangThai')";
@@ -101,7 +108,7 @@ include 'includes/header.php';
                 </div>
                 <h2 class="display-6 mb-3" style="font-family: 'Cormorant Garamond', serif;">Đặt hàng thành công!</h2>
                 <p class="text-muted">Cảm ơn <strong><?php echo $_SESSION['order_success']['name']; ?></strong>!</p>
-                <p class="text-muted mb-5">Chúng tôi sẽ liên hệ qua số <strong><?php echo $_SESSION['order_success']['phone']; ?></strong> để xác nhận.</p>
+                <p class="text-muted mb-5">Chúng tôi sẽ sớm xác nhận đơn hàng của bạn.</p>
                 <div class="d-flex gap-3 justify-content-center">
                     <a href="profile.php" class="btn px-4 py-2 rounded-pill border border-dark" style="color: #1A1A1A; font-weight: 500;">Xem đơn hàng</a>
                     <a href="shop.php" class="btn btn-dark rounded-pill px-4">Tiếp tục mua sắm</a>
@@ -116,23 +123,29 @@ include 'includes/header.php';
             </div>
 
             <form action="checkout.php" method="POST" class="row g-4">
+                <input type="hidden" name="confirm_order" value="1">
+                
                 <div class="col-lg-7">
                     <div class="p-4 rounded-4 mb-4" style="background-color: #EDE8DF;">
-                        <h5 class="mb-4 small fw-bold text-uppercase tracking-widest"><i class="fa-solid fa-user me-2" style="color: #C4622D;"></i>Thông tin người nhận</h5>
+                        <h5 class="mb-4 small fw-bold text-uppercase tracking-widest">
+                            <i class="fa-solid fa-user me-2" style="color: #C4622D;"></i>Thông tin người nhận
+                        </h5>
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="small fw-bold mb-2">Họ và tên *</label>
-                                <input type="text" name="fullname"
-                                    value="<?php echo $user['ten'] ?? $user['fullname'] ?? ''; ?>"
-                                    class="form-control" placeholder="Nguyễn Văn A" required>
+                                <input type="text" name="fullname" 
+                                       value="<?php echo htmlspecialchars($fresh_user['ten']); ?>" 
+                                       class="form-control border-0 p-3 rounded-3" required>
                             </div>
                             <div class="col-12">
                                 <label class="small fw-bold mb-2">Số điện thoại *</label>
-                                <input type="tel" name="phone" value="<?php echo $user['soDienThoai'] ?? ''; ?>" class="form-control border-0 p-3 rounded-3" placeholder="090..." required>
+                                <input type="tel" name="phone" 
+                                       value="<?php echo htmlspecialchars($fresh_user['soDienThoai']); ?>" 
+                                       class="form-control border-0 p-3 rounded-3" required>
                             </div>
                             <div class="col-12">
                                 <label class="small fw-bold mb-2">Địa chỉ giao hàng *</label>
-                                <textarea name="address" class="form-control border-0 p-3 rounded-3" rows="3" placeholder="Số nhà, tên đường, phường/xã..." required></textarea>
+                                <textarea name="address" class="form-control border-0 p-3 rounded-3" rows="3" required><?php echo htmlspecialchars($fresh_user['diaChi']); ?></textarea>
                             </div>
                             <div class="col-12">
                                 <label class="small fw-bold mb-2">Ghi chú</label>
@@ -142,7 +155,9 @@ include 'includes/header.php';
                     </div>
 
                     <div class="p-4 rounded-4" style="background-color: #EDE8DF;">
-                        <h5 class="mb-4 small fw-bold text-uppercase tracking-widest"><i class="fa-solid fa-credit-card me-2" style="color: #C4622D;"></i>Phương thức thanh toán</h5>
+                        <h5 class="mb-4 small fw-bold text-uppercase tracking-widest">
+                            <i class="fa-solid fa-credit-card me-2" style="color: #C4622D;"></i>Phương thức thanh toán
+                        </h5>
                         <div class="payment-options">
                             <label class="d-block p-3 mb-2 rounded-3 bg-white border cursor-pointer">
                                 <input type="radio" name="payment_method" value="COD" checked>
@@ -160,7 +175,7 @@ include 'includes/header.php';
                     <div class="p-4 rounded-4 sticky-top" style="top: 120px; background-color: #EDE8DF;">
                         <h5 class="mb-4 small fw-bold text-uppercase tracking-widest">Đơn hàng (<?php echo count($cartItems); ?>)</h5>
 
-                        <div class="order-items-list mb-4">
+                        <div class="order-items-list mb-4" style="max-height: 300px; overflow-y: auto;">
                             <?php foreach ($cartItems as $item): ?>
                                 <div class="d-flex gap-3 mb-3 pb-3 border-bottom" style="border-color: #D4CEBE !important;">
                                     <img src="<?php echo $item['image']; ?>" class="rounded-3" style="width: 60px; height: 80px; object-fit: cover;">
@@ -178,12 +193,10 @@ include 'includes/header.php';
                                 <span class="text-muted">Tạm tính</span>
                                 <span><?php echo number_format($subtotal); ?>₫</span>
                             </div>
-
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted">Giảm giá<?php echo $discountCode ? " ($discountCode)" : ""; ?></span>
                                 <span style="color:#5C6650;">-<?php echo number_format($discountAmount); ?>₫</span>
                             </div>
-
                             <div class="d-flex justify-content-between">
                                 <span class="text-muted">Vận chuyển</span>
                                 <span><?php echo ($shipping == 0) ? 'Miễn phí' : number_format($shipping) . '₫'; ?></span>
@@ -195,7 +208,7 @@ include 'includes/header.php';
                             <span class="h4 fw-bold mb-0" style="color: #C4622D;"><?php echo number_format($total); ?>₫</span>
                         </div>
 
-                        <button type="submit" name="confirm_order" class="btn w-100 py-3 rounded-pill text-white fw-bold" style="background-color: #C4622D;">
+                        <button type="submit" name="confirm_order" class="btn w-100 py-3 rounded-pill text-white fw-bold shadow-sm" style="background-color: #C4622D;">
                             XÁC NHẬN ĐẶT HÀNG
                         </button>
                     </div>

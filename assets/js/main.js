@@ -28,8 +28,9 @@ setInterval(() => {
 }
 
 
-// 2. THÊM VÀO YÊU THÍCH
+// 2. Thêm vào yêu thích và thêm vào giỏ hàng
 $(document).ready(function () {
+    // 1. XỬ LÝ NÚT YÊU THÍCH (WISHILIST)
     $(document).off('click', '.add-to-wishlist').on('click', '.add-to-wishlist', function (e) {
         e.preventDefault();
         let btn = $(this);
@@ -37,20 +38,47 @@ $(document).ready(function () {
 
         $.post('controll/add_like.php', { product_id: p_id }, function (res) {
             let status = res.trim();
-
-            // TÌM TẤT CẢ CÁC NÚT TRÊN TRANG CÓ CÙNG ID SẢN PHẨM NÀY
-            let allBtnsWithSameId = $(`.add-to-wishlist[data-id="${p_id}"]`);
-
-            if (status === 'added') {
-                // Cập nhật trái tim đỏ cho tất cả chỗ xuất hiện sản phẩm này
-                allBtnsWithSameId.find('i').removeClass('fa-regular').addClass('fa-solid text-danger');
-            } else if (status === 'removed') {
-                // Trả về trái tim rỗng cho tất cả
-                allBtnsWithSameId.find('i').removeClass('fa-solid text-danger').addClass('fa-regular');
-            } else if (status === 'not_logged_in') {
+            if (status === 'not_logged_in') {
                 alert("Vui lòng đăng nhập để thực hiện chức năng này!");
+                window.location.href = 'login.php'; // Trỏ tới trang đăng nhập
+            } else if (status === 'admin_block') {
+                alert("Tài khoản Quản trị viên không thể thực hiện chức năng yêu thích sản phẩm.");
+            } else {
+                let allBtnsWithSameId = $(`.add-to-wishlist[data-id="${p_id}"]`);
+                if (status === 'added') {
+                    allBtnsWithSameId.find('i').removeClass('fa-regular').addClass('fa-solid text-danger');
+                } else if (status === 'removed') {
+                    allBtnsWithSameId.find('i').removeClass('fa-solid text-danger').addClass('fa-regular');
+                }
             }
         });
+    });
+
+    // 2. XỬ LÝ NÚT THÊM VÀO GIỎ HÀNG BẰNG AJAX
+    $(document).on('submit', '.quick-add-form-v3, .quick-add-form-v32, form[action="cart.php"]', function (e) {
+        let form = $(this);
+        // Nếu là trang chi tiết sản phẩm thì vẫn cho submit form bình thường hoặc xử lý AJAX tùy mày
+        // Ở đây tao sẽ ép dùng AJAX cho các nút ở trang chủ/danh sách
+        if (form.find('button[name="add_to_cart"]').length > 0) {
+            e.preventDefault();
+            let formData = form.serialize() + '&add_to_cart=1';
+
+            $.post('cart.php', formData, function (res) {
+                let responseText = res.trim(); // Tạo biến để chứa kết quả đã lọc khoảng trắng
+
+                if (responseText.includes('not_logged_in')) {
+                    alert("Vui lòng đăng nhập để mua hàng!");
+                    window.location.href = 'login.php';
+                }
+                else if (responseText.includes('admin_block')) { // <--- Đã sửa thành responseText
+                    alert("Tài khoản Quản trị viên không thể thực hiện mua hàng.");
+                }
+                else {
+                    alert("Đã thêm vào giỏ hàng thành công!");
+                    location.reload();
+                }
+            });
+        }
     });
 });
 
@@ -285,5 +313,41 @@ $(document).ready(function () {
                 }
             }
         });
+    }
+});
+// 9. LỌC ĐƠN HÀNG TRÊN ADMIN THEO TỪ KHÓA VÀ TRẠNG THÁI
+$(document).ready(function () {
+    const searchInput = $('#orderSearch');
+    const statusFilter = $('#statusFilter');
+
+    function filterOrders() {
+        const query = searchInput.val().toLowerCase().trim();
+        const status = statusFilter.val();
+
+        $('.order-card-v2').each(function () {
+            const card = $(this);
+            const cardText = card.text().toLowerCase();
+            // Lấy trạng thái từ thuộc tính data-status của card
+            const cardStatus = card.data('status');
+
+            const matchesSearch = cardText.indexOf(query) > -1;
+            const matchesStatus = (status === 'all' || cardStatus === status);
+
+            if (matchesSearch && matchesStatus) {
+                card.fadeIn(200); // Hiển thị mượt mà
+            } else {
+                card.hide(); // Ẩn đi
+            }
+        });
+    }
+
+    // Lắng nghe sự kiện gõ phím vào ô tìm kiếm
+    if (searchInput.length) {
+        searchInput.on('input', filterOrders);
+    }
+
+    // Lắng nghe sự kiện thay đổi dropdown trạng thái
+    if (statusFilter.length) {
+        statusFilter.on('change', filterOrders);
     }
 });

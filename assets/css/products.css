@@ -33,33 +33,6 @@
     margin-top: auto;
 }
 
-.btn-quick-add-v32 {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    background-color: #1A1A1A;
-    /* Màu đen sang trọng */
-    color: #ffffff;
-    border: none;
-    border-radius: 50px;
-    /* Bo góc hoàn toàn */
-    padding: 12px 20px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    width: calc(100% - 40px);
-    /* Căn giữa */
-
-    /* Hiệu ứng ẩn mặc định */
-    opacity: 0;
-    transform: translateY(15px);
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    z-index: 10;
-}
-
 /* Hiện nút khi hover vào thẻ sản phẩm */
 .product-card-v3:hover .btn-quick-add-v32 {
     opacity: 1;

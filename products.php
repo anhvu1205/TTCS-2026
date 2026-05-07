@@ -131,11 +131,11 @@ include 'includes/header.php';
                                         <form action="cart.php" method="POST" class="quick-add-form-v32">
                                             <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
                                             <?php if ($row['soLuong'] > 0): ?>
-                                                <button type="submit" name="add_to_cart" class="btn-quick-add-v32">
-                                                    <i class="fa-solid fa-cart-plus me-2"></i>THÊM VÀO GIỎ HÀNG 
-                                                </button>
+                                            <button type="submit" name="add_to_cart" class="btn-quick-add-v3">
+                                                <i class="fa-solid fa-cart-plus me-2"></i>THÊM VÀO GIỎ HÀNG
+                                            </button>
                                             <?php else: ?>
-                                                <button type="button" class="btn-quick-add-v32 disabled" style="background: #999; cursor: not-allowed;">
+                                                <button type="button" class="btn-quick-add-v3 disabled" style="background: #999; cursor: not-allowed;">
                                                     <i class="fa-solid fa-xmark me-2"></i>HẾT HÀNG
                                                 </button>
                                             <?php endif; ?>

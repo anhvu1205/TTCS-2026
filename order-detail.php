@@ -2,6 +2,20 @@
 session_start();
 require_once 'includes/db.php';
 
+// HÀM HỖ TRỢ LẤY CLASS CSS (Đồng bộ toàn hệ thống)
+function getStatusClass($status) {
+    $map = [
+        'Chưa thanh toán'         => 'status-chua_thanh_toan',
+        'Chờ xác nhận'            => 'status-cho_xac_nhan',
+        'Đang giao hàng'          => 'status-dang_giao_hang',
+        'Đã giao hàng'            => 'status-da_giao_hang',
+        'Hoàn tất'                => 'status-hoan_tat',
+        'Đã hủy'                  => 'status-da_huy',
+        'Chờ kiểm tra hoàn tiền'  => 'status-cho_hoan_tien' 
+    ];
+    return $map[$status] ?? 'status-default';
+}
+
 // 1. KIỂM TRA ĐĂNG NHẬP
 if (!isset($_SESSION['user'])) {
     header("Location: login.php");
@@ -9,129 +23,187 @@ if (!isset($_SESSION['user'])) {
 }
 
 $order_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-$user_id = $_SESSION['user']['maND'] ?? $_SESSION['user']['id'];
-$is_admin = (isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'ADMIN');
+$user_id = $_SESSION['user']['id'];
+$is_admin = ($_SESSION['user']['role'] === 'ADMIN');
 
-// 2. XỬ LÝ TÁC VỤ (ADMIN & USER)
+// 2. XỬ LÝ CẬP NHẬT (POST)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if ($is_admin) {
-        if(isset($_POST['set_pending_id'])) mysqli_query($conn, "UPDATE DonHang SET trangThai='CHO_XAC_NHAN' WHERE maDH='$order_id'");
-        if(isset($_POST['set_shipping_id'])) mysqli_query($conn, "UPDATE DonHang SET trangThai='DA_GIAO_HANG' WHERE maDH='$order_id'");
-        if(isset($_POST['set_complete_id'])) mysqli_query($conn, "UPDATE DonHang SET trangThai='HOAN_TAT' WHERE maDH='$order_id'");
-        if(isset($_POST['confirm_refund_id'])) {
+    
+    // ADMIN CẬP NHẬT TRẠNG THÁI TỪ SELECT BOX
+    if ($is_admin && isset($_POST['admin_update_status'])) {
+        $new_st = mysqli_real_escape_string($conn, $_POST['new_status']);
+        
+        // Nếu chuyển sang trạng thái Đã hủy, thực hiện hoàn kho
+        if ($new_st == 'Đã hủy') {
             $res_items = mysqli_query($conn, "SELECT maSP, soLuong FROM ChiTietDonHang WHERE maDH='$order_id'");
             while($item = mysqli_fetch_assoc($res_items)){
                 $p_id = $item['maSP']; $qty = $item['soLuong'];
                 mysqli_query($conn, "UPDATE SanPham SET soLuong = soLuong + $qty WHERE maSP='$p_id'");
             }
-            mysqli_query($conn, "UPDATE DonHang SET trangThai='DA_HUY' WHERE maDH='$order_id'");
         }
+        mysqli_query($conn, "UPDATE DonHang SET trangThai='$new_st' WHERE maDH='$order_id'");
     }
-    if (isset($_POST['action_cancel_order'])) {
-        $id_to_cancel = intval($_POST['order_id_hidden']);
-        mysqli_query($conn, "UPDATE DonHang SET trangThai = 'CHO_HOAN_TIEN' WHERE maDH = '$id_to_cancel'");
+
+    // KHÁCH HÀNG BẤM HỦY ĐƠN
+    if (!$is_admin && isset($_POST['action_cancel_order'])) {
+        $check_sql = mysqli_query($conn, "SELECT phuongThucThanhToan FROM DonHang WHERE maDH = '$order_id'");
+        $order_info = mysqli_fetch_assoc($check_sql);
+        
+        // Logic: COD -> Đã hủy luôn | QR -> Chờ kiểm tra hoàn tiền
+        $new_status = ($order_info['phuongThucThanhToan'] == 'COD') ? 'Đã hủy' : 'Chờ kiểm tra hoàn tiền';
+        
+        mysqli_query($conn, "UPDATE DonHang SET trangThai = '$new_status' 
+                           WHERE maDH = '$order_id' AND maKH = (SELECT maKH FROM KhachHang WHERE maND = '$user_id')");
     }
+
     header("Location: order-detail.php?id=" . $order_id);
     exit();
 }
 
-// 3. TRUY CẬP DỮ LIỆU
+// 3. TRUY VẤN DỮ LIỆU ĐƠN HÀNG
 if ($is_admin) {
     $sql_order = "SELECT * FROM DonHang WHERE maDH = '$order_id'";
 } else {
-    $sql_order = "SELECT d.*, k.maND FROM DonHang d JOIN KhachHang k ON d.maKH = k.maKH WHERE d.maDH = '$order_id' AND k.maND = '$user_id'";
+    $sql_order = "SELECT d.* FROM DonHang d JOIN KhachHang k ON d.maKH = k.maKH 
+                  WHERE d.maDH = '$order_id' AND k.maND = '$user_id'";
 }
 $res_order = mysqli_query($conn, $sql_order);
 $order = mysqli_fetch_assoc($res_order);
 
-if (!$order) die("Đơn hàng không tồn tại hoặc không có quyền.");
+if (!$order) die("<div class='text-center py-5'>Đơn hàng không tồn tại hoặc bạn không có quyền truy cập.</div>");
 
 include 'includes/header.php';
 ?>
 
+<link rel="stylesheet" href="assets/css/auth-account.css">
+
+<style>
+    /* Đồng bộ màu sắc trạng thái */
+    .status-dang_giao_hang { background-color: #8B5CF6 !important; color: white; }
+    .status-da_giao { background-color: #0D9488 !important; color: white; }
+    .status-cho_xac_nhan { background-color: #F59E0B !important; color: white; }
+    .status-hoan_tat { background-color: #10B981 !important; color: white; }
+    .status-da_huy { background-color: #EF4444 !important; color: white; }
+    .status-cho_hoan_tien { background-color: #6366F1 !important; color: white; }
+    .status-chua_thanh_toan { background-color: #6B7280 !important; color: white; }
+
+    .admin-select-status {
+        border: none;
+        border-radius: 50px;
+        padding: 8px 25px 8px 15px;
+        font-size: 11px;
+        font-weight: 700;
+        color: white;
+        appearance: none;
+        cursor: pointer;
+        text-transform: uppercase;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' %3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 12px;
+    }
+</style>
+
 <main class="py-5" style="background-color: #FAF7F2; min-height: 100vh; padding-top: 100px !important;">
     <div class="container" style="max-width: 850px;">
-        <!-- Nút quay lại linh hoạt -->
+        
         <a href="<?php echo $is_admin ? 'admin.php?tab=orders' : 'profile.php?tab=orders'; ?>" class="text-decoration-none text-muted small mb-4 d-inline-block">
-            <i class="fa-solid fa-arrow-left me-2"></i>Quay lại
+            <i class="fa-solid fa-arrow-left me-2"></i> Quay lại danh sách
         </a>
 
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
             <div class="card-body p-4 p-md-5">
                 
+                <!-- HEADER CHI TIẾT -->
                 <div class="d-flex justify-content-between align-items-start mb-5">
                     <div>
-                        <h2 class="h4 fw-bold mb-1" style="font-family: 'Cormorant Garamond', serif;">Chi tiết đơn hàng #<?php echo $order_id; ?></h2>
-                        <p class="extra-small text-muted mb-0">Hệ thống quản lý đơn hàng.</p>
+                        <h2 class="h4 fw-bold mb-1" style="font-family: 'Cormorant Garamond', serif;">Đơn hàng #<?php echo $order_id; ?></h2>
+                        <p class="extra-small text-muted mb-0">Ngày đặt: <?php echo date('d/m/Y H:i', strtotime($order['ngayTao'])); ?></p>
                     </div>
                     
-                    <div class="status-box text-end">
-                        <?php 
-                        $st = $order['trangThai'];
-                        
-                        // NẾU LÀ ADMIN: HIỆN NÚT BẤM TÁC VỤ (GIỮ NGUYÊN STYLE BADGE CỦA USER)
-                        if ($is_admin): ?>
-                            <form method="POST" class="d-flex flex-column align-items-end gap-2">
-                                <?php if($st == 'CHUA_THANH_TOAN'): ?>
-                                    <button type="submit" name="set_pending_id" class="badge-status border-0" style="background-color:#6B7280; color:white; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight:600; text-transform:uppercase;">Chưa thanh toán</button>
-                                <?php elseif($st == 'CHO_XAC_NHAN'): ?>
-                                    <button type="submit" name="set_shipping_id" class="badge-status border-0" style="background-color:#F59E0B; color:white; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight:600; text-transform:uppercase;">Chờ xử lý</button>
-                                <?php elseif($st == 'DA_GIAO_HANG'): ?>
-                                    <button type="submit" name="set_complete_id" class="badge-status border-0" style="background-color:#3B82F6; color:white; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight:600; text-transform:uppercase;">Đang giao hàng</button>
-                                <?php elseif($st == 'CHO_HOAN_TIEN'): ?>
-                                    <button type="submit" name="confirm_refund_id" class="badge-status border-0" style="background-color:#F59E0B; color:white; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight:600; text-transform:uppercase;">Hoàn tiền</button>
-                                <?php elseif($st == 'HOAN_TAT'): ?>
-                                    <span class="badge-status" style="background-color:#10B981; color:white; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight:600;">Hoàn tất</span>                                
-                                <?php elseif($st == 'DA_HUY'): ?>
-                                    <span class="badge-status" style="background-color:#9CA3AF; color:white; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight:600;">Đã hoàn tiền</span>
-                                <?php endif; ?>
+                    <div class="text-end">
+                        <?php if ($is_admin): ?>
+                            <!-- ADMIN CẬP NHẬT TRẠNG THÁI -->
+                            <form method="POST">
+                                <select name="new_status" onchange="this.form.submit()" class="admin-select-status <?php echo getStatusClass($order['trangThai']); ?>">
+                                    <?php 
+                                    $all_sts = ['Chưa thanh toán', 'Chờ xác nhận', 'Đang giao hàng', 'Đã giao', 'Hoàn tất', 'Chờ kiểm tra hoàn tiền', 'Đã hủy'];
+                                    foreach($all_sts as $s): ?>
+                                        <option value="<?php echo $s; ?>" <?php echo ($order['trangThai'] == $s) ? 'selected' : ''; ?>><?php echo $s; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <input type="hidden" name="admin_update_status" value="1">
                             </form>
                         <?php else: ?>
-                            <!-- NẾU LÀ USER: CHỈ HIỂN THỊ CHỮ (GIỮ NGUYÊN CODE CỦA BẠN) -->
-                            <?php if($st == 'CHUA_THANH_TOAN'): ?>
-                                <span class="badge-status" style="background-color:#6B7280; color:white; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight:600; text-transform:uppercase;">Chưa thanh toán</span>
-                            <?php elseif($st == 'CHO_XAC_NHAN'): ?>
-                                <div class="d-flex flex-column align-items-end gap-2">
-                                    <span class="badge-status" style="background-color:#10B981; color:white; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight:600; text-transform:uppercase;">Đã thanh toán</span>
-                                    <span class="badge-status" style="background-color:#F59E0B; color:white; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight:600; text-transform:uppercase;">Chờ xử lý</span>
-                                </div>
-                            <?php elseif($st == 'DA_GIAO_HANG'): ?>
-                                <span class="badge-status" style="background-color:#3B82F6; color:white; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight:600; text-transform:uppercase;">Đang giao hàng</span>
-                            <?php elseif($st == 'CHO_HOAN_TIEN'): ?>
-                                <span class="badge-status" style="background-color:#F59E0B; color:white; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight:600; text-transform:uppercase;">Chờ hoàn tiền</span>
-                            <?php elseif($st == 'DA_HUY'): ?>
-                                <span class="badge-status" style="background-color:#9CA3AF; color:white; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight:600; text-transform:uppercase;">Đã hoàn tiền</span>
-                            <?php else: ?>
-                                <span class="badge-status" style="background-color:#10B981; color:white; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight:600; text-transform:uppercase;">Hoàn tất</span>
-                            <?php endif; ?>
+                            <!-- KHÁCH HÀNG XEM TRẠNG THÁI -->
+                            <span class="badge-status <?php echo getStatusClass($order['trangThai']); ?>" style="padding: 8px 20px; border-radius: 50px; font-size: 11px; font-weight: 700; color: white; text-transform: uppercase;">
+                                <?php echo $order['trangThai']; ?>
+                            </span>
                         <?php endif; ?>
+
+                        <!-- THAY ĐỔI TẠI ĐÂY: Ghi chú trạng thái chi tiết -->
+                        <div class="mt-2">
+                            <?php 
+                            $st = $order['trangThai'];
+                            $pttt = $order['phuongThucThanhToan'];
+                            $proof = $order['minhChungThanhToan'] ?? '';
+
+                            // 1. Đơn COD chưa xong -> CHƯA THANH TOÁN
+                            if ($pttt == 'COD' && !in_array($st, ['Hoàn tất', 'Đã hủy', 'Đã giao'])): ?>
+                                <small class="text-danger fw-bold" style="font-size: 10px;">[ CHƯA THANH TOÁN ]</small>
+                            
+                            <?php 
+                            // 2. Đơn QR đã gửi ảnh -> ĐANG KIỂM TRA
+                            elseif ($pttt == 'QR' && $st == 'Chờ xác nhận' && !empty($proof)): ?>
+                                <small class="text-primary fw-bold" style="font-size: 10px;">[ ĐANG KIỂM TRA ]</small>
+                            
+                            <?php 
+                            // 3. Đơn QR chưa gửi ảnh -> CHƯA THANH TOÁN
+                            elseif ($pttt == 'QR' && $st == 'Chưa thanh toán'): ?>
+                                <small class="text-danger fw-bold" style="font-size: 10px;">[ CHƯA THANH TOÁN ]</small>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
 
-                <!-- CÁC PHẦN THÔNG TIN KHÁCH HÀNG & SẢN PHẨM GIỮ NGUYÊN 100% -->
+                <!-- THÔNG TIN GIAO HÀNG -->
                 <div class="row g-4 mb-5 pb-4 border-bottom" style="border-color: #EDE8DF !important;">
                     <div class="col-md-7">
                         <p class="extra-small text-muted text-uppercase fw-bold mb-3 tracking-wider">Thông tin giao hàng</p>
                         <div class="d-flex align-items-center mb-3">
                             <i class="fa-solid fa-user text-muted me-3" style="width: 15px;"></i>
-                            <div><span class="extra-small text-muted d-block" style="font-size: 10px;">Người nhận</span><span class="small fw-bold"><?php echo htmlspecialchars($order['hoTen']); ?></span></div>
+                            <div><span class="extra-small text-muted d-block">Người nhận</span><span class="small fw-bold"><?php echo htmlspecialchars($order['hoTen']); ?></span></div>
                         </div>
                         <div class="d-flex align-items-center mb-3">
                             <i class="fa-solid fa-phone text-muted me-3" style="width: 15px;"></i>
-                            <div><span class="extra-small text-muted d-block" style="font-size: 10px;">Số điện thoại</span><span class="small fw-bold"><?php echo htmlspecialchars($order['soDienThoai'] ?? $order['sdt']); ?></span></div>
+                            <div><span class="extra-small text-muted d-block">Số điện thoại</span><span class="small fw-bold"><?php echo htmlspecialchars($order['soDienThoai']); ?></span></div>
                         </div>
                         <div class="d-flex align-items-start">
                             <i class="fa-solid fa-location-dot text-muted me-3 mt-1" style="width: 15px;"></i>
-                            <div><span class="extra-small text-muted d-block" style="font-size: 10px;">Địa chỉ</span><span class="small fw-bold"><?php echo htmlspecialchars($order['diaChi']); ?></span></div>
+                            <div><span class="extra-small text-muted d-block">Địa chỉ</span><span class="small fw-bold"><?php echo htmlspecialchars($order['diaChi']); ?></span></div>
                         </div>
                     </div>
                     <div class="col-md-5 text-md-end">
-                        <p class="extra-small text-muted text-uppercase fw-bold mb-3 tracking-wider">Thời gian & Thanh toán</p>
-                        <div class="mb-3"><span class="extra-small text-muted d-block" style="font-size: 10px;">Ngày đặt</span><span class="small fw-bold"><?php echo date('d/m/Y H:i', strtotime($order['ngayTao'])); ?></span></div>
-                        <div><span class="extra-small text-muted d-block" style="font-size: 10px;">Phương thức</span><span class="small fw-bold text-uppercase" style="color: #C4622D;"><?php echo $order['phuongThucThanhToan']; ?></span></div>
+                        <p class="extra-small text-muted text-uppercase fw-bold mb-3 tracking-wider">Thanh toán</p>
+                        <div class="mb-3"><span class="extra-small text-muted d-block">Phương thức</span><span class="small fw-bold text-uppercase" style="color: #C4622D;"><?php echo $order['phuongThucThanhToan']; ?></span></div>
+                        <div><span class="extra-small text-muted d-block">Phí vận chuyển</span><span class="small fw-bold"><?php echo number_format($order['phiShip']); ?>₫</span></div>
                     </div>
                 </div>
 
+                <!-- THÊM TẠI ĐÂY: Hiển thị ảnh minh chứng cho Admin -->
+                <?php if ($is_admin && !empty($order['minhChungThanhToan'])): ?>
+                    <div class="mb-5 p-4 rounded-4 shadow-sm" style="background-color: #f0f7ff; border: 1px solid #cce3ff;">
+                        <p class="small fw-bold text-primary mb-3 text-uppercase tracking-wider">
+                            <i class="fa-solid fa-image me-2"></i>Minh chứng thanh toán (Khách gửi)
+                        </p>
+                        <a href="<?php echo $order['minhChungThanhToan']; ?>" target="_blank">
+                            <img src="<?php echo $order['minhChungThanhToan']; ?>" class="rounded-3 border shadow-sm" style="max-width: 100%; max-height: 350px; cursor: zoom-in;">
+                        </a>
+                        <p class="extra-small text-muted mt-2 italic">Bấm vào ảnh để xem kích thước gốc.</p>
+                    </div>
+                <?php endif; ?>
+
+                <!-- DANH SÁCH SẢN PHẨM -->
                 <div class="order-items mb-5">
                     <?php
                     $sql_items = "SELECT ct.*, s.ten, s.hinhAnh FROM ChiTietDonHang ct JOIN SanPham s ON ct.maSP = s.maSP WHERE ct.maDH = '$order_id'";
@@ -142,26 +214,26 @@ include 'includes/header.php';
                             <img src="<?php echo $item['hinhAnh']; ?>" class="rounded-3 shadow-sm" style="width: 65px; height: 85px; object-fit: cover;">
                             <div class="flex-grow-1">
                                 <h6 class="small fw-bold mb-1"><?php echo htmlspecialchars($item['ten']); ?></h6>
-                                <p class="extra-small text-muted mb-0">Size: <?php echo $item['kichCo'] ?? 'Free'; ?> | SL: x<?php echo $item['soLuong']; ?></p>
+                                <p class="extra-small text-muted mb-0">Size: <?php echo $item['kichCo']; ?> | SL: x<?php echo $item['soLuong']; ?></p>
                             </div>
                             <div class="text-end fw-bold small"><?php echo number_format($item['thanhTien']); ?>₫</div>
                         </div>
                     <?php endwhile; ?>
                 </div>
 
-                <div class="p-4 rounded-4" style="background-color: #f8f9fa; border: 1px solid #eee;">
+                <!-- TỔNG CỘNG -->
+                <div class="p-4 rounded-4" style="background-color: #EDE8DF; border: 1px solid #D4CEBE;">
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fw-bold small text-uppercase">Tổng thanh toán:</span>
                         <span class="h3 fw-bold mb-0" style="color: #C4622D;"><?php echo number_format($order['tongTien']); ?>₫</span>
                     </div>
                 </div>
 
-                <!-- NÚT YÊU CẦU HỦY CỦA USER -->
-                <?php if (!$is_admin && ($order['trangThai'] == 'CHO_XAC_NHAN' || $order['trangThai'] == 'CHUA_THAN_TOAN')): ?>
+                <!-- NÚT HỦY DÀNH CHO USER -->
+                <?php if (!$is_admin && in_array($order['trangThai'], ['Chờ xác nhận', 'Chưa thanh toán'])): ?>
                     <div class="mt-4 pt-4 border-top text-center" style="border-color: #EDE8DF !important;">
-                        <form method="POST" onsubmit="return confirm('Xác nhận yêu cầu hủy?');">
-                            <input type="hidden" name="order_id_hidden" value="<?php echo $order_id; ?>">
-                            <button type="submit" name="action_cancel_order" class="btn btn-outline-danger rounded-pill px-5 py-2 fw-bold small">YÊU CẦU HỦY & HOÀN TIỀN</button>
+                        <form method="POST" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này?');">
+                            <button type="submit" name="action_cancel_order" class="btn btn-outline-danger rounded-pill px-5 py-2 fw-bold small">HỦY ĐƠN HÀNG</button>
                         </form>
                     </div>
                 <?php endif; ?>
@@ -170,4 +242,5 @@ include 'includes/header.php';
         </div>
     </div>
 </main>
+
 <?php include 'includes/footer.php'; ?>

@@ -50,9 +50,6 @@
                 <li class="nav-item">
                     <a class="nav-link nav-link-ptit" href="about.php">Về chúng tôi</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-link-ptit" href="blog.php">Blog</a>
-                </li>
             </ul>
         </div>
 
@@ -91,7 +88,6 @@
     <div class="search-modal-container">
         <div class="d-flex gap-2 mb-4">
             <button class="btn-search-tab active"><i class="fa-solid fa-magnifying-glass"></i>Tìm kiếm</button>
-            <button class="btn-search-tab"><i class="fa-solid fa-sparkles"></i>Tìm bằng AI</button>
         </div>
 
         <div class="search-input-group">

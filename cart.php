@@ -5,6 +5,16 @@ require_once 'includes/discount_functions.php';
 
 // --- LOGIC THÊM SẢN PHẨM ---
 if (isset($_POST['add_to_cart'])) {
+    // Kiểm tra đăng nhập
+    if (!isset($_SESSION['user'])) {
+        echo "not_logged_in";
+        exit();
+    }
+    // CHẶN ADMIN
+    if ($_SESSION['user']['role'] === 'ADMIN') {
+        echo "admin_block";
+        exit();
+    }
     $id = $_POST['id'];
     $qty = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
     $size = isset($_POST['size']) ? $_POST['size'] : 'M';

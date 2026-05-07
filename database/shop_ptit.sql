@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 04, 2026 lúc 03:22 PM
--- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.2.12
+-- Thời gian đã tạo: Th5 07, 2026 lúc 01:02 PM
+-- Phiên bản máy phục vụ: 8.0.43
+-- Phiên bản PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,14 +28,14 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `baiviet` (
-  `maBV` int(11) NOT NULL,
-  `tieuDe` varchar(255) NOT NULL,
-  `tomTat` text DEFAULT NULL,
-  `noiDung` longtext DEFAULT NULL,
-  `hinhAnh` varchar(255) DEFAULT NULL,
-  `ngayDang` datetime DEFAULT current_timestamp(),
-  `tacGia` varchar(100) DEFAULT NULL,
-  `trangThai` tinyint(1) DEFAULT 1
+  `maBV` int NOT NULL,
+  `tieuDe` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tomTat` text COLLATE utf8mb4_unicode_ci,
+  `noiDung` longtext COLLATE utf8mb4_unicode_ci,
+  `hinhAnh` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ngayDang` datetime DEFAULT CURRENT_TIMESTAMP,
+  `tacGia` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `trangThai` tinyint(1) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -54,12 +54,12 @@ INSERT INTO `baiviet` (`maBV`, `tieuDe`, `tomTat`, `noiDung`, `hinhAnh`, `ngayDa
 --
 
 CREATE TABLE `chatbotmessages` (
-  `id` int(11) NOT NULL,
-  `session_id` varchar(100) NOT NULL,
-  `maND` int(11) DEFAULT NULL,
-  `sender` enum('user','bot','admin') NOT NULL,
-  `message` text NOT NULL,
-  `created_at` datetime DEFAULT current_timestamp()
+  `id` int NOT NULL,
+  `session_id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `maND` int DEFAULT NULL,
+  `sender` enum('user','bot','admin') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -106,12 +106,12 @@ INSERT INTO `chatbotmessages` (`id`, `session_id`, `maND`, `sender`, `message`, 
 --
 
 CREATE TABLE `chatbotrequests` (
-  `id` int(11) NOT NULL,
-  `session_id` varchar(100) NOT NULL,
-  `maND` int(11) DEFAULT NULL,
-  `customer_message` text NOT NULL,
-  `status` enum('pending','answered') DEFAULT 'pending',
-  `created_at` datetime DEFAULT current_timestamp()
+  `id` int NOT NULL,
+  `session_id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `maND` int DEFAULT NULL,
+  `customer_message` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('pending','answered') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -129,10 +129,10 @@ INSERT INTO `chatbotrequests` (`id`, `session_id`, `maND`, `customer_message`, `
 --
 
 CREATE TABLE `chatbotsessions` (
-  `session_id` varchar(100) NOT NULL,
-  `maND` int(11) DEFAULT NULL,
-  `mode` enum('bot','admin') DEFAULT 'bot',
-  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `session_id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `maND` int DEFAULT NULL,
+  `mode` enum('bot','admin') COLLATE utf8mb4_unicode_ci DEFAULT 'bot',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -149,15 +149,23 @@ INSERT INTO `chatbotsessions` (`session_id`, `maND`, `mode`, `updated_at`) VALUE
 --
 
 CREATE TABLE `chitietdonhang` (
-  `maCTDH` bigint(20) NOT NULL,
-  `maDH` bigint(20) DEFAULT NULL,
-  `maSP` bigint(20) DEFAULT NULL,
-  `soLuong` int(11) DEFAULT NULL,
+  `maCTDH` bigint NOT NULL,
+  `maDH` bigint DEFAULT NULL,
+  `maSP` bigint DEFAULT NULL,
+  `soLuong` int DEFAULT NULL,
   `donGia` decimal(15,2) DEFAULT NULL,
   `thanhTien` decimal(15,2) DEFAULT NULL,
-  `kichCo` varchar(50) DEFAULT NULL,
-  `mauSac` varchar(50) DEFAULT NULL
+  `kichCo` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mauSac` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `chitietdonhang`
+--
+
+INSERT INTO `chitietdonhang` (`maCTDH`, `maDH`, `maSP`, `soLuong`, `donGia`, `thanhTien`, `kichCo`, `mauSac`) VALUES
+(9, 11, 28, 1, 1280000.00, 1280000.00, 'M', 'Trắng'),
+(10, 12, 28, 1, 1280000.00, 1280000.00, 'S', 'Navy Blue');
 
 -- --------------------------------------------------------
 
@@ -166,12 +174,12 @@ CREATE TABLE `chitietdonhang` (
 --
 
 CREATE TABLE `chitietgiohang` (
-  `maCTGH` bigint(20) NOT NULL,
-  `maGH` bigint(20) DEFAULT NULL,
-  `maSP` bigint(20) DEFAULT NULL,
-  `soLuong` int(11) DEFAULT NULL,
-  `kichCo` varchar(50) DEFAULT NULL,
-  `mauSac` varchar(50) DEFAULT NULL
+  `maCTGH` bigint NOT NULL,
+  `maGH` bigint DEFAULT NULL,
+  `maSP` bigint DEFAULT NULL,
+  `soLuong` int DEFAULT NULL,
+  `kichCo` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mauSac` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -181,9 +189,9 @@ CREATE TABLE `chitietgiohang` (
 --
 
 CREATE TABLE `danhmuc` (
-  `maDM` bigint(20) NOT NULL,
-  `ten` varchar(100) DEFAULT NULL,
-  `hinhAnh` varchar(255) DEFAULT NULL
+  `maDM` bigint NOT NULL,
+  `ten` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hinhAnh` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -206,18 +214,18 @@ INSERT INTO `danhmuc` (`maDM`, `ten`, `hinhAnh`) VALUES
 --
 
 CREATE TABLE `discount_codes` (
-  `id` int(11) NOT NULL,
-  `code` varchar(50) NOT NULL,
-  `discount_type` enum('percent','fixed') NOT NULL DEFAULT 'percent',
-  `discount_value` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `min_order_value` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `id` int NOT NULL,
+  `code` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `discount_type` enum('percent','fixed') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'percent',
+  `discount_value` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `min_order_value` decimal(10,2) NOT NULL DEFAULT '0.00',
   `max_discount` decimal(10,2) DEFAULT NULL,
-  `usage_limit` int(11) DEFAULT NULL,
-  `used_count` int(11) NOT NULL DEFAULT 0,
+  `usage_limit` int DEFAULT NULL,
+  `used_count` int NOT NULL DEFAULT '0',
   `start_date` datetime DEFAULT NULL,
   `end_date` datetime DEFAULT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -225,6 +233,7 @@ CREATE TABLE `discount_codes` (
 --
 
 INSERT INTO `discount_codes` (`id`, `code`, `discount_type`, `discount_value`, `min_order_value`, `max_discount`, `usage_limit`, `used_count`, `start_date`, `end_date`, `is_active`, `created_at`) VALUES
+(1, 'MAU10', 'percent', 10.00, 200000.00, 50000.00, 100, 1, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-13 22:18:37'),
 (3, 'DINHNOCKICHTRAN', 'percent', 15.00, 1199999.00, 200000.00, NULL, 0, NULL, NULL, 1, '2026-05-04 11:26:52'),
 (4, 'PTIT2026', 'fixed', 50000.00, 999999.00, NULL, NULL, 0, NULL, NULL, 1, '2026-05-04 11:27:38');
 
@@ -235,27 +244,30 @@ INSERT INTO `discount_codes` (`id`, `code`, `discount_type`, `discount_value`, `
 --
 
 CREATE TABLE `donhang` (
-  `maDH` bigint(20) NOT NULL,
-  `maKH` bigint(20) DEFAULT NULL,
-  `maNV` bigint(20) DEFAULT NULL,
-  `hoTen` varchar(100) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `soDienThoai` varchar(20) DEFAULT NULL,
-  `diaChi` varchar(255) DEFAULT NULL,
+  `maDH` bigint NOT NULL,
+  `maKH` bigint DEFAULT NULL,
+  `maNV` bigint DEFAULT NULL,
+  `hoTen` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `soDienThoai` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `diaChi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tongTien` decimal(15,2) DEFAULT NULL,
-  `phiShip` decimal(15,2) DEFAULT 0.00,
-  `phuongThucThanhToan` varchar(50) DEFAULT NULL,
-  `trangThai` varchar(50) DEFAULT 'Chờ xác nhận',
-  `ngayTao` timestamp NOT NULL DEFAULT current_timestamp()
+  `phiShip` decimal(15,2) DEFAULT '0.00',
+  `phuongThucThanhToan` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `trangThai` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'Chờ xác nhận',
+  `ngayTao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `minhChungThanhToan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `donhang`
 --
 
-INSERT INTO `donhang` (`maDH`, `maKH`, `maNV`, `hoTen`, `email`, `soDienThoai`, `diaChi`, `tongTien`, `phiShip`, `phuongThucThanhToan`, `trangThai`, `ngayTao`) VALUES
-(1, 1, NULL, 'Người Dùng', 'user@email.com', '0912345678', '123 Đường ABC, Hà Nội', 3680000.00, 30000.00, 'COD', 'DA_GIAO_HANG', '2025-11-05 07:20:30'),
-(2, 1, NULL, 'Người Dùng', 'user@email.com', '0912345678', '123 Đường ABC, Hà Nội', 1330000.00, 30000.00, 'Chuyển khoản', 'DA_GIAO_HANG', '2026-04-17 03:56:27');
+INSERT INTO `donhang` (`maDH`, `maKH`, `maNV`, `hoTen`, `email`, `soDienThoai`, `diaChi`, `tongTien`, `phiShip`, `phuongThucThanhToan`, `trangThai`, `ngayTao`, `minhChungThanhToan`) VALUES
+(1, 1, NULL, 'Người Dùng', 'user@email.com', '0912345678', '123 Đường ABC, Hà Nội', 3680000.00, 30000.00, 'COD', 'Đã giao hàng', '2025-11-05 07:20:30', NULL),
+(2, 1, NULL, 'Người Dùng', 'user@email.com', '0912345678', '123 Đường ABC, Hà Nội', 1330000.00, 30000.00, 'QR', 'Chờ xác nhận', '2026-04-17 03:56:27', NULL),
+(11, 1, NULL, 'Nguyễn Tuấn Kiệt', NULL, '0327484058', '123', 1280000.00, 0.00, 'QR', 'Hoàn tất', '2026-05-07 10:50:15', 'assets/img/proofs/proof_11_1778151025.png'),
+(12, 1, NULL, 'Nguyễn Tuấn Kiệt', NULL, '0327484058', '123', 1280000.00, 0.00, 'COD', 'Hoàn tất', '2026-05-07 10:57:47', NULL);
 
 -- --------------------------------------------------------
 
@@ -264,36 +276,10 @@ INSERT INTO `donhang` (`maDH`, `maKH`, `maNV`, `hoTen`, `email`, `soDienThoai`, 
 --
 
 CREATE TABLE `giohang` (
-  `maGH` bigint(20) NOT NULL,
-  `maKH` bigint(20) DEFAULT NULL,
-  `trangThai` varchar(50) DEFAULT 'Đang mua'
+  `maGH` bigint NOT NULL,
+  `maKH` bigint DEFAULT NULL,
+  `trangThai` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'Đang mua'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `homereviews`
---
-
-CREATE TABLE `homereviews` (
-  `id` int(11) NOT NULL,
-  `customer_name` varchar(100) NOT NULL,
-  `content` text NOT NULL,
-  `rating` int(11) DEFAULT 5,
-  `status` tinyint(4) DEFAULT 1,
-  `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `homereviews`
---
-
-INSERT INTO `homereviews` (`id`, `customer_name`, `content`, `rating`, `status`, `created_at`) VALUES
-(1, 'Nguyễn An', 'Chất vải rất mịn, form áo cực kỳ tôn dáng.', 5, 1, '2026-05-01 17:10:13'),
-(2, 'Trần Bình', 'Giao hàng nhanh, đóng gói cẩn thận, sản phẩm giống ảnh.', 5, 1, '2026-05-01 17:10:13'),
-(3, 'Lê Chi', 'Áo sơ mi mặc đi làm rất lịch sự, dễ phối với quần âu.', 4, 1, '2026-05-01 17:10:13'),
-(4, 'Minh Anh', 'Shop tư vấn nhiệt tình, chất liệu mặc thoải mái.', 5, 1, '2026-05-01 17:10:13'),
-(5, 'Bảo Ngọc', 'Phong cách tối giản, màu sắc đẹp, rất hợp gu mình.', 5, 1, '2026-05-01 17:10:13');
 
 -- --------------------------------------------------------
 
@@ -302,9 +288,9 @@ INSERT INTO `homereviews` (`id`, `customer_name`, `content`, `rating`, `status`,
 --
 
 CREATE TABLE `khachhang` (
-  `maKH` bigint(20) NOT NULL,
-  `maND` bigint(20) DEFAULT NULL,
-  `diemTichLuy` int(11) DEFAULT 0
+  `maKH` bigint NOT NULL,
+  `maND` bigint DEFAULT NULL,
+  `diemTichLuy` int DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -319,49 +305,21 @@ INSERT INTO `khachhang` (`maKH`, `maND`, `diemTichLuy`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `magiamgia`
---
-
-CREATE TABLE `magiamgia` (
-  `maGG` int(11) NOT NULL,
-  `code` varchar(20) NOT NULL,
-  `loaiGiam` enum('PERCENT','FIXED') NOT NULL DEFAULT 'PERCENT',
-  `giaTriGiam` decimal(15,2) NOT NULL DEFAULT 0.00,
-  `phanTramGiam` int(11) NOT NULL,
-  `donToiThieu` int(11) DEFAULT 0,
-  `giamToiDa` decimal(15,2) DEFAULT NULL,
-  `trangThai` enum('ACTIVE','HIDDEN') DEFAULT 'ACTIVE',
-  `ngayTao` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `magiamgia`
---
-
-INSERT INTO `magiamgia` (`maGG`, `code`, `loaiGiam`, `giaTriGiam`, `phanTramGiam`, `donToiThieu`, `giamToiDa`, `trangThai`, `ngayTao`) VALUES
-(1, 'MAU10', 'PERCENT', 10.00, 10, 200000, 50000.00, 'ACTIVE', '2026-04-18 00:14:50'),
-(2, 'GIAM50K', 'FIXED', 50000.00, 0, 500000, NULL, 'ACTIVE', '2026-04-18 00:14:50'),
-(3, 'GIAM100K', 'FIXED', 100000.00, 0, 1000000, NULL, 'ACTIVE', '2026-04-18 00:14:50'),
-(4, 'SALE15', 'PERCENT', 15.00, 15, 800000, 120000.00, 'ACTIVE', '2026-04-18 00:14:50');
-
--- --------------------------------------------------------
-
---
 -- Cấu trúc bảng cho bảng `nguoidung`
 --
 
 CREATE TABLE `nguoidung` (
-  `maND` bigint(20) NOT NULL,
-  `tenDangNhap` varchar(50) NOT NULL,
-  `matKhau` varchar(255) NOT NULL,
-  `ten` varchar(100) DEFAULT NULL,
+  `maND` bigint NOT NULL,
+  `tenDangNhap` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `matKhau` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ten` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ngaySinh` date DEFAULT NULL,
-  `gioiTinh` varchar(10) DEFAULT NULL,
-  `diaChi` varchar(255) DEFAULT NULL,
-  `soDienThoai` varchar(20) DEFAULT NULL,
-  `ngayTao` timestamp NOT NULL DEFAULT current_timestamp(),
-  `vaiTro` varchar(20) DEFAULT 'USER',
-  `trangThai` varchar(20) DEFAULT 'ACTIVE'
+  `gioiTinh` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `diaChi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `soDienThoai` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ngayTao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `vaiTro` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT 'USER',
+  `trangThai` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT 'ACTIVE'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -370,43 +328,9 @@ CREATE TABLE `nguoidung` (
 
 INSERT INTO `nguoidung` (`maND`, `tenDangNhap`, `matKhau`, `ten`, `ngaySinh`, `gioiTinh`, `diaChi`, `soDienThoai`, `ngayTao`, `vaiTro`, `trangThai`) VALUES
 (1, 'admin', '1', 'Quản Trị Viên', NULL, NULL, NULL, NULL, '2025-10-13 17:14:54', 'ADMIN', 'ACTIVE'),
-(2, 'user', '2', 'Người Dùng', NULL, NULL, NULL, NULL, '2025-10-13 17:14:54', 'USER', 'ACTIVE'),
+(2, 'user', '2', 'Nguyễn Tuấn Kiệt', NULL, NULL, '123', '0327484058', '2025-10-13 17:14:54', 'USER', 'ACTIVE'),
 (3, 'anhvu', 'vu12122005@@', 'Anh Vũ Trần Lê', NULL, NULL, NULL, '1', '2026-04-17 05:25:57', 'USER', 'ACTIVE'),
 (6, 'abcd', '1', 'Trần Hà Linh Côn', NULL, NULL, NULL, '0945123789', '2026-05-04 13:17:35', 'USER', 'ACTIVE');
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `nhanvien`
---
-
-CREATE TABLE `nhanvien` (
-  `maNV` bigint(20) NOT NULL,
-  `maND` bigint(20) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `luong` decimal(15,2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `orders`
---
-
-CREATE TABLE `orders` (
-  `order_id` varchar(255) NOT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `maKH` bigint(20) DEFAULT NULL,
-  `maNV` bigint(20) DEFAULT NULL,
-  `subtotal` bigint(20) DEFAULT NULL,
-  `shipping` bigint(20) DEFAULT NULL,
-  `tongTien` bigint(20) DEFAULT NULL,
-  `ngayTao` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `trangThai` varchar(50) DEFAULT NULL,
-  `diaChi` varchar(255) DEFAULT NULL,
-  `soDienThoai` varchar(15) DEFAULT NULL,
-  `phuongThucThanhToan` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -415,38 +339,32 @@ CREATE TABLE `orders` (
 --
 
 CREATE TABLE `productreviews` (
-  `id` int(11) NOT NULL,
-  `product_id` bigint(20) NOT NULL,
-  `user_id` bigint(20) DEFAULT NULL,
-  `user_name` varchar(100) NOT NULL,
-  `rating` int(11) NOT NULL DEFAULT 5,
-  `content` text NOT NULL,
-  `is_purchased` tinyint(4) DEFAULT 0,
-  `status` enum('visible','hidden') DEFAULT 'visible',
-  `created_at` datetime DEFAULT current_timestamp()
+  `id` int NOT NULL,
+  `product_id` bigint NOT NULL,
+  `user_id` bigint DEFAULT NULL,
+  `user_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `rating` int NOT NULL DEFAULT '5',
+  `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_purchased` tinyint DEFAULT '0',
+  `status` enum('visible','hidden') COLLATE utf8mb4_unicode_ci DEFAULT 'visible',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `reply` text COLLATE utf8mb4_unicode_ci,
+  `reply_at` datetime DEFAULT NULL,
+  `is_edited` tinyint DEFAULT '0',
+  `admin_reply` text COLLATE utf8mb4_unicode_ci,
+  `admin_reply_at` datetime DEFAULT NULL,
+  `edit_count` int DEFAULT '0',
+  `replied_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `productreviews`
 --
 
-INSERT INTO `productreviews` (`id`, `product_id`, `user_id`, `user_name`, `rating`, `content`, `is_purchased`, `status`, `created_at`) VALUES
-(1, 28, 3, 'Anh Vũ Trần Lê', 5, 'Sản phẩm chất lượng cao, rất đáng mua!', 0, 'visible', '2026-05-01 17:19:24'),
-(2, 27, 3, 'Anh Vũ Trần Lê', 5, 'Sản phẩm chất lượng xuất sắc', 0, 'visible', '2026-05-04 19:51:10'),
-(3, 25, 6, 'Trần Hà Linh Côn', 2, 'quần không đúng chất lượng', 0, 'visible', '2026-05-04 20:18:02'),
-(4, 27, 6, 'Trần Hà Linh Côn', 4, 'Sản phẩm chất lượng ổn, giá cả phải chăng. Nên mua hàng ở shop', 0, 'visible', '2026-05-04 20:21:30');
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `quantrivien`
---
-
-CREATE TABLE `quantrivien` (
-  `maQTV` bigint(20) NOT NULL,
-  `maND` bigint(20) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `productreviews` (`id`, `product_id`, `user_id`, `user_name`, `rating`, `content`, `is_purchased`, `status`, `created_at`, `reply`, `reply_at`, `is_edited`, `admin_reply`, `admin_reply_at`, `edit_count`, `replied_at`) VALUES
+(2, 27, 3, 'Anh Vũ Trần Lê', 5, 'Sản phẩm chất lượng xuất sắc', 0, 'visible', '2026-05-04 19:51:10', NULL, NULL, 0, NULL, NULL, 0, NULL),
+(3, 25, 6, 'Trần Hà Linh Côn', 2, 'quần không đúng chất lượng', 0, 'visible', '2026-05-04 20:18:02', NULL, NULL, 0, 'Nếu quý khách hàng có vấn đề gì với sản phẩm vui lòng liên hệ hotlines hoặc mail của shop để được hỗ trợ ạ!', '2026-05-06 20:27:10', 0, NULL),
+(4, 27, 6, 'Trần Hà Linh Côn', 4, 'Sản phẩm chất lượng ổn, giá cả phải chăng. Nên mua hàng ở shop', 0, 'visible', '2026-05-04 20:21:30', NULL, NULL, 0, NULL, NULL, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -455,18 +373,18 @@ CREATE TABLE `quantrivien` (
 --
 
 CREATE TABLE `sanpham` (
-  `maSP` bigint(20) NOT NULL,
-  `maDM` bigint(20) DEFAULT NULL,
-  `maTH` bigint(20) DEFAULT NULL,
-  `ten` varchar(100) DEFAULT NULL,
-  `moTa` text DEFAULT NULL,
+  `maSP` bigint NOT NULL,
+  `maDM` bigint DEFAULT NULL,
+  `maTH` bigint DEFAULT NULL,
+  `ten` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `moTa` text COLLATE utf8mb4_unicode_ci,
   `gia` decimal(15,2) DEFAULT NULL,
-  `soLuong` int(11) DEFAULT NULL,
-  `kichCo` varchar(50) DEFAULT NULL,
-  `mauSac` varchar(50) DEFAULT NULL,
-  `chatLieu` varchar(100) DEFAULT NULL,
-  `hinhAnh` varchar(255) DEFAULT NULL,
-  `daBan` int(11) DEFAULT 0
+  `soLuong` int DEFAULT NULL,
+  `kichCo` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mauSac` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `chatLieu` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hinhAnh` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `daBan` int DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -501,7 +419,8 @@ INSERT INTO `sanpham` (`maSP`, `maDM`, `maTH`, `ten`, `moTa`, `gia`, `soLuong`, 
 (25, 6, 7, 'Quần short Puma Basic', 'Quần short basic Puma, nhiều màu', 280000.00, 45, 'S,M,L,XL', 'Navy', 'Cotton', 'https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_2000,h_2000/global/682598/03/mod03/fnd/PNA/fmt/png/PUMA-Essentials-Men\'s-10%22-Shorts', 95),
 (26, 7, 6, 'Áo len Gucci', 'Áo len vải thun cotton Gucci', 1500000.00, 40, 'M,L,XL', 'Đen', 'Vải thun cotton', 'https://media.gucci.com/style/DarkGray_Center_0_0_2400x2400/1757932225/838450_XJHJO_1043_003_100_0000_Light-Brushed-cotton-jersey-sweatshirt.jpg', 40),
 (27, 7, 5, 'Áo nỉ H&M', 'Áo nỉ dáng thụng H&M Basics', 399000.00, 45, 'XS,S,M,L', 'Xanh Navy', 'Cotton, Polyester', 'https://image.hm.com/assets/hm/d2/29/d229e5925fab8f6b9db1cdf4f386a269616e632b.jpg?imwidth=2160', 60),
-(28, 7, 3, 'Áo len Zara', 'Áo len Polo cổ tay Zara', 1280000.00, 28, 'S,M,L,XL', 'Navy Blue', 'Cotton, Polyester', 'https://static.zara.net/assets/public/7f3d/981f/a95a48fda38b/12e72a1415da/00526310401-a1/00526310401-a1.jpg?ts=1754995160359&w=1125', 65);
+(28, 7, 3, 'Áo len Zara', 'Áo len Polo cổ tay Zara', 1280000.00, 19, 'S,M,L,XL', 'Navy Blue', 'Cotton, Polyester', 'https://static.zara.net/assets/public/7f3d/981f/a95a48fda38b/12e72a1415da/00526310401-a1/00526310401-a1.jpg?ts=1754995160359&w=1125', 65),
+(29, 1, 1, 'Áo jacket', '', 1200000000.00, 0, 'S,M,L', 'Đỏ', '', 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQBMxYp1009ABsBgUNtd8glcY3nAGyg9TCXVODNnFgskia4eZG66yF4YK2pdh3w9I13pukRfq7x6To1nh6LFJ53MfaI5gmqEgD-8ca4OcSOduCIswknA-MCp2k1sx7j9_rHlGh3fnd1&usqp=CAc', 0);
 
 -- --------------------------------------------------------
 
@@ -510,9 +429,9 @@ INSERT INTO `sanpham` (`maSP`, `maDM`, `maTH`, `ten`, `moTa`, `gia`, `soLuong`, 
 --
 
 CREATE TABLE `thuonghieu` (
-  `maTH` bigint(20) NOT NULL,
-  `ten` varchar(100) DEFAULT NULL,
-  `logo` varchar(255) DEFAULT NULL
+  `maTH` bigint NOT NULL,
+  `ten` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `logo` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -535,11 +454,19 @@ INSERT INTO `thuonghieu` (`maTH`, `ten`, `logo`) VALUES
 --
 
 CREATE TABLE `yeuthich` (
-  `maYT` bigint(20) NOT NULL,
-  `maND` bigint(20) NOT NULL,
-  `maSP` bigint(20) NOT NULL,
-  `ngayTao` timestamp NOT NULL DEFAULT current_timestamp()
+  `maYT` bigint NOT NULL,
+  `maND` bigint NOT NULL,
+  `maSP` bigint NOT NULL,
+  `ngayTao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `yeuthich`
+--
+
+INSERT INTO `yeuthich` (`maYT`, `maND`, `maSP`, `ngayTao`) VALUES
+(2, 2, 28, '2026-05-07 08:38:29'),
+(3, 2, 29, '2026-05-07 08:44:58');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -614,24 +541,11 @@ ALTER TABLE `giohang`
   ADD KEY `maKH` (`maKH`);
 
 --
--- Chỉ mục cho bảng `homereviews`
---
-ALTER TABLE `homereviews`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Chỉ mục cho bảng `khachhang`
 --
 ALTER TABLE `khachhang`
   ADD PRIMARY KEY (`maKH`),
   ADD KEY `maND` (`maND`);
-
---
--- Chỉ mục cho bảng `magiamgia`
---
-ALTER TABLE `magiamgia`
-  ADD PRIMARY KEY (`maGG`),
-  ADD UNIQUE KEY `code` (`code`);
 
 --
 -- Chỉ mục cho bảng `nguoidung`
@@ -641,34 +555,13 @@ ALTER TABLE `nguoidung`
   ADD UNIQUE KEY `tenDangNhap` (`tenDangNhap`);
 
 --
--- Chỉ mục cho bảng `nhanvien`
---
-ALTER TABLE `nhanvien`
-  ADD PRIMARY KEY (`maNV`),
-  ADD KEY `maND` (`maND`);
-
---
--- Chỉ mục cho bảng `orders`
---
-ALTER TABLE `orders`
-  ADD PRIMARY KEY (`order_id`),
-  ADD KEY `maKH` (`maKH`),
-  ADD KEY `maNV` (`maNV`);
-
---
 -- Chỉ mục cho bảng `productreviews`
 --
 ALTER TABLE `productreviews`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_review` (`product_id`,`user_id`),
   ADD KEY `idx_product_reviews_product` (`product_id`),
   ADD KEY `idx_product_reviews_user` (`user_id`);
-
---
--- Chỉ mục cho bảng `quantrivien`
---
-ALTER TABLE `quantrivien`
-  ADD PRIMARY KEY (`maQTV`),
-  ADD KEY `maND` (`maND`);
 
 --
 -- Chỉ mục cho bảng `sanpham`
@@ -700,115 +593,91 @@ ALTER TABLE `yeuthich`
 -- AUTO_INCREMENT cho bảng `baiviet`
 --
 ALTER TABLE `baiviet`
-  MODIFY `maBV` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `maBV` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `chatbotmessages`
 --
 ALTER TABLE `chatbotmessages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT cho bảng `chatbotrequests`
 --
 ALTER TABLE `chatbotrequests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `chitietdonhang`
 --
 ALTER TABLE `chitietdonhang`
-  MODIFY `maCTDH` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `maCTDH` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT cho bảng `chitietgiohang`
 --
 ALTER TABLE `chitietgiohang`
-  MODIFY `maCTGH` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `maCTGH` bigint NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `danhmuc`
 --
 ALTER TABLE `danhmuc`
-  MODIFY `maDM` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `maDM` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT cho bảng `discount_codes`
 --
 ALTER TABLE `discount_codes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `donhang`
 --
 ALTER TABLE `donhang`
-  MODIFY `maDH` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `maDH` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT cho bảng `giohang`
 --
 ALTER TABLE `giohang`
-  MODIFY `maGH` bigint(20) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT cho bảng `homereviews`
---
-ALTER TABLE `homereviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `maGH` bigint NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `khachhang`
 --
 ALTER TABLE `khachhang`
-  MODIFY `maKH` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT cho bảng `magiamgia`
---
-ALTER TABLE `magiamgia`
-  MODIFY `maGG` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `maKH` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `nguoidung`
 --
 ALTER TABLE `nguoidung`
-  MODIFY `maND` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT cho bảng `nhanvien`
---
-ALTER TABLE `nhanvien`
-  MODIFY `maNV` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `maND` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `productreviews`
 --
 ALTER TABLE `productreviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT cho bảng `quantrivien`
---
-ALTER TABLE `quantrivien`
-  MODIFY `maQTV` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `sanpham`
 --
 ALTER TABLE `sanpham`
-  MODIFY `maSP` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `maSP` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT cho bảng `thuonghieu`
 --
 ALTER TABLE `thuonghieu`
-  MODIFY `maTH` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `maTH` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT cho bảng `yeuthich`
 --
 ALTER TABLE `yeuthich`
-  MODIFY `maYT` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `maYT` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -832,8 +701,7 @@ ALTER TABLE `chitietgiohang`
 -- Các ràng buộc cho bảng `donhang`
 --
 ALTER TABLE `donhang`
-  ADD CONSTRAINT `donhang_ibfk_1` FOREIGN KEY (`maKH`) REFERENCES `khachhang` (`maKH`) ON DELETE CASCADE,
-  ADD CONSTRAINT `donhang_ibfk_2` FOREIGN KEY (`maNV`) REFERENCES `nhanvien` (`maNV`) ON DELETE SET NULL;
+  ADD CONSTRAINT `donhang_ibfk_1` FOREIGN KEY (`maKH`) REFERENCES `khachhang` (`maKH`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `giohang`
@@ -848,30 +716,11 @@ ALTER TABLE `khachhang`
   ADD CONSTRAINT `khachhang_ibfk_1` FOREIGN KEY (`maND`) REFERENCES `nguoidung` (`maND`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `nhanvien`
---
-ALTER TABLE `nhanvien`
-  ADD CONSTRAINT `nhanvien_ibfk_1` FOREIGN KEY (`maND`) REFERENCES `nguoidung` (`maND`) ON DELETE CASCADE;
-
---
--- Các ràng buộc cho bảng `orders`
---
-ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`maKH`) REFERENCES `khachhang` (`maKH`) ON DELETE CASCADE,
-  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`maNV`) REFERENCES `nhanvien` (`maNV`) ON DELETE SET NULL;
-
---
 -- Các ràng buộc cho bảng `productreviews`
 --
 ALTER TABLE `productreviews`
   ADD CONSTRAINT `fk_product_reviews_product` FOREIGN KEY (`product_id`) REFERENCES `sanpham` (`maSP`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_product_reviews_user` FOREIGN KEY (`user_id`) REFERENCES `nguoidung` (`maND`) ON DELETE SET NULL;
-
---
--- Các ràng buộc cho bảng `quantrivien`
---
-ALTER TABLE `quantrivien`
-  ADD CONSTRAINT `quantrivien_ibfk_1` FOREIGN KEY (`maND`) REFERENCES `nguoidung` (`maND`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `sanpham`

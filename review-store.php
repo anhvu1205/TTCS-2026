@@ -46,6 +46,25 @@ if ($res_kh && mysqli_num_rows($res_kh) > 0) {
     }
 }
 
+// KHÔNG cho phép review nếu chưa mua hàng
+if ($is_purchased == 0) {
+    header("Location: detail.php?id=" . $product_id . "&error=not_purchased");
+    exit();
+}
+
+// Check user đã review chưa
+$check_review = mysqli_query($conn, "
+    SELECT id FROM ProductReviews 
+    WHERE product_id = $product_id AND user_id = $user_id 
+    LIMIT 1
+");
+
+if ($check_review && mysqli_num_rows($check_review) > 0) {
+    // đã review rồi → không cho thêm
+    header("Location: detail.php?id=" . $product_id . "&error=already_reviewed");
+    exit();
+}
+
 mysqli_query($conn, "
     INSERT INTO ProductReviews (product_id, user_id, user_name, rating, content, is_purchased, status)
     VALUES ($product_id, $user_id, '$user_name', $rating, '$content_safe', $is_purchased, 'visible')

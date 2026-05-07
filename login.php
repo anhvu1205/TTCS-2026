@@ -75,14 +75,6 @@ include 'includes/header.php';
                             <input type="password" name="password" id="password" class="form-control custom-input" placeholder="Nhập mật khẩu..." required>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="remember">
-                                <label class="form-check-label small text-muted" for="remember">Ghi nhớ tôi</label>
-                            </div>
-                            <a href="#" class="small text-muted text-decoration-none hover-gold">Quên mật khẩu?</a>
-                        </div>
-
                         <button type="submit" class="btn btn-dark w-100 py-3 fw-bold mb-4 shadow-sm" style="border-radius: 12px; letter-spacing: 1px;">
                             ĐĂNG NHẬP
                         </button>

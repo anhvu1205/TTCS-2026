@@ -128,6 +128,9 @@ body.admin-page {
 .status-cho_xac_nhan {
     background-color: #F59E0B;
 }
+.status-dang_giao_hang {
+    background-color: #e678d7;
+}
 
 .status-da_giao_hang {
     background-color: #3B82F6;
@@ -139,6 +142,16 @@ body.admin-page {
 
 .status-da_huy {
     background-color: #EF4444;
+}
+.status-cho_hoan_tien {
+    background-color: #6366F1;
+}
+.status-da_hoan_tien {
+    background-color: #7be0ff;
+}
+.status-default {
+    background-color: #D4CEBE !important;
+    color: #5C5049 !important;
 }
 
 /* --- LOGOUT BUTTON --- */
@@ -211,4 +224,38 @@ body.admin-page {
 .btn-primary-v2:hover {
     background-color: #a34f24;
     color: white;
+}
+.order-card-v2 {
+    background-color: #EDE8DF;
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 16px;
+    border: none;
+    transition: transform 0.2s;
+}
+
+.order-card-v2:hover {
+    transform: translateY(-2px);
+}
+
+.status-select-v2 {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 50px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    appearance: none;
+    text-transform: uppercase;
+}
+
+.product-line-item {
+    font-size: 12px;
+    color: #8C8279;
+    margin-bottom: 4px;
+}
+
+.rounded-xl {
+    border-radius: 12px !important;
 }
