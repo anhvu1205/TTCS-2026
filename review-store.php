@@ -37,7 +37,7 @@ if ($res_kh && mysqli_num_rows($res_kh) > 0) {
         JOIN ChiTietDonHang ct ON dh.maDH = ct.maDH
         WHERE dh.maKH = $maKH
           AND ct.maSP = $product_id
-          AND dh.trangThai IN ('HOAN_TAT', 'DA_GIAO_HANG')
+          AND dh.trangThai IN ('Hoàn tất', 'Đã giao hàng')
         LIMIT 1
     ");
 
