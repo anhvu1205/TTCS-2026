@@ -2,26 +2,23 @@
 
 const messages = [
     "🌿 Miễn phí vận chuyển cho đơn từ 500.000₫",
-    "✦ Nhập MAU10 để được giảm 10% đơn đầu tiên",
+    "✦ Nhập MAU10 để được giảm ngay 10%",
     "🍂 Bộ sưu tập hè 2026 đã ra mắt – Khám phá ngay!"
     ];
 
     let currentIdx = 0;
     const textElem = document.getElementById('announcement-text');
 
-// Hàm đổi chữ mượt mà
 setInterval(() => {
     if (textElem) {
-        textElem.style.opacity = 0; // Hiệu ứng mờ dần
+        textElem.style.opacity = 0; 
         setTimeout(() => {
         currentIdx = (currentIdx + 1) % messages.length;
     textElem.innerText = messages[currentIdx];
-    textElem.style.opacity = 1; // Hiện lên lại
+    textElem.style.opacity = 1; 
         }, 500);
     }
 }, 3500);
-
-    // Hàm đóng thanh thông báo
     function closeAnnouncement() {
     const bar = document.getElementById('announcement-bar');
     if (bar) bar.style.display = 'none';
@@ -30,7 +27,7 @@ setInterval(() => {
 
 // 2. Thêm vào yêu thích và thêm vào giỏ hàng
 $(document).ready(function () {
-    // 1. XỬ LÝ NÚT YÊU THÍCH (WISHILIST)
+    // 1. XỬ LÝ NÚT YÊU THÍCH )
     $(document).off('click', '.add-to-wishlist').on('click', '.add-to-wishlist', function (e) {
         e.preventDefault();
         let btn = $(this);
@@ -40,7 +37,7 @@ $(document).ready(function () {
             let status = res.trim();
             if (status === 'not_logged_in') {
                 alert("Vui lòng đăng nhập để thực hiện chức năng này!");
-                window.location.href = 'login.php'; // Trỏ tới trang đăng nhập
+                window.location.href = 'login.php'; 
             } else if (status === 'admin_block') {
                 alert("Tài khoản Quản trị viên không thể thực hiện chức năng yêu thích sản phẩm.");
             } else {
@@ -54,23 +51,21 @@ $(document).ready(function () {
         });
     });
 
-    // 2. XỬ LÝ NÚT THÊM VÀO GIỎ HÀNG BẰNG AJAX
+    // 2. XỬ LÝ NÚT THÊM VÀO GIỎ HÀNG
     $(document).on('submit', '.quick-add-form-v3, .quick-add-form-v32, form[action="cart.php"]', function (e) {
         let form = $(this);
-        // Nếu là trang chi tiết sản phẩm thì vẫn cho submit form bình thường hoặc xử lý AJAX tùy mày
-        // Ở đây tao sẽ ép dùng AJAX cho các nút ở trang chủ/danh sách
         if (form.find('button[name="add_to_cart"]').length > 0) {
             e.preventDefault();
             let formData = form.serialize() + '&add_to_cart=1';
 
             $.post('cart.php', formData, function (res) {
-                let responseText = res.trim(); // Tạo biến để chứa kết quả đã lọc khoảng trắng
+                let responseText = res.trim(); 
 
                 if (responseText.includes('not_logged_in')) {
                     alert("Vui lòng đăng nhập để mua hàng!");
                     window.location.href = 'login.php';
                 }
-                else if (responseText.includes('admin_block')) { // <--- Đã sửa thành responseText
+                else if (responseText.includes('admin_block')) { 
                     alert("Tài khoản Quản trị viên không thể thực hiện mua hàng.");
                 }
                 else {
@@ -85,18 +80,17 @@ $(document).ready(function () {
 // 3. TĂNG GIẢM SỐ LƯỢNG TRANG CARD
 
 function updateQty(id, delta) {
-    // Lấy thẻ span hiển thị số lượng
     const qtyElement = document.getElementById('qty-' + id);
-    if (!qtyElement) return; // Phòng hờ không tìm thấy thẻ
+    if (!qtyElement) return; 
 
     let currentVal = parseInt(qtyElement.innerText);
     let newVal = currentVal + delta;
 
     if (newVal < 1) {
         if (confirm("Bạn có muốn xóa sản phẩm này khỏi giỏ hàng?")) {
-            newVal = 0; // Gửi 0 để server thực hiện unset
+            newVal = 0; 
         } else {
-            return; // Hủy thao tác nếu người dùng không muốn xóa
+            return; 
         }
     }
 
@@ -111,7 +105,7 @@ function updateQty(id, delta) {
             try {
                 let data = JSON.parse(response);
                 if (data.status === 'success') {
-                    location.reload(); // Load lại để cập nhật tiền ship và tổng tiền
+                    location.reload(); 
                 }
             } catch (e) {
                 console.error("Lỗi phản hồi từ server:", response);
@@ -127,7 +121,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const minusBtn = document.getElementById('qtyMinus');
 
     if (qtyInput && plusBtn && minusBtn) {
-        // Lấy stock từ data-attribute thay vì PHP trực tiếp
         let stock = parseInt(qtyInput.getAttribute('data-stock')) || 0;
 
         plusBtn.addEventListener('click', () => {
@@ -144,7 +137,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// Hàm đổi ảnh (để ngoài vì gọi trực tiếp từ thuộc tính onclick của HTML)
 function changeMainImage(src, thumb) {
     const mainImg = document.getElementById('mainImage');
     if (mainImg) {
@@ -163,11 +155,9 @@ document.addEventListener('DOMContentLoaded', function () {
         let itemWrapper = $('#wishlist-item-' + p_id);
 
         $.post('controll/add_like.php', { product_id: p_id }, function (res) {
-            // Chỉ thực hiện xóa giao diện nếu server báo thành công/đã xóa
             if (res.trim() === 'removed' || res.trim() === 'success') {
                 itemWrapper.fadeOut(400, function () {
                     $(this).remove();
-                    // Nếu xóa hết, load lại trang để hiện thông báo danh sách trống
                     if ($('.wishlist-item-wrapper').length === 0) {
                         location.reload();
                     }
@@ -179,34 +169,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // 6. MŨI TÊN LÊN
 const backToTopBtn = document.getElementById("scrollBackToTop");
-
-// Lắng nghe sự kiện cuộn chuột
 window.onscroll = function () {
-    // Nếu cuộn xuống hơn 300px thì hiện nút, ngược lại thì ẩn
     if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
         backToTopBtn.style.display = "flex";
-        // Thêm một chút delay để hiệu ứng fade-in mượt hơn (nếu dùng CSS transition)
         setTimeout(() => backToTopBtn.classList.add("visible"), 10);
     } else {
         backToTopBtn.classList.remove("visible");
-        // Ẩn hoàn toàn sau khi hiệu ứng mờ dần kết thúc
         setTimeout(() => {
             if (!backToTopBtn.classList.contains("visible")) backToTopBtn.style.display = "none";
         }, 300);
     }
 };
 
-// Xử lý khi click vào nút
 backToTopBtn.onclick = function () {
     window.scrollTo({
         top: 0,
-        behavior: "smooth" // Cuộn mượt mà lên đầu trang
+        behavior: "smooth" 
     });
 };
 
 // 7. Thanh tìm kiếm
 $(document).ready(function () {
-    // 1. Mở Search Overlay
+    // 1. Mở Search 
     $('#open-search-trigger').on('click', function (e) {
         e.preventDefault();
         $('#search-overlay-fullscreen').fadeIn(300).css('display', 'flex');
@@ -242,14 +226,11 @@ $(document).ready(function () {
             $('#live-search-results').hide();
         }
     });
-
-    // 5. CHỮA LỖI ENTER: Tách riêng sự kiện keydown để bắt phím Enter
     $('#full-search-input').on('keydown', function (e) {
-        if (e.which === 13) { // Phím Enter
+        if (e.which === 13) { 
             e.preventDefault();
             let query = $(this).val().trim();
             if (query.length > 0) {
-                // Điều hướng sang trang products.php kèm từ khóa
                 window.location.href = 'products.php?keyword=' + encodeURIComponent(query);
             }
         }
@@ -315,7 +296,7 @@ $(document).ready(function () {
         });
     }
 });
-// 9. LỌC ĐƠN HÀNG TRÊN ADMIN THEO TỪ KHÓA VÀ TRẠNG THÁI
+// 9. LỌC ĐƠN HÀNG TRÊN ADMIN TRẠNG THÁI
 $(document).ready(function () {
     const searchInput = $('#orderSearch');
     const statusFilter = $('#statusFilter');
@@ -327,26 +308,22 @@ $(document).ready(function () {
         $('.order-card-v2').each(function () {
             const card = $(this);
             const cardText = card.text().toLowerCase();
-            // Lấy trạng thái từ thuộc tính data-status của card
             const cardStatus = card.data('status');
 
             const matchesSearch = cardText.indexOf(query) > -1;
             const matchesStatus = (status === 'all' || cardStatus === status);
 
             if (matchesSearch && matchesStatus) {
-                card.fadeIn(200); // Hiển thị mượt mà
+                card.fadeIn(200); 
             } else {
-                card.hide(); // Ẩn đi
+                card.hide(); 
             }
         });
     }
 
-    // Lắng nghe sự kiện gõ phím vào ô tìm kiếm
     if (searchInput.length) {
         searchInput.on('input', filterOrders);
     }
-
-    // Lắng nghe sự kiện thay đổi dropdown trạng thái
     if (statusFilter.length) {
         statusFilter.on('change', filterOrders);
     }

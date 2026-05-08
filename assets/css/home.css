@@ -1,15 +1,11 @@
 /* Chứa Banner Hero, danh mục nổi bật, Slider đánh giá và Newsletter tại trang chủ. */
 
 /* BANNER */
-
-/* Tông màu be sáng chủ đạo */
 :root {
     --mau-bg: #FAF7F2;
     --mau-gold: #C4622D;
     --mau-text: #1A1A1A;
 }
-
-/* 1. Navbar Căn giữa */
 .nav-custom-centered {
     padding: 20px 0;
     border: none !important;
@@ -22,22 +18,18 @@
     color: var(--mau-text) !important;
     text-transform: uppercase;
 }
-
-/* 2. Hero Section Tỷ lệ 65/35 */
 .hero-minimalist {
     background-color: var(--mau-bg);
     min-height: 85vh;
     overflow: hidden;
 }
 
-/* Cột văn bản chiếm 65% */
 .hero-text-area-custom {
     width: 65%;
     padding-left: 10%;
     padding-right: 5%;
 }
 
-/* Cột hình ảnh chiếm 35% */
 .hero-image-area-custom {
     width: 35%;
 }
@@ -71,7 +63,7 @@
 .hero-main-title {
     font-family: 'Cormorant Garamond', serif;
     font-size: clamp(4rem, 7vw, 100px);
-    /* Co giãn theo màn hình */
+
     line-height: 1.0;
     font-weight: 700;
     color: #1A1A1A;
@@ -112,13 +104,11 @@
     box-shadow: 0 10px 20px rgba(196, 98, 45, 0.2);
 }
 
-/* Responsive cho điện thoại */
 @media (max-width: 991px) {
 
     .hero-text-area-custom,
     .hero-image-area-custom {
         width: 100%;
-        /* Trên mobile quay lại chiếm trọn màn hình */
     }
 
     .hero-text-area-custom {
@@ -192,7 +182,6 @@
     height: 100%;
     object-fit: cover;
     mix-blend-mode: multiply;
-    /* Tạo hiệu ứng hòa trộn màu nền như bản mẫu */
     transition: transform 0.7s ease;
 }
 
@@ -272,7 +261,6 @@
     font-size: clamp(2.5rem, 5vw, 3.5rem);
     color: #1A1A1A;
     font-weight: 400;
-    /* Để 400 cho thanh thoát hoặc 550 nếu bạn muốn đậm hơn */
     line-height: 1.2;
 }
 
@@ -294,13 +282,12 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* THẺ SẢN PHẨM MỚI V3 - ĐỒNG BỘ THEO MẪU */
+/* THẺ SẢN PHẨM */
 .product-card-v3 {
     margin-bottom: 30px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-radius: 20px;
     overflow: hidden;
-    /* Bọc toàn bộ nội dung */
     background-color: #ffffff;
 }
 
@@ -309,14 +296,12 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
-/* 1. Image Wrapper: Chứa ảnh, nút yêu thích và nút mua nhanh */
+/* ảnh, nút yêu thích và nút mua nhanh */
 .product-img-wrapper-v3 {
     position: relative;
     aspect-ratio: 3 / 4;
-    /* Tỷ lệ ảnh dọc */
     overflow: hidden;
     background-color: #f8f8f8;
-    /* Màu nền khi ảnh chưa load */
 }
 
 .product-img-main-v3 {
@@ -330,7 +315,7 @@
     transform: scale(1.08);
 }
 
-/* 2. Nút Yêu thích (Trái tim) ở góc trên bên phải */
+/* Nút Yêu thích  */
 .btn-wishlist-v3 {
     position: absolute;
     top: 15px;
@@ -338,7 +323,6 @@
     background: transparent;
     border: none;
     color: #b0b0b0;
-    /* Màu xám mặc định */
     font-size: 18px;
     transition: 0.3s;
     z-index: 10;
@@ -351,18 +335,16 @@
     transform: scale(1.1);
 }
 
-/* 3. Nút THÊM VÀO GIỎ MỚI (Màu đen, bo góc, hiện khi hover) */
+/* Nút THÊM VÀO GIỎ */
 .btn-quick-add-v3 {
     position: absolute;
     bottom: 20px;
     left: 20px;
     right: 20px;
     background-color: #1A1A1A;
-    /* Màu đen sang trọng */
     color: #ffffff;
     border: none;
     border-radius: 50px;
-    /* Bo góc hoàn toàn */
     padding: 12px 20px;
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
@@ -370,16 +352,12 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     width: calc(100% - 40px);
-    /* Căn giữa */
-
-    /* Hiệu ứng ẩn mặc định */
     opacity: 0;
     transform: translateY(15px);
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     z-index: 10;
 }
 
-/* Hiện nút khi hover vào thẻ sản phẩm */
 .product-card-v3:hover .btn-quick-add-v3 {
     opacity: 1;
     transform: translateY(0);
@@ -390,7 +368,7 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* 4. Phần thông tin sản phẩm (Căn giữa) */
+/* thông tin sản phẩm */
 .product-info-v3 {
     padding: 20px 15px;
     text-align: center;
@@ -411,18 +389,15 @@
     font-size: 14px;
     font-weight: 500;
     color: #8C8279;
-    /* Màu xám muted nhẹ nhàng */
     margin-bottom: 0;
 }
 
 /* --- SẢN PHẨM BÁN CHẠY --- */
 .best-sellers-section {
     background-color: #EDE8DF;
-    /* Màu nền be đậm hơn */
     padding: 80px 40px;
     margin: 40px 20px;
     border-radius: 30px;
-    /* Bo góc toàn bộ section như mẫu */
 }
 
 .best-seller-tag {
@@ -441,8 +416,6 @@
     color: #1A1A1A;
     font-weight: 400;
 }
-
-/* Nút điều hướng */
 .btn-scroll-nav {
     width: 45px;
     height: 45px;
@@ -462,21 +435,18 @@
     background-color: #f8f8f8;
 }
 
-/* Slider Horizontal */
+/* Slider */
 .best-seller-slider-wrapper {
     display: flex;
     gap: 24px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    /* Hít vào từng item khi cuộn */
     scrollbar-width: none;
-    /* Ẩn scrollbar trên Firefox */
     padding-bottom: 10px;
 }
 
 .best-seller-slider-wrapper::-webkit-scrollbar {
     display: none;
-    /* Ẩn scrollbar trên Chrome/Safari */
 }
 
 .best-seller-item {
@@ -484,15 +454,11 @@
     scroll-snap-align: start;
 }
 
-/* Đảm bảo Card V3 bên trong Slider không bị méo */
 .best-seller-item .product-card-v3 {
-    margin-bottom: 0; /* Bỏ margin bottom trong slider để cân đối */
+    margin-bottom: 0; 
     height: 100%;
 }
 
-/* Các thuộc tính Card V3 khác giữ nguyên như bạn đã thiết lập */
-
-/* Responsive cho mobile */
 @media (max-width: 768px) {
     .best-sellers-section {
         padding: 60px 20px;
@@ -507,7 +473,6 @@
 /* --- REVIEW SLIDER SECTION --- */
 .review-slider-section {
     background-color: #1A1A1A;
-    /* Nền tối sang trọng */
     padding: 80px 40px;
     margin: 40px 20px;
     border-radius: 30px;
@@ -574,7 +539,6 @@
     letter-spacing: 1px;
 }
 
-/* Nút điều hướng Review */
 .btn-review-nav {
     width: 45px;
     height: 45px;
@@ -604,13 +568,11 @@
 
 .newsletter-card {
     background-color: #E8DDD0;
-    /* Màu nền như mẫu React */
     border-radius: 30px;
     padding: 80px 40px;
     text-align: center;
 }
 
-/* Các vòng tròn trang trí */
 .deco-circle {
     position: absolute;
     border-radius: 50%;

@@ -20,17 +20,15 @@ if (isset($_GET['id'])) {
         $colors = $product['mauSac'] ? explode(',', $product['mauSac']) : [];
         $sizes = $product['kichCo'] ? explode(',', $product['kichCo']) : [];
         $stock = $product['soLuong'] ?? 0;
-
-        // --- Trừ số lượng đã có trong giỏ hàng (theo biến thể) ---
         if (isset($_SESSION['cart'])) {
             foreach ($_SESSION['cart'] as $c_item) {
                 if ($c_item['id'] == $id) {
-                    $stock -= $c_item['quantity']; // trừ chung cho tất cả biến thể
+                    $stock -= $c_item['quantity']; 
                 }
             }
         }
 
-        $stock = max(0, $stock); // không âm
+        $stock = max(0, $stock); 
 
     } else {
         header("Location: products.php");
@@ -250,7 +248,6 @@ if (isset($_GET['id'])) {
                 <div class="col-lg-8">
                     <div class="p-4 bg-white shadow-sm" style="border-radius: 1rem;">
                         <?php
-                        // Hiển thị thông báo lỗi
                         if (isset($_GET['error'])) {
                             $error_msg = '';
                             switch ($_GET['error']) {
@@ -344,7 +341,7 @@ if (isset($_GET['id'])) {
                                             </button>
                                         </div>
 
-                                        <!-- Form sửa review (ẩn) -->
+                                        <!-- Form sửa review -->
                                         <div class="edit-review-form mt-3" id="edit-form-<?php echo $rv['id']; ?>" style="display: none;">
                                             <form method="POST" action="review-edit.php">
                                                 <input type="hidden" name="review_id" value="<?php echo $rv['id']; ?>">
@@ -386,9 +383,7 @@ if (isset($_GET['id'])) {
 </main>
 
 <script>
-    // Handle edit review functionality
     document.addEventListener('DOMContentLoaded', function() {
-        // Edit button click
         document.querySelectorAll('.edit-review-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const reviewId = this.getAttribute('data-review-id');
@@ -398,8 +393,6 @@ if (isset($_GET['id'])) {
                 }
             });
         });
-
-        // Cancel edit button click
         document.querySelectorAll('.cancel-edit-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const reviewId = this.getAttribute('data-review-id');

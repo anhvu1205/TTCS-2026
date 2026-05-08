@@ -4,7 +4,6 @@ require_once 'includes/db.php';
 
 $error = '';
 
-// Hiển thị lỗi nếu bị hệ thống tự động đăng xuất do bị khóa
 if (isset($_GET['error']) && $_GET['error'] == 'locked') {
     $error = 'Tài khoản của bạn đã bị khóa bởi quản trị viên.';
 }
@@ -13,25 +12,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = $_POST['password']; 
 
-    // BƯỚC 1: Tìm người dùng khớp Tên đăng nhập và Mật khẩu
+    //Tìm người dùng khớp Tên đăng nhập và Mật khẩu
     $sql = "SELECT * FROM NguoiDung WHERE tenDangNhap = '$username' AND matKhau = '$password'";
     $result = mysqli_query($conn, $sql);
 
     if ($result && mysqli_num_rows($result) > 0) {
         $user = mysqli_fetch_assoc($result);
         
-        // BƯỚC 2: KIỂM TRA TRẠNG THÁI TÀI KHOẢN
+        // KIỂM TRA TRẠNG THÁI TÀI KHOẢN
         if ($user['trangThai'] === 'LOCKED') {
             $error = 'Tài khoản của bạn đã bị khóa, vui lòng liên hệ Admin.';
         } else {
-            // BƯỚC 3: Nếu tài khoản ACTIVE, tiến hành đăng nhập bình thường
+            // Nếu tài khoản ACTIVE, tiến hành đăng nhập bình thường
             $_SESSION['user'] = [
                 'id' => $user['maND'],
                 'username' => $user['tenDangNhap'],
                 'name' => $user['ten'],
                 'role' => $user['vaiTro']
             ];
-
             // Điều hướng dựa trên vai trò
             if ($user['vaiTro'] === 'ADMIN') {
                 header("Location: admin.php");

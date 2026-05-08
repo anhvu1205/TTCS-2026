@@ -14,17 +14,16 @@ if(isset($_POST['save'])){
     $gia = $_POST['gia'];
     $soluong = $_POST['soluong'];
     $danhmuc = $_POST['danhmuc'];
-    $thuonghieu = $_POST['thuonghieu']; // MỚI
-    $kichthuoc = $_POST['kichthuoc'];   // MỚI
-    $mausac = $_POST['mausac'];         // MỚI
-    $chatlieu = $_POST['chatlieu'];     // MỚI
+    $thuonghieu = $_POST['thuonghieu']; 
+    $kichthuoc = $_POST['kichthuoc'];   
+    $mausac = $_POST['mausac'];        
+    $chatlieu = $_POST['chatlieu'];    
     $mota = $_POST['mota'];
     $hinhanh_link = $_POST['hinhanh'];
     $hinhanh_file = $_FILES['hinhanh_file'];
 
     for($i=0; $i<count($ten); $i++){
         if($ten[$i] != ""){
-            // XỬ LÝ ẢNH UPLOAD
             $img_path = '';
             if(!empty($hinhanh_file['name'][$i])){
                 $tmp_name = $hinhanh_file['tmp_name'][$i];
@@ -43,10 +42,10 @@ if(isset($_POST['save'])){
             $gia_sp = floatval($gia[$i]);
             $soluong_sp = intval($soluong[$i]);
             $dm_sp = intval($danhmuc[$i]);
-            $th_sp = intval($thuonghieu[$i]); // MỚI
-            $kt_sp = mysqli_real_escape_string($conn, $kichthuoc[$i]); // MỚI
-            $ms_sp = mysqli_real_escape_string($conn, $mausac[$i]);     // MỚI
-            $cl_sp = mysqli_real_escape_string($conn, $chatlieu[$i]);   // MỚI
+            $th_sp = intval($thuonghieu[$i]); 
+            $kt_sp = mysqli_real_escape_string($conn, $kichthuoc[$i]); 
+            $ms_sp = mysqli_real_escape_string($conn, $mausac[$i]);    
+            $cl_sp = mysqli_real_escape_string($conn, $chatlieu[$i]);  
             $mota_sp = mysqli_real_escape_string($conn, $mota[$i]);
 
             $sql = "INSERT INTO SanPham(ten, gia, soLuong, maDM, maTH, kichCo, mauSac, chatLieu, hinhAnh, moTa)
@@ -59,7 +58,6 @@ if(isset($_POST['save'])){
     exit();
 }
 
-// Chuẩn bị dữ liệu danh mục và thương hiệu để dùng cho cả HTML và Javascript
 $dm_options = "";
 $dm_query = mysqli_query($conn, "SELECT * FROM DanhMuc");
 while($d = mysqli_fetch_assoc($dm_query)) {

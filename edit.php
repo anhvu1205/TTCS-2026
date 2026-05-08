@@ -27,16 +27,16 @@ if(isset($_POST['update'])){
     $gia = floatval($_POST['gia']);
     $soluong = intval($_POST['soluong']);
     $danhmuc = intval($_POST['danhmuc']);
-    $thuonghieu = intval($_POST['thuonghieu']); // MỚI
-    $kichco = $_POST['kichco'];                 // MỚI
-    $mausac = $_POST['mausac'];                 // MỚI
-    $chatlieu = $_POST['chatlieu'];             // MỚI
+    $thuonghieu = intval($_POST['thuonghieu']); 
+    $kichco = $_POST['kichco'];                
+    $mausac = $_POST['mausac'];               
+    $chatlieu = $_POST['chatlieu'];           
     $mota = $_POST['mota'];
     $hinhanh_link = $_POST['hinhanh'];
     $hinhanh_file = $_FILES['hinhanh_file'];
 
     // XỬ LÝ ẢNH UPLOAD
-    $img_path = $product['hinhAnh']; // giữ ảnh cũ nếu ko đổi
+    $img_path = $product['hinhAnh']; 
     if(!empty($hinhanh_file['name'][0])){
         $tmp_name = $hinhanh_file['tmp_name'][0];
         $filename = time() . '_' . basename($hinhanh_file['name'][0]);
@@ -52,9 +52,9 @@ if(isset($_POST['update'])){
 
     $ten_sp = mysqli_real_escape_string($conn, $ten);
     $mota_sp = mysqli_real_escape_string($conn, $mota);
-    $kc_sp = mysqli_real_escape_string($conn, $kichco); // MỚI
-    $ms_sp = mysqli_real_escape_string($conn, $mausac); // MỚI
-    $cl_sp = mysqli_real_escape_string($conn, $chatlieu); // MỚI
+    $kc_sp = mysqli_real_escape_string($conn, $kichco); 
+    $ms_sp = mysqli_real_escape_string($conn, $mausac); 
+    $cl_sp = mysqli_real_escape_string($conn, $chatlieu); 
 
     $sql = "UPDATE SanPham 
             SET ten='$ten_sp', gia='$gia', soLuong='$soluong', maDM='$danhmuc', 
@@ -96,7 +96,7 @@ include 'includes/header.php';
         <input type="text" name="ten" class="form-control" value="<?php echo $product['ten']; ?>" required>
     </div>
 
-    <!-- Thương hiệu (MỚI) -->
+    <!-- Thương hiệu -->
     <div class="col-md-6">
         <label class="form-label">Thương hiệu</label>
         <select name="thuonghieu" class="form-control">
@@ -136,7 +136,7 @@ include 'includes/header.php';
         </select>
     </div>
 
-    <!-- Thông số chi tiết (MỚI) -->
+    <!-- Thông số chi tiết -->
     <div class="col-md-4">
         <label class="form-label">Kích cỡ</label>
         <input type="text" name="kichco" class="form-control" value="<?php echo $product['kichCo']; ?>">

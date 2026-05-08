@@ -2,7 +2,6 @@
 session_start();
 require_once 'includes/db.php';
 
-// HÀM HỖ TRỢ LẤY CLASS CSS (Đồng bộ với Admin)
 function getStatusClass($status) {
     $map = [
         'Chờ xác nhận'   => 'status-cho_xac_nhan',
@@ -32,10 +31,7 @@ $user_id = $_SESSION['user']['id'];
 $tab = isset($_GET['tab']) ? $_GET['tab'] : 'orders';
 $is_editing = isset($_GET['edit']) && $_GET['edit'] == 1;
 
-// --- XỬ LÝ CÁC HÀNH ĐỘNG POST ---
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-    // A. CẬP NHẬT THÔNG TIN TÀI KHOẢN
     if (isset($_POST['update_profile'])) {
         $ten = mysqli_real_escape_string($conn, $_POST['ten']);
         $sdt = mysqli_real_escape_string($conn, $_POST['soDienThoai']);
@@ -49,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    // B. XÓA KHỎI DANH SÁCH YÊU THÍCH
+    // XÓA KHỎI DANH SÁCH YÊU THÍCH
     if (isset($_POST['remove_wishlist_id'])) {
         $product_id = mysqli_real_escape_string($conn, $_POST['remove_wishlist_id']);
         mysqli_query($conn, "DELETE FROM YeuThich WHERE maND = '$user_id' AND maSP = '$product_id'");
@@ -57,11 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    // C. LOGIC HỦY ĐƠN HÀNG (ĐÃ SỬA)
+    // LOGIC HỦY ĐƠN HÀNG 
     if (isset($_POST['cancel_order_id'])) {
         $order_id = mysqli_real_escape_string($conn, $_POST['cancel_order_id']);
         
-        // Lấy phương thức thanh toán của đơn hàng này
+        // Lấy phương thức thanh toán của đơn hàng
         $check_sql = "SELECT phuongThucThanhToan FROM DonHang WHERE maDH = '$order_id'";
         $check_res = mysqli_query($conn, $check_sql);
         $order_info = mysqli_fetch_assoc($check_res);
@@ -87,7 +83,6 @@ include 'includes/header.php';
 <link rel="stylesheet" href="assets/css/auth-account.css">
 
 <style>
-    /* Đồng bộ CSS với Admin */
     .status-dang_giao_hang { background-color: #8B5CF6 !important; color: white; }
     .status-da_giao { background-color: #0D9488 !important; color: white; }
     .status-cho_xac_nhan { background-color: #F59E0B !important; color: white; }
@@ -168,8 +163,6 @@ include 'includes/header.php';
                                     <span class="badge-status <?php echo getStatusClass($st); ?>">
                                         <?php echo $st; ?>
                                     </span>
-                                    
-                                    <!-- PHẦN SỬA LỖI BIẾN $o THÀNH $order VÀ $curr_st THÀNH $st -->
                                     <div class="mt-1">
                                         <?php 
                                         // 1. Đơn COD chưa xong -> CHƯA THANH TOÁN (Màu đỏ)
@@ -188,7 +181,7 @@ include 'includes/header.php';
                                         <?php endif; ?>
                                     </div>
 
-                                    <!-- Nút Hủy đơn cho khách (Giữ nguyên) -->
+                                    <!-- Nút Hủy đơn cho khách -->
                                     <?php if($st == 'Chờ xác nhận' || $st == 'Chưa thanh toán'): ?>
                                         <form method="POST" class="mt-2" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này?');">
                                             <input type="hidden" name="cancel_order_id" value="<?php echo $order['maDH']; ?>">
@@ -217,7 +210,7 @@ include 'includes/header.php';
             <?php elseif ($tab == 'wishlist'): ?>
                 <div class="wishlist-container">
                     <?php
-                    // Lấy danh sách sản phẩm yêu thích (Join với bảng SanPham để lấy soLuong, giá, ảnh...)
+                    // Lấy danh sách sản phẩm yêu thích 
                     $sql_wishlist = "SELECT p.maSP as id, p.ten as name, p.gia as price, p.hinhAnh as image, p.soLuong 
                                     FROM YeuThich y JOIN SanPham p ON y.maSP = p.maSP 
                                     WHERE y.maND = '$user_id' ORDER BY y.ngayTao DESC";
@@ -228,18 +221,17 @@ include 'includes/header.php';
                             <?php while ($item = mysqli_fetch_assoc($res_wishlist)): ?>
                                 <div class="col-6 col-md-4 col-lg-3 wishlist-item-wrapper" id="wishlist-item-<?php echo $item['id']; ?>">
                                     <div class="product-card-v3 h-100">
-                                        <!-- PHẦN HÌNH ẢNH & NÚT TÁC VỤ (Giống Shop.php) -->
+                                        <!-- PHẦN HÌNH ẢNH & NÚT TÁC VỤ  -->
                                         <div class="product-img-wrapper-v3">
                                             <a href="detail.php?id=<?php echo $item['id']; ?>">
                                                 <img src="<?php echo $item['image']; ?>" class="product-img-main-v3" alt="<?php echo htmlspecialchars($item['name']); ?>">
                                             </a>
 
-                                            <!-- Nút trái tim đỏ (Xóa yêu thích bằng AJAX trong main.js) -->
                                             <button class="btn-wishlist-v3 remove-from-wishlist" data-id="<?php echo $item['id']; ?>" title="Xóa khỏi yêu thích">
                                                 <i class="fa-solid text-danger fa-heart"></i>
                                             </button>
 
-                                            <!-- FORM THÊM VÀO GIỎ HÀNG (Lấy y hệt cấu trúc shop.php) -->
+                                            <!-- FORM THÊM VÀO GIỎ HÀNG  -->
                                             <form action="cart.php" method="POST" class="quick-add-form-v3">
                                                 <input type="hidden" name="id" value="<?php echo $item['id']; ?>">
                                                 <?php if ($item['soLuong'] > 0): ?>
@@ -254,7 +246,7 @@ include 'includes/header.php';
                                             </form>
                                         </div>
 
-                                        <!-- THÔNG TIN SẢN PHẨM (Căn giữa giống Shop.php) -->
+                                        <!-- THÔNG TIN SẢN PHẨM  -->
                                         <div class="product-info-v3 text-center mt-3">
                                             <h6 class="product-name-v3 mb-1">
                                                 <a href="detail.php?id=<?php echo $item['id']; ?>" class="text-decoration-none text-dark fw-bold">
@@ -275,7 +267,7 @@ include 'includes/header.php';
                         </div>
                     <?php endif; ?>
                 </div>
-            <!-- --- TAB TÀI KHOẢN (Sử dụng label-minimal & input-mimic của bạn) --- -->
+            <!-- --- TAB TÀI KHOẢN  --- -->
             <?php elseif ($tab == 'profile'): ?>
                 <div class="profile-details max-w-md">
                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -306,7 +298,7 @@ include 'includes/header.php';
                             </div>
                         </form>
                     <?php else: ?>
-                        <!-- GIAO DIỆN HIỂN THỊ (DÙNG CLASS CSS CỦA BẠN) -->
+                        <!-- GIAO DIỆN HIỂN THỊ  -->
                         <div class="mb-4">
                             <label class="label-minimal">HỌ VÀ TÊN</label>
                             <p class="input-mimic"><?php echo htmlspecialchars($user['ten']); ?></p>

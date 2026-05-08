@@ -13,7 +13,6 @@ $total = isset($_GET['total']) ? intval($_GET['total']) : 0;
 $user = $_SESSION['user'];
 $maND = $user['maND'] ?? $user['id'];
 
-// Tạo mã hiển thị chuyên nghiệp (Ví dụ: #17741001)
 $display_order_id = "17741" . str_pad($order_id, 3, "0", STR_PAD_LEFT);
 
 // 2. KIỂM TRA QUYỀN TRUY CẬP ĐƠN HÀNG
@@ -36,7 +35,6 @@ $qr_url = "https://img.vietqr.io/image/{$bank}-{$account_no}-compact2.jpg?amount
 
 // 4. XỬ LÝ KHI KHÁCH NHẤN "TÔI ĐÃ CHUYỂN KHOẢN"
 if (isset($_POST['confirm_payment'])) {
-    // Xử lý upload ảnh
     $proof_path = "";
     if (isset($_FILES['payment_proof']) && $_FILES['payment_proof']['error'] == 0) {
         $target_dir = "assets/img/proofs/";
@@ -50,7 +48,6 @@ if (isset($_POST['confirm_payment'])) {
             $proof_path = $target_file;
         }
     }
-
     // CẬP NHẬT TRẠNG THÁI VÀ LƯU ĐƯỜNG DẪN ẢNH
     mysqli_query($conn, "UPDATE DonHang SET trangThai = 'Chờ xác nhận', minhChungThanhToan = '$proof_path' WHERE maDH = '$order_id'");
 
@@ -69,14 +66,10 @@ include 'includes/header.php';
             <div class="card-body p-4 text-center" style="background-color: #EDE8DF;">
                 <h4 class="fw-bold mb-1" style="color: #1A1A1A; font-family: 'Cormorant Garamond', serif;">XÁC NHẬN CHUYỂN KHOẢN</h4>
                 <p class="text-muted small mb-4">Mã đơn hàng: #<?php echo $display_order_id; ?></p>
-
-                <!-- Vùng hiển thị mã QR -->
                 <div class="mb-4 bg-white d-inline-block p-3 rounded-4 shadow-sm">
                     <img src="<?php echo $qr_url; ?>" alt="QR Thanh Toán" class="img-fluid" style="max-width: 280px;">
                     <p class="mt-2 mb-0 small text-muted"><i class="fa-solid fa-qrcode me-1"></i> Quét mã để thanh toán</p>
                 </div>
-
-                <!-- Vùng hiển thị số tiền -->
                 <div class="p-3 mb-4 rounded-3" style="background-color: #D9E5D6; color: #5C6650;">
                     <span class="small d-block fw-medium">Số tiền cần thanh toán</span>
                     <strong class="fs-3"><?php echo number_format($total); ?>₫</strong>
@@ -106,8 +99,6 @@ include 'includes/header.php';
                         </span>
                     </div>
                 </div>
-
-                <!-- Thêm enctype vào form để gửi được file -->
                 <form method="POST" enctype="multipart/form-data">
                     <div class="mb-4 text-start">
                         <label class="small fw-bold mb-2 text-muted">TẢI ẢNH XÁC NHẬN CHUYỂN KHOẢN *</label>

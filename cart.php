@@ -51,8 +51,6 @@ if (isset($_POST['add_to_cart'])) {
             }
         }
     }
-
-    // thêm/xóa/sửa giỏ thì bỏ mã cũ để tránh sai tổng
     unset($_SESSION['discount']);
 
     header("Location: cart.php");
@@ -63,8 +61,6 @@ if (isset($_POST['add_to_cart'])) {
 if (isset($_GET['remove'])) {
     $id_remove = $_GET['remove'];
     unset($_SESSION['cart'][$id_remove]);
-
-    // xóa sản phẩm thì bỏ mã cũ để user áp lại
     unset($_SESSION['discount']);
 
     header("Location: cart.php");
@@ -81,8 +77,6 @@ if (isset($_POST['update_cart'])) {
             $_SESSION['cart'][$id]['quantity'] = $qty;
         }
     }
-
-    // cập nhật giỏ thì bỏ mã cũ để user áp lại
     unset($_SESSION['discount']);
 
     header("Location: cart.php");
@@ -105,7 +99,6 @@ if (isset($_POST['remove_discount'])) {
     $discountMessageType = 'secondary';
 }
 
-// Khởi tạo các giá trị tính toán
 $cartItems = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
 $subtotal = getCartSubtotal();
 $discountAmount = getAppliedDiscountAmount();

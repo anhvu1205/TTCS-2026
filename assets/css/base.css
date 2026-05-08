@@ -29,7 +29,6 @@ body {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Xóa gạch chân mặc định cho tất cả các thẻ link */
 a {
     text-decoration: none !important;
     color: inherit;
@@ -48,7 +47,6 @@ a {
     font-family: 'DM Sans', sans-serif;
     text-transform: uppercase;
     z-index: 1050;
-    /* Đảm bảo nằm trên Menu */
 }
 
 .close-announcement {

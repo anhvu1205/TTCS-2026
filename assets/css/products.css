@@ -1,4 +1,4 @@
-/* --- SIDEBAR FILTERS (GIỮ NGUYÊN) --- */
+/* --- SIDEBAR FILTERS --- */
 .filter-label-ptit {
     font-size: 11px;
     letter-spacing: 2px;
@@ -16,7 +16,7 @@
     background-color: #F9FAFB !important;
 }
 
-/* --- PAGINATION (GIỮ NGUYÊN) --- */
+/* --- PAGINATION --- */
 .pagination .page-link {
     width: 40px;
     height: 40px;
@@ -28,12 +28,10 @@
     margin: 0 4px;
 }
 
-/* Chỉ giữ lại logic bổ trợ cho lưới sản phẩm nếu cần */
 .product-info-v3 {
     margin-top: auto;
 }
 
-/* Hiện nút khi hover vào thẻ sản phẩm */
 .product-card-v3:hover .btn-quick-add-v32 {
     opacity: 1;
     transform: translateY(0);

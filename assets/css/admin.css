@@ -39,7 +39,7 @@ body.admin-page {
     box-shadow: 0 4px 12px rgba(196, 98, 45, 0.2);
 }
 
-/* --- THỐNG KÊ (STAT CARDS MODERN) --- */
+/* --- THỐNG KÊ --- */
 .stat-card-modern {
     background-color: var(--admin-card) !important;
     border-radius: 20px !important;
@@ -120,7 +120,6 @@ body.admin-page {
     display: inline-block;
 }
 
-/* Các trạng thái mapping từ PHP */
 .status-chua_thanh_toan {
     background-color: #6B7280;
 }

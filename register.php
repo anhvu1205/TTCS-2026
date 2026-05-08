@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (mysqli_num_rows($check_res) > 0) {
             $error = 'Tên đăng nhập này đã được sử dụng.';
         } else {
-            // 3. Thêm user mới (password vẫn lưu plain text)
+            // 3. Thêm user mới 
             $sql_nd = "INSERT INTO NguoiDung (tenDangNhap, matKhau, ten, soDienThoai, vaiTro, trangThai) 
                        VALUES ('$username', '$password', '$fullName', '$phone', 'USER', 'ACTIVE')";
 

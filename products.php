@@ -2,7 +2,6 @@
 session_start(); 
 require_once 'includes/db.php';
 
-// 1. KHỞI TẠO THAM SỐ (Tương đương requestScope trong JSP)
 $limit = 12; 
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
@@ -13,20 +12,19 @@ $cat_id = isset($_GET['cat']) ? (int)$_GET['cat'] : 0;
 $brand_id = isset($_GET['brandId']) ? (int)$_GET['brandId'] : 0;
 $sort = isset($_GET['sort']) ? $_GET['sort'] : '';
 
-// 2. XÂY DỰNG TRUY VẤN LỌC
+// TRUY VẤN LỌC
 $where_clauses = ["1=1"];
 if ($keyword != '') $where_clauses[] = "ten LIKE '%$keyword%'";
 if ($cat_id > 0) $where_clauses[] = "maDM = $cat_id";
 if ($brand_id > 0) $where_clauses[] = "maTH = $brand_id";
 $where_sql = implode(" AND ", $where_clauses);
 
-// Tính tổng số trang
 $total_query = mysqli_query($conn, "SELECT COUNT(*) as total FROM SanPham WHERE $where_sql");
 $total_data = mysqli_fetch_assoc($total_query);
 $total_products = $total_data['total'];
 $endPage = ceil($total_products / $limit);
 
-// 3. LOGIC SẮP XẾP
+// LOGIC SẮP XẾP
 $order_sql = " ORDER BY maSP DESC";
 if ($sort === 'price_asc') $order_sql = " ORDER BY gia ASC";
 if ($sort === 'price_desc') $order_sql = " ORDER BY gia DESC";

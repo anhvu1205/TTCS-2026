@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 07, 2026 lúc 01:02 PM
+-- Thời gian đã tạo: Th5 08, 2026 lúc 09:06 AM
 -- Phiên bản máy phục vụ: 8.0.43
 -- Phiên bản PHP: 8.0.30
 
@@ -20,32 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Cơ sở dữ liệu: `shop_ptit`
 --
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `baiviet`
---
-
-CREATE TABLE `baiviet` (
-  `maBV` int NOT NULL,
-  `tieuDe` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tomTat` text COLLATE utf8mb4_unicode_ci,
-  `noiDung` longtext COLLATE utf8mb4_unicode_ci,
-  `hinhAnh` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ngayDang` datetime DEFAULT CURRENT_TIMESTAMP,
-  `tacGia` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `trangThai` tinyint(1) DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `baiviet`
---
-
-INSERT INTO `baiviet` (`maBV`, `tieuDe`, `tomTat`, `noiDung`, `hinhAnh`, `ngayDang`, `tacGia`, `trangThai`) VALUES
-(1, 'Xu hướng thời trang hè 2026', 'Các mẫu trang phục nổi bật cho mùa hè năm nay.', 'Nội dung bài viết mẫu 1...', 'assets/images/blog1.jpg', '2026-04-17 12:45:35', 'Admin', 1),
-(2, 'Cách phối đồ basic nhưng vẫn đẹp', 'Gợi ý mix đồ đơn giản cho nam và nữ.', 'Nội dung bài viết mẫu 2...', 'assets/images/blog2.jpg', '2026-04-17 12:45:35', 'Admin', 1),
-(3, 'Mẹo bảo quản quần áo bền đẹp', 'Một số mẹo giúp quần áo luôn mới.', 'Nội dung bài viết mẫu 3...', 'assets/images/blog3.jpg', '2026-04-17 12:45:35', 'Admin', 1);
 
 -- --------------------------------------------------------
 
@@ -159,14 +133,6 @@ CREATE TABLE `chitietdonhang` (
   `mauSac` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Đang đổ dữ liệu cho bảng `chitietdonhang`
---
-
-INSERT INTO `chitietdonhang` (`maCTDH`, `maDH`, `maSP`, `soLuong`, `donGia`, `thanhTien`, `kichCo`, `mauSac`) VALUES
-(9, 11, 28, 1, 1280000.00, 1280000.00, 'M', 'Trắng'),
-(10, 12, 28, 1, 1280000.00, 1280000.00, 'S', 'Navy Blue');
-
 -- --------------------------------------------------------
 
 --
@@ -233,7 +199,7 @@ CREATE TABLE `discount_codes` (
 --
 
 INSERT INTO `discount_codes` (`id`, `code`, `discount_type`, `discount_value`, `min_order_value`, `max_discount`, `usage_limit`, `used_count`, `start_date`, `end_date`, `is_active`, `created_at`) VALUES
-(1, 'MAU10', 'percent', 10.00, 200000.00, 50000.00, 100, 1, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-13 22:18:37'),
+(1, 'MAU10', 'percent', 10.00, 200000.00, 50000.00, 100, 4, '2026-04-17 00:00:00', '2026-05-17 00:00:00', 1, '2026-04-13 22:18:37'),
 (3, 'DINHNOCKICHTRAN', 'percent', 15.00, 1199999.00, 200000.00, NULL, 0, NULL, NULL, 1, '2026-05-04 11:26:52'),
 (4, 'PTIT2026', 'fixed', 50000.00, 999999.00, NULL, NULL, 0, NULL, NULL, 1, '2026-05-04 11:27:38');
 
@@ -256,18 +222,18 @@ CREATE TABLE `donhang` (
   `phuongThucThanhToan` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `trangThai` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'Chờ xác nhận',
   `ngayTao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `minhChungThanhToan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `minhChungThanhToan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `maGiamGia` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `soTienGiam` int DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `donhang`
 --
 
-INSERT INTO `donhang` (`maDH`, `maKH`, `maNV`, `hoTen`, `email`, `soDienThoai`, `diaChi`, `tongTien`, `phiShip`, `phuongThucThanhToan`, `trangThai`, `ngayTao`, `minhChungThanhToan`) VALUES
-(1, 1, NULL, 'Người Dùng', 'user@email.com', '0912345678', '123 Đường ABC, Hà Nội', 3680000.00, 30000.00, 'COD', 'Đã giao hàng', '2025-11-05 07:20:30', NULL),
-(2, 1, NULL, 'Người Dùng', 'user@email.com', '0912345678', '123 Đường ABC, Hà Nội', 1330000.00, 30000.00, 'QR', 'Chờ xác nhận', '2026-04-17 03:56:27', NULL),
-(11, 1, NULL, 'Nguyễn Tuấn Kiệt', NULL, '0327484058', '123', 1280000.00, 0.00, 'QR', 'Hoàn tất', '2026-05-07 10:50:15', 'assets/img/proofs/proof_11_1778151025.png'),
-(12, 1, NULL, 'Nguyễn Tuấn Kiệt', NULL, '0327484058', '123', 1280000.00, 0.00, 'COD', 'Hoàn tất', '2026-05-07 10:57:47', NULL);
+INSERT INTO `donhang` (`maDH`, `maKH`, `maNV`, `hoTen`, `email`, `soDienThoai`, `diaChi`, `tongTien`, `phiShip`, `phuongThucThanhToan`, `trangThai`, `ngayTao`, `minhChungThanhToan`, `maGiamGia`, `soTienGiam`) VALUES
+(1, 1, NULL, 'Người Dùng', 'user@email.com', '0912345678', '123 Đường ABC, Hà Nội', 3680000.00, 30000.00, 'COD', 'Đã giao hàng', '2025-11-05 07:20:30', NULL, NULL, 0),
+(2, 1, NULL, 'Người Dùng', 'user@email.com', '0912345678', '123 Đường ABC, Hà Nội', 1330000.00, 30000.00, 'QR', 'Chờ xác nhận', '2026-04-17 03:56:27', NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -418,8 +384,8 @@ INSERT INTO `sanpham` (`maSP`, `maDM`, `maTH`, `ten`, `moTa`, `gia`, `soLuong`, 
 (24, 6, 2, 'Quần short Adidas Originals', 'Quần short casual Adidas', 320000.00, 35, 'S,M,L', 'Xám', 'Cotton', 'https://assets.adidas.com/images/h_2000,f_auto,q_auto,fl_lossy,c_fill,g_auto/6739ddc25daa4df3875e8497ca3f01bd_9366/Own_The_Run_Shorts_Blue_JX2247_21_model.jpg', 70),
 (25, 6, 7, 'Quần short Puma Basic', 'Quần short basic Puma, nhiều màu', 280000.00, 45, 'S,M,L,XL', 'Navy', 'Cotton', 'https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_2000,h_2000/global/682598/03/mod03/fnd/PNA/fmt/png/PUMA-Essentials-Men\'s-10%22-Shorts', 95),
 (26, 7, 6, 'Áo len Gucci', 'Áo len vải thun cotton Gucci', 1500000.00, 40, 'M,L,XL', 'Đen', 'Vải thun cotton', 'https://media.gucci.com/style/DarkGray_Center_0_0_2400x2400/1757932225/838450_XJHJO_1043_003_100_0000_Light-Brushed-cotton-jersey-sweatshirt.jpg', 40),
-(27, 7, 5, 'Áo nỉ H&M', 'Áo nỉ dáng thụng H&M Basics', 399000.00, 45, 'XS,S,M,L', 'Xanh Navy', 'Cotton, Polyester', 'https://image.hm.com/assets/hm/d2/29/d229e5925fab8f6b9db1cdf4f386a269616e632b.jpg?imwidth=2160', 60),
-(28, 7, 3, 'Áo len Zara', 'Áo len Polo cổ tay Zara', 1280000.00, 19, 'S,M,L,XL', 'Navy Blue', 'Cotton, Polyester', 'https://static.zara.net/assets/public/7f3d/981f/a95a48fda38b/12e72a1415da/00526310401-a1/00526310401-a1.jpg?ts=1754995160359&w=1125', 65),
+(27, 7, 5, 'Áo nỉ H&M', 'Áo nỉ dáng thụng H&M Basics', 399000.00, 42, 'XS,S,M,L', 'Xanh Navy', 'Cotton, Polyester', 'https://image.hm.com/assets/hm/d2/29/d229e5925fab8f6b9db1cdf4f386a269616e632b.jpg?imwidth=2160', 60),
+(28, 7, 3, 'Áo len Zara', 'Áo len Polo cổ tay Zara', 1280000.00, 17, 'S,M,L,XL', 'Navy Blue', 'Cotton, Polyester', 'https://static.zara.net/assets/public/7f3d/981f/a95a48fda38b/12e72a1415da/00526310401-a1/00526310401-a1.jpg?ts=1754995160359&w=1125', 65),
 (29, 1, 1, 'Áo jacket', '', 1200000000.00, 0, 'S,M,L', 'Đỏ', '', 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQBMxYp1009ABsBgUNtd8glcY3nAGyg9TCXVODNnFgskia4eZG66yF4YK2pdh3w9I13pukRfq7x6To1nh6LFJ53MfaI5gmqEgD-8ca4OcSOduCIswknA-MCp2k1sx7j9_rHlGh3fnd1&usqp=CAc', 0);
 
 -- --------------------------------------------------------
@@ -461,22 +427,8 @@ CREATE TABLE `yeuthich` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `yeuthich`
---
-
-INSERT INTO `yeuthich` (`maYT`, `maND`, `maSP`, `ngayTao`) VALUES
-(2, 2, 28, '2026-05-07 08:38:29'),
-(3, 2, 29, '2026-05-07 08:44:58');
-
---
 -- Chỉ mục cho các bảng đã đổ
 --
-
---
--- Chỉ mục cho bảng `baiviet`
---
-ALTER TABLE `baiviet`
-  ADD PRIMARY KEY (`maBV`);
 
 --
 -- Chỉ mục cho bảng `chatbotmessages`
@@ -590,12 +542,6 @@ ALTER TABLE `yeuthich`
 --
 
 --
--- AUTO_INCREMENT cho bảng `baiviet`
---
-ALTER TABLE `baiviet`
-  MODIFY `maBV` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
 -- AUTO_INCREMENT cho bảng `chatbotmessages`
 --
 ALTER TABLE `chatbotmessages`
@@ -611,7 +557,7 @@ ALTER TABLE `chatbotrequests`
 -- AUTO_INCREMENT cho bảng `chitietdonhang`
 --
 ALTER TABLE `chitietdonhang`
-  MODIFY `maCTDH` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `maCTDH` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT cho bảng `chitietgiohang`
@@ -635,7 +581,7 @@ ALTER TABLE `discount_codes`
 -- AUTO_INCREMENT cho bảng `donhang`
 --
 ALTER TABLE `donhang`
-  MODIFY `maDH` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `maDH` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT cho bảng `giohang`
@@ -647,13 +593,13 @@ ALTER TABLE `giohang`
 -- AUTO_INCREMENT cho bảng `khachhang`
 --
 ALTER TABLE `khachhang`
-  MODIFY `maKH` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `maKH` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `nguoidung`
 --
 ALTER TABLE `nguoidung`
-  MODIFY `maND` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `maND` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT cho bảng `productreviews`
@@ -677,7 +623,7 @@ ALTER TABLE `thuonghieu`
 -- AUTO_INCREMENT cho bảng `yeuthich`
 --
 ALTER TABLE `yeuthich`
-  MODIFY `maYT` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `maYT` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Các ràng buộc cho các bảng đã đổ

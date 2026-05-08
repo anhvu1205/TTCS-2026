@@ -16,7 +16,7 @@ function getStatusClass($status) {
     return $map[$status] ?? 'status-default';
 }
 
-// 1. KIỂM TRA QUYỀN TRUY CẬP
+// KIỂM TRA QUYỀN TRUY CẬP
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'ADMIN') {
     header("Location: shop.php");
     exit();
@@ -24,7 +24,6 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'ADMIN') {
 
 $tab = $_GET['tab'] ?? 'overview';
 
-// 2. XỬ LÝ ĐÁNH DẤU CHAT ĐÃ XỬ LÝ
 if (isset($_GET['mark_chat_answered'])) {
     $id = (int)$_GET['mark_chat_answered'];
     mysqli_query($conn, "UPDATE ChatbotRequests SET status = 'answered' WHERE id = $id");
@@ -32,7 +31,6 @@ if (isset($_GET['mark_chat_answered'])) {
     exit();
 }
 
-// Xử lý quản lý đánh giá sản phẩm
 if (isset($_GET['hide_review'])) {
     $id = (int)$_GET['hide_review'];
     mysqli_query($conn, "UPDATE ProductReviews SET status = 'hidden' WHERE id = $id");
@@ -68,9 +66,7 @@ if (isset($_GET['delete_home_review'])) {
     exit();
 }
 
-// 3. XỬ LÝ POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
     // Admin trả lời khách trong chatbot
     if (isset($_POST['admin_reply_chat'])) {
         $session_id = mysqli_real_escape_string($conn, $_POST['session_id']);
@@ -98,8 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: admin.php?tab=chatbot");
         exit();
     }
-
-    // Trả session về bot
     if (isset($_POST['return_bot_chat'])) {
         $session_id = mysqli_real_escape_string($conn, $_POST['session_id']);
 
@@ -112,7 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: admin.php?tab=chatbot");
         exit();
     }
-
     // Thêm review khách hàng hiển thị random ở Home
     if (isset($_POST['add_home_review'])) {
         $customer_name = mysqli_real_escape_string($conn, trim($_POST['customer_name']));
@@ -130,7 +123,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: admin.php?tab=reviews");
         exit();
     }
-
     // Xử lý đơn hàng
     if (isset($_POST['set_pending_id'])) {
         $id = $_POST['set_pending_id'];
@@ -151,7 +143,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         mysqli_query($conn, "UPDATE DonHang SET trangThai='DA_HUY' WHERE maDH='$order_id'");
     }
-
     // Xử lý người dùng
     elseif (isset($_POST['user_action'])) {
         $user_id = $_POST['target_user_id'];
@@ -165,7 +156,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             mysqli_query($conn, "UPDATE NguoiDung SET trangThai='ACTIVE' WHERE maND='$user_id'");
         }
     }
-
     // Xử lý admin reply review
     elseif (isset($_POST['admin_reply_review'])) {
         $review_id = (int)$_POST['review_id'];
@@ -228,12 +218,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['update_order_status'])) {
         $order_id = $_POST['order_id'];
         $new_status = $_POST['new_status'];
-        
-        // Cập nhật trạng thái mới vào Database
         $sql = "UPDATE DonHang SET trangThai = '$new_status' WHERE maDH = '$order_id'";
         mysqli_query($conn, $sql);
-        
-        // Chuyển hướng về tab đơn hàng để thấy kết quả
         header("Location: admin.php?tab=orders");
         exit();
     }
@@ -242,7 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 include 'includes/header.php';
 
-// 4. LẤY DỮ LIỆU THỐNG KÊ
+// LẤY DỮ LIỆU THỐNG KÊ
 $revenue = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SUM(tongTien) as total FROM DonHang WHERE trangThai != 'DA_HUY'"))['total'] ?: 0;
 $total_orders = mysqli_num_rows(mysqli_query($conn, "SELECT maDH FROM DonHang"));
 $pending_orders = mysqli_num_rows(mysqli_query($conn, "SELECT maDH FROM DonHang WHERE trangThai = 'CHO_XAC_NHAN'"));
@@ -369,27 +355,20 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                                         <p class="mb-0 extra-small text-muted"><?php echo number_format($o['tongTien']); ?>₫ · <?php echo date('d/m/Y', strtotime($o['ngayTao'])); ?></p>
                                     </div>
                                     <div class="text-end d-flex flex-column align-items-end">
-                                        <!-- Nhóm Badge và Ghi chú vào đây để chúng xếp chồng lên nhau ở bên phải -->
                                         <span class="badge-status <?php echo getStatusClass($o['trangThai']); ?>">
                                             <?php echo $o['trangThai']; ?>
                                         </span>
-
-                                        <!-- Ghi chú chưa thanh toán -->
                                         <div class="mt-1">
                                             <?php 
-                                            $st = $o['trangThai'] ?? $curr_st; // Tùy file đang dùng biến nào
-                                            
-                                            // Đơn COD chưa xong -> CHƯA THANH TOÁN (Màu đỏ)
+                                            $st = $o['trangThai'] ?? $curr_st; 
                                             if ($o['phuongThucThanhToan'] == 'COD' && !in_array($st, ['Hoàn tất', 'Đã hủy', 'Đã giao'])): ?>
                                                 <small class="text-danger fw-bold" style="font-size: 9px;">[ CHƯA THANH TOÁN ]</small>
                                             
                                             <?php 
-                                            // Đơn QR đã gửi ảnh -> ĐANG KIỂM TRA (Màu xanh dương/tím)
                                             elseif ($o['phuongThucThanhToan'] == 'QR' && $st == 'Chờ xác nhận' && !empty($o['minhChungThanhToan'])): ?>
                                                 <small class="text-primary fw-bold" style="font-size: 9px;">[ ĐANG KIỂM TRA ]</small>
                                             
                                             <?php 
-                                            // Đơn QR chưa gửi ảnh -> CHƯA THANH TOÁN
                                             elseif ($o['phuongThucThanhToan'] == 'QR' && $st == 'Chưa thanh toán'): ?>
                                                 <small class="text-danger fw-bold" style="font-size: 9px;">[ CHƯA THANH TOÁN ]</small>
                                             <?php endif; ?>
@@ -444,7 +423,6 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                 </div>
 
             <?php elseif ($tab == 'orders'): ?>
-                <!-- 1. Thanh tìm kiếm và Bộ lọc giống React -->
                 <div class="d-flex align-items-center gap-3 mb-5 flex-wrap">
                     <select id="statusFilter" class="rounded-xl px-4 py-2 text-sm border-0 focus:outline-none" 
                             style="background-color: #EDE8DF; color: #1A1A1A;">
@@ -458,16 +436,13 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                         <option value="Đã hoàn tiền">Đã hoàn tiền</option>
                     </select>
                 </div>
-
-                <!-- 2. Danh sách Đơn hàng dạng Card -->
                 <div id="orderContainer" class="space-y-3">
                     <?php
                     $res_o = mysqli_query($conn, "SELECT * FROM DonHang ORDER BY ngayTao DESC");
                     if (mysqli_num_rows($res_o) > 0):
                         while ($o = mysqli_fetch_assoc($res_o)):
                             $curr_st = $o['trangThai'];
-                            // Mapping màu sắc dựa trên file css bạn có
-                            $st_color = '#6B7280'; // mặc định
+                            $st_color = '#6B7280'; 
                             if($curr_st == 'Chờ xác nhận') $st_color = '#F59E0B';
                             if($curr_st == 'Đã giao hàng') $st_color = '#3B82F6';
                             if($curr_st == 'Hoàn tất') $st_color = '#10B981';
@@ -488,7 +463,6 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                                 </div>
                                 
                                 <div class="flex-shrink-0 text-end">
-                                    <!-- Select trạng thái -->
                                     <form method="POST">
                                         <input type="hidden" name="order_id" value="<?php echo $o['maDH']; ?>">
                                         <select name="new_status" onchange="this.form.submit()" 
@@ -504,23 +478,21 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                                         </select>
                                         <input type="hidden" name="update_order_status" value="1">
                                     </form>
-
                                     <!-- Ghi chú chưa thanh toán -->
                                     <div class="mt-1">
                                         <?php 
-                                        $st = $o['trangThai'] ?? $curr_st; // Tùy file đang dùng biến nào
-                                        
-                                        // Đơn COD chưa xong -> CHƯA THANH TOÁN (Màu đỏ)
+                                        $st = $o['trangThai'] ?? $curr_st; 
+                                
                                         if ($o['phuongThucThanhToan'] == 'COD' && !in_array($st, ['Hoàn tất', 'Đã hủy', 'Đã giao'])): ?>
                                             <small class="text-danger fw-bold" style="font-size: 9px;">[ CHƯA THANH TOÁN ]</small>
                                         
                                         <?php 
-                                        // Đơn QR đã gửi ảnh -> ĐANG KIỂM TRA (Màu xanh dương/tím)
+    
                                         elseif ($o['phuongThucThanhToan'] == 'QR' && $st == 'Chờ xác nhận' && !empty($o['minhChungThanhToan'])): ?>
                                             <small class="text-primary fw-bold" style="font-size: 9px;">[ ĐANG KIỂM TRA ]</small>
                                         
                                         <?php 
-                                        // Đơn QR chưa gửi ảnh -> CHƯA THANH TOÁN
+                        
                                         elseif ($o['phuongThucThanhToan'] == 'QR' && $st == 'Chưa thanh toán'): ?>
                                             <small class="text-danger fw-bold" style="font-size: 9px;">[ CHƯA THANH TOÁN ]</small>
                                         <?php endif; ?>
@@ -542,13 +514,11 @@ $total_products = mysqli_num_rows(mysqli_query($conn, "SELECT maSP FROM SanPham"
                                     </p>
                                 <?php endwhile; ?>
                             </div>
-
-                            <!-- Footer của Card -->
                             <div class="d-flex justify-content-between align-items-center mt-3">
                                 <span class="text-xs text-muted"><?php echo date('d/m/Y H:i', strtotime($o['ngayTao'])); ?></span>
                                 <div class="d-flex align-items-center gap-3">
                                     <span class="text-sm font-bold" style="color: #C4622D;">TỔNG: <?php echo number_format($o['tongTien']); ?>₫</span>
-                                    <!-- Nút xem chi tiết giữ lại theo yêu cầu -->
+                                    <!-- Nút xem chi tiết -->
                                     <a href="order-detail.php?id=<?php echo $o['maDH']; ?>" class="btn btn-sm btn-white bg-white rounded-lg shadow-sm border-0" title="Xem chi tiết">
                                         <i class="fa-solid fa-eye" style="color: #5C5049;"></i>
                                     </a>

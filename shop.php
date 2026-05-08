@@ -2,7 +2,6 @@
 session_start();
 require_once 'includes/db.php';
 
-// Logic lấy dữ liệu
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, trim($_GET['search'])) : '';
 $cat = isset($_GET['cat']) ? mysqli_real_escape_string($conn, $_GET['cat']) : '';
 
@@ -165,8 +164,8 @@ include 'includes/header.php';
             </div>
         </div>
     </section>
-    
-    <!-- 4. SECTION BEST SELLERS (SẢN PHẨM BÁN CHẠY) -->
+
+    <!-- SẢN PHẨM BÁN CHẠY -->
     <section class="best-sellers-section">
         <div class="container-fluid max-w-7xl mx-auto">
             <div class="d-flex align-items-end justify-content-between mb-5">
@@ -182,7 +181,7 @@ include 'includes/header.php';
 
             <div id="bestSellerSlider" class="best-seller-slider-wrapper">
                 <?php
-                // THAY ĐỔI SQL: Sắp xếp theo cột 'daBan' giảm dần
+                // Sắp xếp theo cột 'daBan' giảm dần
                 $sql_best = "SELECT maSP as id, ten as name, gia as price, hinhAnh as image, soLuong, daBan 
                              FROM SanPham 
                              ORDER BY daBan DESC 
@@ -212,7 +211,7 @@ include 'includes/header.php';
                                         <i class="<?php echo $is_wishlisted ? 'fa-solid text-danger' : 'fa-regular'; ?> fa-heart"></i>
                                     </button>
 
-                                    <!-- FORM THÊM VÀO GIỎ HÀNG (AJAX) -->
+                                    <!-- FORM THÊM VÀO GIỎ HÀNG -->
                                     <form action="cart.php" method="POST" class="quick-add-form-v3">
                                         <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
                                         <?php if ($row['soLuong'] > 0): ?>
@@ -226,7 +225,7 @@ include 'includes/header.php';
                                         <?php endif; ?>
                                     </form>
                                     
-                                    <!-- Hiển thị nhãn số lượng đã bán (Tùy chọn giúp khách hàng thấy độ hot) -->
+                                    <!-- Hiển thị nhãn số lượng đã bán -->
                                     <div class="position-absolute top-0 start-0 m-3">
                                         <span class="badge rounded-pill bg-white text-dark small fw-bold px-2 py-1 shadow-sm" style="font-size: 9px; opacity: 0.9;">
                                             Đã bán <?php echo number_format($row['daBan']); ?>
@@ -354,7 +353,7 @@ include 'includes/header.php';
         }
     }
 
-    // Wishlist không dùng jQuery
+    // Wishlist không dùng
     document.addEventListener('DOMContentLoaded', function() {
 
         const newsletterForm = document.getElementById('newsletter-form');

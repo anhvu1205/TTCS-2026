@@ -10,7 +10,6 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-// LẤY THÔNG TIN MỚI NHẤT TỪ DATABASE (Thay vì dùng Session cũ)
 $user_session = $_SESSION['user'];
 $user_id = $user_session['id'] ?? $user_session['maND'];
 $res_fresh_user = mysqli_query($conn, "SELECT * FROM NguoiDung WHERE maND = '$user_id'");
@@ -23,7 +22,7 @@ if (empty($cartItems) && !isset($_GET['step'])) {
     exit();
 }
 
-// 2. TÍNH TOÁN TIỀN HÀNG
+// TÍNH TOÁN TIỀN HÀNG
 $subtotal = getCartSubtotal();
 $discountAmount = getAppliedDiscountAmount();
 $discountCode = $_SESSION['discount']['code'] ?? null;
@@ -31,11 +30,10 @@ $discountCode = $_SESSION['discount']['code'] ?? null;
 $shipping = ($subtotal >= 500000 || $subtotal == 0) ? 0 : 30000;
 $total = max(($subtotal - $discountAmount), 0) + $shipping;
 
-// 3. XỬ LÝ KHI ẤN NÚT XÁC NHẬN ĐẶT HÀNG
+// XỬ LÝ KHI ẤN NÚT XÁC NHẬN ĐẶT HÀNG
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_order'])) {
+    
     $maND = $fresh_user['maND'];
-
-    // Tìm maKH tương ứng
     $res_kh = mysqli_query($conn, "SELECT maKH FROM KhachHang WHERE maND = '$maND'");
     if (mysqli_num_rows($res_kh) > 0) {
         $kh = mysqli_fetch_assoc($res_kh);
@@ -50,12 +48,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_order'])) {
     $address = mysqli_real_escape_string($conn, $_POST['address']);
     $note = mysqli_real_escape_string($conn, $_POST['note']);
     $payment_method = $_POST['payment_method'];
-
-// Đồng bộ trạng thái với trang Admin (pending cho COD, CHUA_THANH_TOAN cho QR)
     $trangThai = ($payment_method === 'QR') ? 'CHUA_THANH_TOAN' : 'Chờ xác nhận';
 
-    $sql_order = "INSERT INTO DonHang (maKH, hoTen, soDienThoai, diaChi, tongTien, phiShip, phuongThucThanhToan, trangThai) 
-                  VALUES ('$maKH', '$fullname', '$phone', '$address', '$total', '$shipping', '$payment_method', '$trangThai')";
+    $maGiamGia = $_SESSION['discount']['code'] ?? null; // Lấy mã code
+    $soTienGiam = $_SESSION['discount']['amount'] ?? 0;  // Lấy số tiền đã giảm
+
+    // Thêm maGiamGia và soTienGiam vào query
+    $sql_order = "INSERT INTO DonHang (maKH, hoTen, soDienThoai, diaChi, tongTien, phiShip, phuongThucThanhToan, trangThai, maGiamGia, soTienGiam) 
+                  VALUES ('$maKH', '$fullname', '$phone', '$address', '$total', '$shipping', '$payment_method', '$trangThai', " . 
+                  ($maGiamGia ? "'$maGiamGia'" : "NULL") . ", '$soTienGiam')";
 
     if (mysqli_query($conn, $sql_order)) {
         $maDH = mysqli_insert_id($conn);
@@ -73,13 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_order'])) {
 
             mysqli_query($conn, "UPDATE SanPham SET soLuong = soLuong - $soLuong WHERE maSP = '$maSP'");
         }
-
-        // tăng lượt dùng mã giảm giá nếu có
+        
         if (!empty($_SESSION['discount']['id'])) {
             increaseDiscountUsedCount($conn, (int)$_SESSION['discount']['id']);
         }
 
-        // xóa giỏ hàng và mã giảm giá sau khi tạo đơn
         unset($_SESSION['cart']);
         unset($_SESSION['discount']);
 

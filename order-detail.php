@@ -2,7 +2,6 @@
 session_start();
 require_once 'includes/db.php';
 
-// HÀM HỖ TRỢ LẤY CLASS CSS (Đồng bộ toàn hệ thống)
 function getStatusClass($status) {
     $map = [
         'Chưa thanh toán'         => 'status-chua_thanh_toan',
@@ -16,7 +15,7 @@ function getStatusClass($status) {
     return $map[$status] ?? 'status-default';
 }
 
-// 1. KIỂM TRA ĐĂNG NHẬP
+// KIỂM TRA ĐĂNG NHẬP
 if (!isset($_SESSION['user'])) {
     header("Location: login.php");
     exit();
@@ -26,14 +25,9 @@ $order_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $user_id = $_SESSION['user']['id'];
 $is_admin = ($_SESSION['user']['role'] === 'ADMIN');
 
-// 2. XỬ LÝ CẬP NHẬT (POST)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
-    // ADMIN CẬP NHẬT TRẠNG THÁI TỪ SELECT BOX
     if ($is_admin && isset($_POST['admin_update_status'])) {
         $new_st = mysqli_real_escape_string($conn, $_POST['new_status']);
-        
-        // Nếu chuyển sang trạng thái Đã hủy, thực hiện hoàn kho
         if ($new_st == 'Đã hủy') {
             $res_items = mysqli_query($conn, "SELECT maSP, soLuong FROM ChiTietDonHang WHERE maDH='$order_id'");
             while($item = mysqli_fetch_assoc($res_items)){
@@ -43,13 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         mysqli_query($conn, "UPDATE DonHang SET trangThai='$new_st' WHERE maDH='$order_id'");
     }
-
-    // KHÁCH HÀNG BẤM HỦY ĐƠN
     if (!$is_admin && isset($_POST['action_cancel_order'])) {
         $check_sql = mysqli_query($conn, "SELECT phuongThucThanhToan FROM DonHang WHERE maDH = '$order_id'");
         $order_info = mysqli_fetch_assoc($check_sql);
-        
-        // Logic: COD -> Đã hủy luôn | QR -> Chờ kiểm tra hoàn tiền
         $new_status = ($order_info['phuongThucThanhToan'] == 'COD') ? 'Đã hủy' : 'Chờ kiểm tra hoàn tiền';
         
         mysqli_query($conn, "UPDATE DonHang SET trangThai = '$new_status' 
@@ -60,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
 }
 
-// 3. TRUY VẤN DỮ LIỆU ĐƠN HÀNG
+// TRUY VẤN DỮ LIỆU ĐƠN HÀNG
 if ($is_admin) {
     $sql_order = "SELECT * FROM DonHang WHERE maDH = '$order_id'";
 } else {
@@ -78,7 +68,6 @@ include 'includes/header.php';
 <link rel="stylesheet" href="assets/css/auth-account.css">
 
 <style>
-    /* Đồng bộ màu sắc trạng thái */
     .status-dang_giao_hang { background-color: #8B5CF6 !important; color: white; }
     .status-da_giao { background-color: #0D9488 !important; color: white; }
     .status-cho_xac_nhan { background-color: #F59E0B !important; color: white; }
@@ -140,8 +129,6 @@ include 'includes/header.php';
                                 <?php echo $order['trangThai']; ?>
                             </span>
                         <?php endif; ?>
-
-                        <!-- THAY ĐỔI TẠI ĐÂY: Ghi chú trạng thái chi tiết -->
                         <div class="mt-2">
                             <?php 
                             $st = $order['trangThai'];
@@ -190,7 +177,7 @@ include 'includes/header.php';
                     </div>
                 </div>
 
-                <!-- THÊM TẠI ĐÂY: Hiển thị ảnh minh chứng cho Admin -->
+                <!-- Hiển thị ảnh minh chứng cho Admin -->
                 <?php if ($is_admin && !empty($order['minhChungThanhToan'])): ?>
                     <div class="mb-5 p-4 rounded-4 shadow-sm" style="background-color: #f0f7ff; border: 1px solid #cce3ff;">
                         <p class="small fw-bold text-primary mb-3 text-uppercase tracking-wider">
@@ -223,9 +210,28 @@ include 'includes/header.php';
 
                 <!-- TỔNG CỘNG -->
                 <div class="p-4 rounded-4" style="background-color: #EDE8DF; border: 1px solid #D4CEBE;">
+
+                    <?php 
+                        $coupon_code = $order['maGiamGia'] ?? '';
+                        $discount_val = (int)($order['soTienGiam'] ?? 0);
+                        
+                        if ($discount_val > 0): 
+                    ?>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted small">
+                            <i class="fa-solid fa-ticket me-1 text-danger"></i> Giảm giá (<?php echo htmlspecialchars($coupon_code); ?>):
+                        </span>
+                        <span class="fw-bold small text-danger">- <?php echo number_format($discount_val); ?>₫</span>
+                    </div>
+                    <?php endif; ?>
+
+                    <hr style="border-top: 1px dashed #D4CEBE; margin: 15px 0;">
+
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fw-bold small text-uppercase">Tổng thanh toán:</span>
-                        <span class="h3 fw-bold mb-0" style="color: #C4622D;"><?php echo number_format($order['tongTien']); ?>₫</span>
+                        <span class="h3 fw-bold mb-0" style="color: #C4622D; font-family: 'DM Sans', serif;">
+                            <?php echo number_format($order['tongTien']); ?>₫
+                        </span>
                     </div>
                 </div>
 
